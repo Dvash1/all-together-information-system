@@ -5,8 +5,7 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.Message;
-
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
