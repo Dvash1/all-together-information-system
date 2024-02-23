@@ -55,6 +55,7 @@ public class PrimaryController {
 
 	@Subscribe
 	public void setDataFromServerTF(MessageEvent event) {
+
 		DataFromServerTF.setText(event.getMessage().getMessage());
 	}
 
@@ -89,6 +90,13 @@ public class PrimaryController {
 			alert.setHeaderText("Error:");
 			alert.show();
 		});
+	}
+
+	@Subscribe
+	public void taskEvent(NewTaskEvent event){
+		Message message = event.getMessage();
+		DataFromServerTF.setText(message.getTask().getRequiredTask());
+
 	}
 
 	@FXML

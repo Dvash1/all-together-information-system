@@ -8,18 +8,25 @@ public class Message implements Serializable {
     LocalDateTime timeStamp;
     String message;
     String data;
+    Task task;
 
-    public Message(int id, LocalDateTime timeStamp, String message) {
+
+    /*  Main constructor  */
+    public Message(int id, LocalDateTime timeStamp, String message, Task task) {
         this.id = id;
         this.timeStamp = timeStamp;
         this.message = message;
+        this.task = task;
     }
 
+
+    /*  Null constructor  */
     public Message(int id, String message) {
         this.id = id;
         this.timeStamp = LocalDateTime.now();
         this.message = message;
         this.data = null;
+        this.task = null;
     }
 
     public Message(int id, String message,String data) {
@@ -31,6 +38,10 @@ public class Message implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public Task getTask() {
+        return task;
     }
 
     public LocalDateTime getTimeStamp() {
@@ -51,6 +62,10 @@ public class Message implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
     }
 
     public String getData() {
