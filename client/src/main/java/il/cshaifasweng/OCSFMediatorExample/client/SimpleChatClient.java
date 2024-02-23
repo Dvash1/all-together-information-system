@@ -33,6 +33,11 @@ public class SimpleChatClient extends Application {
         stage.show();
     }
 
+    @Subscribe
+    public void mashuEvent(NewTaskEvent event) {
+
+    }
+
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
@@ -50,24 +55,6 @@ public class SimpleChatClient extends Application {
     	EventBus.getDefault().unregister(this);
 		super.stop();
 	}
-
-
-    @Subscribe
-    public void onMessageEvent(MessageEvent message) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-        Platform.runLater(() -> {
-            Alert alert = new Alert(AlertType.INFORMATION,
-                    String.format("Message:\nId: %d\nData: %s\nTimestamp: %s\n",
-                            message.getMessage().getId(),
-                            message.getMessage().getMessage(),
-                            message.getMessage().getTimeStamp().format(dtf))
-            );
-            alert.setTitle("new message");
-            alert.setHeaderText("New Message:");
-            alert.show();
-        });
-    }
-
 
 	public static void main(String[] args) {
         launch();

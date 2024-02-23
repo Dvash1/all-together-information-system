@@ -43,6 +43,7 @@ public class Task implements Serializable {
         return id;
     }
 
+
     public String getRequiredTask() {
         return requiredTask;
     }
@@ -83,4 +84,5 @@ public class Task implements Serializable {
     public void setTaskVolunteer(User taskVolunteer) {
         this.taskVolunteer = taskVolunteer;
     }
+
 }

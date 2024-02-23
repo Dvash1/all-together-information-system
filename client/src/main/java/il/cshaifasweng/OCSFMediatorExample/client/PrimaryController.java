@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -16,111 +17,124 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+
+
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
+
 public class PrimaryController {
+	@FXML
+	private ListView<String> myListView;
 
 	@FXML
-	private TextField submitterID1;
+	private Label myLabel;
 
 	@FXML
-	private TextField submitterID2;
+	private TextField myTextField1;
 
 	@FXML
-	private TextField timeTF;
+	private TextField myTextField2;
 
 	@FXML
-	private TextField MessageTF;
+	private TextField myTextField3;
 
 	@FXML
-	private Button SendBtn;
+	private TextField myTextField4;
 
 	@FXML
-	private TextField DataFromServerTF;
+	private TextField myTextField5;
+
+	@FXML // fx:id="TaskDetailsBox"
+	private AnchorPane TaskDetailsBox; // Value injected by FXMLLoader
+
+
+	@FXML
+	private Button status_button;
+	String[] tasks = {"task1","task2","task3","task4","task5","task6"};
+
+	String currentTask;
+
 
 	private int msgId;
 
 	@FXML
-	void sendMessage(ActionEvent event) {
+	void updateStateTaskEvent(ActionEvent event) {
+		currentTask = myListView.getSelectionModel().getSelectedItem();
 		try {
-			Message message = new Message(msgId++, MessageTF.getText());
-			MessageTF.clear();
+			int taskId = Integer.parseInt("" + currentTask.charAt(4));
+
+			Message message = new Message(taskId,"Update State");
 			SimpleClient.getClient().sendToServer(message);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
 
-	@Subscribe
-	public void setDataFromServerTF(MessageEvent event) {
-
-		DataFromServerTF.setText(event.getMessage().getMessage());
-	}
-
-	@Subscribe
-	public void setSubmittersTF(UpdateMessageEvent event) {
-		submitterID1.setText(event.getMessage().getData().substring(0,9));
-		submitterID2.setText(event.getMessage().getData().substring(11,20));
-	}
-
-	@Subscribe
-	public void getStarterData(NewSubscriberEvent event) {
-		try {
-			Message message = new Message(msgId, "send Submitters IDs");
-			SimpleClient.getClient().sendToServer(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	@Subscribe
-	public void errorEvent(ErrorEvent event){
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-		Platform.runLater(() -> {
-			Alert alert = new Alert(Alert.AlertType.ERROR,
-					String.format("Message:\nId: %d\nData: %s\nTimestamp: %s\n",
-							event.getMessage().getId(),
-							event.getMessage().getMessage(),
-							event.getMessage().getTimeStamp().format(dtf))
-			);
-			alert.setTitle("Error!");
-			alert.setHeaderText("Error:");
-			alert.show();
-		});
 	}
 
 	@Subscribe
 	public void taskEvent(NewTaskEvent event){
 		Message message = event.getMessage();
-		DataFromServerTF.setText(message.getTask().getRequiredTask());
+		Task task = message.getTask();
+		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
+		myTextField2.setText("Created on:" + task.getCreationTime());
+		myTextField3.setText("Task ID:" + task.getId());
+		myTextField4.setText("Task state:" + task.getTaskState());
+		myTextField5.setText("Description:" + task.getRequiredTask());
 
 	}
-
+	@Subscribe
+	public void updateEvent(UpdateTaskEvent event) {
+		Message message = event.getMessage();
+		Task task = message.getTask();
+		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
+		myTextField2.setText("Created on:" + task.getCreationTime());
+		myTextField3.setText("Task ID:" + task.getId());
+		myTextField4.setText("Task state:" + task.getTaskState());
+		myTextField5.setText("Description:" + task.getRequiredTask());
+	}
 	@FXML
 	void initialize() {
-		EventBus.getDefault().register(this);
-		MessageTF.clear();
-		DataFromServerTF.clear();
-		msgId=0;
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-		Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {
-			LocalTime currentTime = LocalTime.now();
-			timeTF.setText(currentTime.format(dtf));
-		}),
-				new KeyFrame(Duration.seconds(1))
-		);
-		clock.setCycleCount(Animation.INDEFINITE);
-		clock.play();
 		try {
-			Message message = new Message(msgId, "add client");
+			Message message = new Message(0, "add client");
 			SimpleClient.getClient().sendToServer(message);
+
+			EventBus.getDefault().register(this);
+			myListView.getItems().addAll(tasks);
+			myListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+
+				@Override
+				public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
+					currentTask = myListView.getSelectionModel().getSelectedItem();
+
+					int taskId = Integer.parseInt("" + currentTask.charAt(4));
+					try {
+						Message message1 = new Message(taskId, "Get Data");
+						SimpleClient.getClient().sendToServer(message1);
+					}
+					catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 }
