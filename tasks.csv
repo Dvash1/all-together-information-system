@@ -1,0 +1,7 @@
+task_id,creationTime,requiredTask,taskState,creator_id,volunteer_id
+1,"2024-02-23 15:20:44","Hug Ron Spector",Bakasha,1,NULL
+2,"2024-02-23 16:18:20","Mowing the lawn.",Bakasha,2,NULL
+3,"2024-02-23 16:18:21","Taking the dog out.",Bakasha,2,NULL
+4,"2024-02-23 16:18:22","Finishing the software engineering project.",Bakasha,3,NULL
+5,"2024-02-23 16:18:23","Helping my grandma cross the road",Bakasha,5,NULL
+6,"2024-02-23 16:18:24","Need help getting to the university for the 'Haganat Av Tipus'.",Bakasha,3,NULL
