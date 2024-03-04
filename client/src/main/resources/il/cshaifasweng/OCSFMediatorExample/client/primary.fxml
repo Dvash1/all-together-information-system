@@ -25,5 +25,6 @@
       <TextField fx:id="myTextField3" layoutX="164.0" layoutY="303.0" prefHeight="25.0" prefWidth="370.0" />
       <TextField fx:id="myTextField4" layoutX="164.0" layoutY="328.0" prefHeight="25.0" prefWidth="370.0" />
       <TextField fx:id="myTextField5" layoutX="164.0" layoutY="353.0" prefHeight="25.0" prefWidth="370.0" />
+      <Button fx:id="loginButton" layoutX="44.0" layoutY="387.0" mnemonicParsing="false" onAction="#switchToLogin" text="מעבר ללוגין" />
     </children>
 </AnchorPane>
