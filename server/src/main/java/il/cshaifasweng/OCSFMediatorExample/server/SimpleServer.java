@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Community;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.Task;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
@@ -36,6 +37,7 @@ public class SimpleServer extends AbstractServer {
 
 		configuration.addAnnotatedClass(Task.class);
 		configuration.addAnnotatedClass(User.class);
+		configuration.addAnnotatedClass(Community.class);
 
 		ServiceRegistry serviceRegistry = new
 				StandardServiceRegistryBuilder()
@@ -49,6 +51,31 @@ public class SimpleServer extends AbstractServer {
 		super(port);
 		
 	}
+
+	public static void generateDataBase()
+	{
+		try {
+			SessionFactory sessionFactory = getSessionFactory();
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+
+//			if () {
+//				create users/tasks/communities
+//			}
+
+			session.getTransaction().commit();
+		} catch (Exception exception) {
+			if (session != null) {
+				session.getTransaction().rollback();
+			}
+			System.err.println("An error occured, changes have been rolled back.");
+			exception.printStackTrace();
+		}
+		finally {
+			session.close();
+		}
+	}
+
 
 
 	@Override

@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "users")
+        @Table(name = "users")
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,6 +13,7 @@ public class User implements Serializable {
 
     private String userName;
     @ManyToOne
+    @JoinColumn(name = "community",referencedColumnName = "communityName")
     private Community community;
 
     private String teudatZehut;
@@ -24,6 +25,12 @@ public class User implements Serializable {
     public User(String userName, Community community, String teudatZehut, String password, boolean isManager) {
         this.userName = userName;
         this.community = community;
+        this.teudatZehut = teudatZehut;
+        this.password = password;
+        this.isManager = isManager;
+    }
+    public User(String userName, String teudatZehut, String password, boolean isManager) {
+        this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.password = password;
         this.isManager = isManager;

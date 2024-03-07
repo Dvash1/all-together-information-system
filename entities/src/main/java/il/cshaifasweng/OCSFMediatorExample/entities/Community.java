@@ -31,6 +31,11 @@ public class Community implements Serializable {
         this.communityManager = communityManager;
         this.communityUsers = communityUsers;
     }
+    public Community(String communityName, User communityManager) {
+        this.communityName = communityName;
+        this.communityManager = communityManager;
+
+    }
 
     public int getId() {
         return id;
