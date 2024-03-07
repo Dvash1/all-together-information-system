@@ -33,7 +33,6 @@ public class Message implements Serializable {
     }
 
 
-
     public LocalDateTime getTimeStamp() {
         return timeStamp;
     }
@@ -61,5 +60,6 @@ public class Message implements Serializable {
     public void setObject(Object object) {
         this.object = object;
     }
+}
 
 
