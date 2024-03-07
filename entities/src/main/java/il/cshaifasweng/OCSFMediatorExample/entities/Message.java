@@ -7,15 +7,15 @@ public class Message implements Serializable {
     int id;
     LocalDateTime timeStamp;
     String message;
-    Task task;
+    Object object; // will cast to specific object type when needed, a more general approach
 
 
     /*  Main constructor  */
-    public Message(int id, LocalDateTime timeStamp, String message, Task task) {
+    public Message(int id, LocalDateTime timeStamp, String message, Object object) {
         this.id = id;
         this.timeStamp = timeStamp;
         this.message = message;
-        this.task = task;
+        this.object = object;
     }
 
 
@@ -24,7 +24,7 @@ public class Message implements Serializable {
         this.id = id;
         this.timeStamp = LocalDateTime.now();
         this.message = message;
-        this.task = null;
+        this.object = null;
     }
 
 
@@ -32,9 +32,7 @@ public class Message implements Serializable {
         return id;
     }
 
-    public Task getTask() {
-        return task;
-    }
+
 
     public LocalDateTime getTimeStamp() {
         return timeStamp;
@@ -56,7 +54,12 @@ public class Message implements Serializable {
         this.message = message;
     }
 
-    public void setTask(Task task) {
-        this.task = task;
+    public Object getObject() {
+        return object;
     }
-}
+
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
+

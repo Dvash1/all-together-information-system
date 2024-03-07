@@ -12,8 +12,8 @@ public class User implements Serializable {
     private int id;
 
     private String userName;
-
-    private String communityName;
+    @ManyToOne
+    private Community community;
 
     private String teudatZehut;
 
@@ -21,9 +21,9 @@ public class User implements Serializable {
 
     private boolean isManager;
 
-    public User(String userName, String communityName, String teudatZehut, String password, boolean isManager) {
+    public User(String userName, Community community, String teudatZehut, String password, boolean isManager) {
         this.userName = userName;
-        this.communityName = communityName;
+        this.community = community;
         this.teudatZehut = teudatZehut;
         this.password = password;
         this.isManager = isManager;
@@ -45,13 +45,7 @@ public class User implements Serializable {
         this.userName = userName;
     }
 
-    public String getCommunityName() {
-        return communityName;
-    }
 
-    public void setCommunityName(String communityName) {
-        this.communityName = communityName;
-    }
 
     public String getTeudatZehut() {
         return teudatZehut;
@@ -75,5 +69,13 @@ public class User implements Serializable {
 
     public void setManager(boolean manager) {
         isManager = manager;
+    }
+
+    public Community getCommunity() {
+        return community;
+    }
+
+    public void setCommunity(Community community) {
+        this.community = community;
     }
 }
