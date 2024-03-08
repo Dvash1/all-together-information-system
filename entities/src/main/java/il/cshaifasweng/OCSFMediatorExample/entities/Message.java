@@ -4,50 +4,49 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Message implements Serializable {
-    int id;
-    LocalDateTime timeStamp;
+    int taskID;
     String message;
     Object object; // will cast to specific object type when needed, a more general approach
 
 
     /*  Main constructor  */
-    public Message(int id, LocalDateTime timeStamp, String message, Object object) {
-        this.id = id;
-        this.timeStamp = timeStamp;
+    public Message(int taskID, String message, Object object) {
+        this.taskID = taskID;
         this.message = message;
         this.object = object;
     }
 
 
     /*  Null constructor  */
-    public Message(int id, String message) {
-        this.id = id;
-        this.timeStamp = LocalDateTime.now();
+    public Message(int taskID, String message) {
+        this.taskID = taskID;
+        this.message = message;
+        this.object = null;
+    }
+    public Message(String message,Object object) {
+        this.message = message;
+        this.object = object;
+    }
+    public Message(String message) {
         this.message = message;
         this.object = null;
     }
 
 
-    public int getId() {
-        return id;
+
+    public int getTaskID() {
+        return taskID;
     }
 
-
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
-    }
 
     public String getMessage() {
         return message;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setTaskID(int taskID) {
+        this.taskID = taskID;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
-    }
 
     public void setMessage(String message) {
         this.message = message;

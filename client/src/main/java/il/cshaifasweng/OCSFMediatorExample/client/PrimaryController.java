@@ -2,37 +2,20 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 
 import java.io.IOException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.util.Duration;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import org.hibernate.Session;
-import org.hibernate.query.Query;
 
-
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 
@@ -86,9 +69,9 @@ public class PrimaryController {
 	}
 
 	@Subscribe
-	public void taskEvent(NewTaskEvent event){
+	public void taskEvent(getDataEvent event){
 		Message message = event.getMessage();
-		Task task = message.getTask();
+		Task task = (Task) message.getObject();
 		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
 		myTextField2.setText("Created on:" + task.getCreationTime());
 		myTextField3.setText("Task ID:" + task.getId());
@@ -99,7 +82,7 @@ public class PrimaryController {
 	@Subscribe
 	public void updateEvent(UpdateTaskEvent event) {
 		Message message = event.getMessage();
-		Task task = message.getTask();
+		Task task = (Task) message.getObject();
 		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
 		myTextField2.setText("Created on:" + task.getCreationTime());
 		myTextField3.setText("Task ID:" + task.getId());

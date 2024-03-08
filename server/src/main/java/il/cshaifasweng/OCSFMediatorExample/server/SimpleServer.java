@@ -9,21 +9,14 @@ import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.time.LocalDateTime;
 
-import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import javax.persistence.criteria.Join;
-
 
 
 public class SimpleServer extends AbstractServer {
@@ -102,21 +95,32 @@ public class SimpleServer extends AbstractServer {
 
 				session.getTransaction().commit();
 
-				message.setTask(task);
+				message.setObject(task);
 				message.setMessage("Test");
 				client.sendToClient(message);
 			}
+			else if(request.equals("create task"))
+			{
+				Task testTask = (Task) message.getObject();
+				User u1 = testTask.getTaskCreator();
+				session.save(u1);
+				session.save(testTask);
+				session.flush();
+				session.getTransaction().commit();
+				client.sendToClient(message);
+
+			}
 			else if (request.equals("Get Data")) {
-				Task task = session.get(Task.class,message.getId());
-				message.setTask(task);
+				Task task = session.get(Task.class,message.getTaskID());
+				message.setObject(task);
 
 				client.sendToClient(message);
 
 			}
 			else if (request.equals("Update State")) {
-				Task task = session.get(Task.class,message.getId());
+				Task task = session.get(Task.class,message.getTaskID());
 				task.setTaskState("Betipul");
-				message.setTask(task);
+				message.setObject(task);
 
 				session.update(task);
 				session.flush();
