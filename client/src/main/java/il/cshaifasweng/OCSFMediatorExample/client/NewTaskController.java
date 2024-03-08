@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
+import static il.cshaifasweng.OCSFMediatorExample.client.ViewTasksController.currentUser;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,14 +53,15 @@ public class NewTaskController {
             return;
         }
         // dummy user for now, will get it directly from controller when implemented
-        User testUser = new User("Billy Gates","999999999","password",true);
+//        User testUser = new User("Billy Gates","999999999","password",true);
         RadioButton selectedButton = (RadioButton) toggle;
         String btnText = selectedButton.getText();
         if(btnText.equals("other"))
         {
             btnText = otherTF.getText();
         }
-        Task testTask = new Task(btnText, LocalDateTime.now(),"Request",testUser);
+//        Task testTask = new Task(btnText, LocalDateTime.now(),"Request",testUser);
+        Task testTask = new Task(btnText, LocalDateTime.now(),"Request",currentUser);
         try {
             Message message = new Message("create task",testTask);
             SimpleClient.getClient().sendToServer(message);
@@ -71,7 +73,7 @@ public class NewTaskController {
 
 
     @Subscribe
-    public void newTaskCreated(newTaskEvent event)
+    public void newTaskCreated(NewTaskEvent event)
     {
         Message message = event.getMessage();
         Platform.runLater(() -> {
@@ -80,9 +82,21 @@ public class NewTaskController {
             alert.setHeaderText(null);
             alert.setContentText("Your request has been added,a message has been sent to your community manager (Not really)");
             alert.showAndWait();
+            // close down new task window, go back to viewtasks
+            Platform.runLater(() -> {
+                try {
+                    SimpleChatClient.setRoot("ViewTasks");
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+                }
+            });
         });
+
     }
     public void initialize() {
+        // this try catch block SHOULD NOT be here, but in the LogInController.
+        // it's here because SimpleChatClient loads the NewTask.fxml file first, and we need to establish connection to server.
         try {
             Message message = new Message(0, "add client");
             SimpleClient.getClient().sendToServer(message);

@@ -16,14 +16,17 @@ public class SimpleClient extends AbstractClient {
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		Message message = (Message) msg;
-		if(message.getMessage().equals("Get Data")) {
+		if (message.getMessage().equals("Get Data")) {
 			EventBus.getDefault().post(new getDataEvent(message));
-		}
-		else if (message.getMessage().equals("Update State")) {
+		} else if (message.getMessage().equals("Update State")) {
 			EventBus.getDefault().post(new UpdateTaskEvent(message));
+		} else if (message.getMessage().equals("create task")) {
+			EventBus.getDefault().post(new NewTaskEvent(message));
+		} else if (message.getMessage().equals("get tasks")) {
+			EventBus.getDefault().post(new LoadTasksEvent(message));
 		}
-		else if (message.getMessage().equals("create task")) {
-			EventBus.getDefault().post(new newTaskEvent(message));
+		else if (message.getMessage().equals("get user")) {
+			EventBus.getDefault().post(new GetUserEvent(message));
 		}
 
 	}
