@@ -12,6 +12,6 @@ il\cshaifasweng\OCSFMediatorExample\client\SimpleChatClient.class
 il\cshaifasweng\OCSFMediatorExample\client\GetUserEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\Main.class
 il\cshaifasweng\OCSFMediatorExample\client\ocsf\AdaptableClient.class
+il\cshaifasweng\OCSFMediatorExample\client\VolunteerToTaskEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\SecondaryController.class
 il\cshaifasweng\OCSFMediatorExample\client\NewTaskEvent.class
-il\cshaifasweng\OCSFMediatorExample\client\UpdateTaskEvent.class

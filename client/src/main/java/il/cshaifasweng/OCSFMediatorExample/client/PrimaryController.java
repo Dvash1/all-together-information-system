@@ -79,16 +79,16 @@ public class PrimaryController {
 		myTextField5.setText("Description:" + task.getRequiredTask());
 
 	}
-	@Subscribe
-	public void updateEvent(UpdateTaskEvent event) {
-		Message message = event.getMessage();
-		Task task = (Task) message.getObject();
-		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
-		myTextField2.setText("Created on:" + task.getCreationTime());
-		myTextField3.setText("Task ID:" + task.getId());
-		myTextField4.setText("Task state:" + task.getTaskState());
-		myTextField5.setText("Description:" + task.getRequiredTask());
-	}
+//	@Subscribe
+//	public void updateEvent(UpdateTaskEvent event) {
+//		Message message = event.getMessage();
+//		Task task = (Task) message.getObject();
+//		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
+//		myTextField2.setText("Created on:" + task.getCreationTime());
+//		myTextField3.setText("Task ID:" + task.getId());
+//		myTextField4.setText("Task state:" + task.getTaskState());
+//		myTextField5.setText("Description:" + task.getRequiredTask());
+//	}
 	@FXML
 	void initialize() {
 		try {

@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -66,9 +67,40 @@ public class ViewTasksController {
     @FXML
     void volunteerToTask(ActionEvent event) {
 
+        Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
+        selectedTask.setTaskState("In Progress");
+        selectedTask.setTaskVolunteer(currentUser);
+        try {
+            Message message = new Message("Volunteer to task",selectedTask);
+            SimpleClient.getClient().sendToServer(message);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 
+
+    @Subscribe
+	public void updateToInProgress(VolunteerToTaskEvent event)
+    {
+        Message message = event.getMessage();
+        Task updatedTask = (Task) message.getObject();
+        Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
+
+        int index = taskList.indexOf(selectedTask);
+        taskList.set(index,updatedTask);
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText("You have successfully volunteered for the task.\nYou have 24 hours");
+            alert.showAndWait();
+        });
+
+    }
     @Subscribe
     public void loadTasks(LoadTasksEvent event)
     {
@@ -83,6 +115,7 @@ public class ViewTasksController {
         // this should update all the clients interfaces automatically ( assuming they are browsing tasks, we can check what is the currect scene and decide what to do )
     }
 
+    // "Log in"
     @Subscribe
     public void setLoggedUnUser(GetUserEvent event)
     {
