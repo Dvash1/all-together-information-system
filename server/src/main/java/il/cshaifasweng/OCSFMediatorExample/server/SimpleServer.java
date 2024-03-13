@@ -230,6 +230,20 @@ public class SimpleServer extends AbstractServer {
 		return tasks;
 	}
 
+// same code as above, but will retrieve only tasks that are from the same community as the input user.
+//
+	private static List<Task> getCommunityTasks(User user) throws Exception {
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Task> query = cb.createQuery(Task.class);
+		Root<Task> root = query.from(Task.class);
+		Join<Task, User> creatorJoin = root.join("taskCreator");
+		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
+		query.select(root);
+		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()));
+		List<Task> tasks = session.createQuery(query).getResultList();
+		return tasks;
+	}
+
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -271,7 +285,8 @@ public class SimpleServer extends AbstractServer {
 
 			}
 			else if(request.equals("get tasks")) {
-				List<Task> tasks = getAllTasks();
+				User u1 = (User) message.getObject();
+				List<Task> tasks = getCommunityTasks(u1);
 				// for now just fetch all Tasks in database
 				// will need to add a Query "WHERE taskCreator_communityName == LoggedInUser_communityName in order to fetch tasks that are only from specific community
 				// Might need to add communityName attribute to Task class to simplify things
@@ -292,19 +307,25 @@ public class SimpleServer extends AbstractServer {
 				client.sendToClient(message);
 
 			}
-			else if (request.equals("Volunteer to task")) {
-
-//				Task task = session.get(Task.class,message.getTaskID());
-//				task.setTaskState("Betipul");
-//				message.setObject(task);
+			else if (request.equals("Update task")) {
 
 				Task task = (Task) message.getObject();
 				session.update(task);
 				session.flush();
-
+				if (task.getTaskState().equals("In Progress"))
+				{
+					message.setMessage("Volunteer to task");
+				}
+				else
+				{
+					message.setMessage("Complete task");
+				}
 				client.sendToClient(message);
 				session.getTransaction().commit();
 			}
+
+
+
 			else if (request.equals("add client")){
 				SubscribedClient connection = new SubscribedClient(client);
 				SubscribersList.add(connection);

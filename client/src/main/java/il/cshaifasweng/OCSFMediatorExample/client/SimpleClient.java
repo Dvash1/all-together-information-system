@@ -20,11 +20,16 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new getDataEvent(message));
 		} else if (message.getMessage().equals("Volunteer to task")) {
 			EventBus.getDefault().post(new VolunteerToTaskEvent(message));
-		} else if (message.getMessage().equals("create task")) {
+		}
+		else if (message.getMessage().equals("Complete task")) {
+			EventBus.getDefault().post(new CompleteTaskEvent(message));
+		}
+		else if (message.getMessage().equals("create task")) {
 			EventBus.getDefault().post(new NewTaskEvent(message));
 		} else if (message.getMessage().equals("get tasks")) {
 			EventBus.getDefault().post(new LoadTasksEvent(message));
 		}
+
 		else if (message.getMessage().equals("get user")) {
 			EventBus.getDefault().post(new GetUserEvent(message));
 		}
