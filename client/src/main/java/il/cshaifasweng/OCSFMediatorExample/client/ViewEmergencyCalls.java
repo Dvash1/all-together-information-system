@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import javafx.scene.chart.CategoryAxis;
@@ -37,16 +36,16 @@ public class ViewEmergencyCalls implements Initializable {
     private ToggleGroup TG2;
 
     @FXML
-    private RadioButton RB1;
+    private RadioButton allCommunitiesRB;
 
     @FXML
-    private RadioButton RB2;
+    private RadioButton myCommunityRB;
 
     @FXML
-    private RadioButton RB3;
+    private RadioButton allDatesRB;
 
     @FXML
-    private RadioButton RB4;
+    private RadioButton specificDatesRB;
 
     @FXML
     private Button displayBtn;
@@ -92,8 +91,8 @@ public class ViewEmergencyCalls implements Initializable {
 
     @FXML
     void displayHistogram(ActionEvent event) {
-//        //first we'll check that if the user pressed specific dates, that they are valid.
-        if(RB4.isSelected())
+//        first we'll check that if the user pressed specific dates, that they are valid.
+        if(specificDatesRB.isSelected())
         {
             LocalDate startDateSelected = (LocalDate) startDate.getValue();
             LocalDate endDateSelected = (LocalDate) endDate.getValue();
@@ -121,20 +120,51 @@ public class ViewEmergencyCalls implements Initializable {
                 });
                 return;
             }
-
-
         }
-        try {
-            Message newMessage = new Message("get emergency",currentUser);
-            SimpleClient.getClient().sendToServer(newMessage);
+
+
+        Message message;
+        RadioButton first = (RadioButton) TG1.getSelectedToggle();
+        RadioButton second = (RadioButton) TG2.getSelectedToggle();
+
+
+
+        if (first == allCommunitiesRB && second == allDatesRB)
+        {
+            message = new Message("emergency everything",currentUser);
+        }
+        else if (first == myCommunityRB && second == allDatesRB)
+        {
+            message = new Message("emergency my community all dates",currentUser);
+        }
+        // second == specific dates from here
+        else {
+            LocalDateTime startDate = LocalDateTime.of(this.startDate.getValue(), LocalTime.MIN);
+            LocalDateTime endDate = LocalDateTime.of(this.endDate.getValue(), LocalTime.MAX);
+            List<LocalDateTime> dateList = new ArrayList<LocalDateTime>();
+            dateList.add(startDate);
+            dateList.add(endDate);
+
+            if (first == allCommunitiesRB) {
+                message = new Message("emergency all community specific dates", dateList, currentUser);
+            } else {
+                message = new Message("emergency my community specific dates", dateList, currentUser);
+            }
+        }
+
+        try
+        {
+            SimpleClient.getClient().sendToServer(message);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
     @Subscribe
-    public void showHistEmergency(getEmergencyData event) {
+    public void showHistEmergency(getEmergencyData event)
+    {
 
         Message message = event.getMessage();
         List<Task> taskList = (List<Task>) message.getObject();
@@ -163,10 +193,10 @@ public class ViewEmergencyCalls implements Initializable {
 
         // update histogram
         Platform.runLater(() -> {
-            hist.getData().clear();
-            hist.getData().add(series);
-            hist.layout();
-            hist.setVisible(true);
+        hist.getData().clear();
+        hist.getData().add(series);
+        hist.layout();
+        hist.setVisible(true);
         });
     }
 
@@ -186,11 +216,11 @@ public class ViewEmergencyCalls implements Initializable {
 
         // create ToggleGroup for buttons
         TG1 = new ToggleGroup();
-        RB1.setToggleGroup(TG1);
-        RB2.setToggleGroup(TG1);
+        allCommunitiesRB.setToggleGroup(TG1);
+        myCommunityRB.setToggleGroup(TG1);
         TG2 = new ToggleGroup();
-        RB3.setToggleGroup(TG2);
-        RB4.setToggleGroup(TG2);
+        allDatesRB.setToggleGroup(TG2);
+        specificDatesRB.setToggleGroup(TG2);
 
         // add listener to disable/enable display button
         TG1.selectedToggleProperty().addListener((observable, oldValue, newValue) -> updateButtonState());

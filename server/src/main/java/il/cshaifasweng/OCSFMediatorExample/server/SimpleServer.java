@@ -57,7 +57,7 @@ public class SimpleServer extends AbstractServer {
 			session.beginTransaction();
 
 			//check if database is empty first
-			if (getAllTasks().isEmpty()) {
+			if (getAllTasks(null).isEmpty()) {
 			// first community
 				User u1 = new User("Jan Christie","335720074","nJ9rS8~-",true);
 				Community c1 = new Community("Kfir",u1);
@@ -218,21 +218,25 @@ public class SimpleServer extends AbstractServer {
 
 
 
-
-	private static List<Task> getAllTasks() throws Exception {
+	private static List<Task> getAllTasks(List<LocalDateTime> dateList) throws Exception {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
 		Join<Task, User> creatorJoin = root.join("taskCreator");
 		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
 		query.select(root);
+		if (dateList != null)
+		{
+			query.where(cb.between(root.get("creationTime"), dateList.get(0), dateList.get(1)));
+
+		}
 		List<Task> tasks = session.createQuery(query).getResultList();
 		return tasks;
 	}
 
-// same code as above, but will retrieve only tasks that are from the same community as the input user.
-//
-	private static List<Task> getCommunityTasks(User user) throws Exception {
+	private static List<Task> getCommunityTasks(User user,List<LocalDateTime> dateList) throws Exception
+	{
+
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
@@ -240,6 +244,12 @@ public class SimpleServer extends AbstractServer {
 		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
 		query.select(root);
 		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()));
+
+		if(dateList != null)
+		{
+			query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
+					cb.between(root.get("creationTime"), dateList.get(0), dateList.get(1)));
+		}
 		List<Task> tasks = session.createQuery(query).getResultList();
 		return tasks;
 	}
@@ -276,8 +286,6 @@ public class SimpleServer extends AbstractServer {
 			else if(request.equals("create task"))
 			{
 				Task testTask = (Task) message.getObject();
-//				User u1 = testTask.getTaskCreator();
-//				session.save(u1);
 				session.save(testTask);
 				session.flush();
 				session.getTransaction().commit();
@@ -285,21 +293,53 @@ public class SimpleServer extends AbstractServer {
 
 			}
 			else if(request.equals("get tasks")) {
-				User u1 = (User) message.getObject();
-				List<Task> tasks = getCommunityTasks(u1);
-				// for now just fetch all Tasks in database
-				// will need to add a Query "WHERE taskCreator_communityName == LoggedInUser_communityName in order to fetch tasks that are only from specific community
-				// Might need to add communityName attribute to Task class to simplify things
+				User u1 = message.getUser();
+				List<Task> tasks = getCommunityTasks(u1,null);
+				// for now fetches all Tasks in database from the same community
+
 				message.setObject(tasks);
 				client.sendToClient(message);
 			}
-			else if(request.equals("get emergency")) {
-				// testing with Tasks because emergency is not implemented yet.
-				User u1 = (User) message.getObject();
-				List<Task> tasks = getCommunityTasks(u1);
+
+
+// ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
+			else if(request.equals("emergency everything"))
+			{
+				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+				List<Task> tasks = getAllTasks(null);
+				message.setMessage("emergency histogram");
 				message.setObject(tasks);
 				client.sendToClient(message);
 			}
+			else if(request.equals("emergency my community all dates"))
+			{
+				User u1 = (User) message.getUser();
+				List<Task> tasks = getCommunityTasks(u1,null);
+				message.setMessage("emergency histogram");
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+			else if(request.equals("emergency all community specific dates"))
+			{
+				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+				List<Task> tasks = getAllTasks(dates);
+				message.setMessage("emergency histogram");
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+			else if(request.equals("emergency my community specific dates"))
+			{
+				User u1 = (User) message.getUser();
+				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+				List<Task> tasks = getCommunityTasks(u1,dates);
+				message.setMessage("emergency histogram");
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+
+// ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
+
+
 			else if (request.equals("get user")) {
 				User u1 = session.get(User.class,2);
 				message.setObject(u1);

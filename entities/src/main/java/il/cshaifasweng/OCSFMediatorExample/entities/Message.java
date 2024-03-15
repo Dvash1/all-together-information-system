@@ -7,13 +7,15 @@ public class Message implements Serializable {
     int taskID;
     String message;
     Object object; // will cast to specific object type when needed.
+    User user; // message sending user
 
 
     /*  Main constructor  */
-    public Message(int taskID, String message, Object object) {
+    public Message(int taskID, String message, Object object,User user) {
         this.taskID = taskID;
         this.message = message;
         this.object = object;
+        this.user = user;
     }
 
 
@@ -23,9 +25,15 @@ public class Message implements Serializable {
         this.message = message;
         this.object = null;
     }
-    public Message(String message,Object object) {
+    public Message(String message,Object object,User user) {
         this.message = message;
         this.object = object;
+        this.user = user;
+    }
+    public Message(String message,User user) {
+        this.message = message;
+        this.object = null;
+        this.user = user;
     }
     public Message(String message) {
         this.message = message;
@@ -58,6 +66,14 @@ public class Message implements Serializable {
 
     public void setObject(Object object) {
         this.object = object;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
 

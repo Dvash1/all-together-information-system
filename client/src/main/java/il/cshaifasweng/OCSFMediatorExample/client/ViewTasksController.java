@@ -66,7 +66,7 @@ public class ViewTasksController {
         selectedTask.setTaskState("Complete");
         selectedTask.setCompletionTime(LocalDateTime.now());
         try {
-            Message message = new Message("Update task",selectedTask);
+            Message message = new Message("Update task",selectedTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
         }
         catch (IOException e) {
@@ -134,7 +134,7 @@ public class ViewTasksController {
         selectedTask.setTaskState("In Progress");
         selectedTask.setTaskVolunteer(currentUser);
         try {
-            Message message = new Message("Update task",selectedTask);
+            Message message = new Message("Update task",selectedTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
         }
         catch (IOException e) {
@@ -169,7 +169,6 @@ public class ViewTasksController {
         Message message = event.getMessage();
         taskList = FXCollections.observableArrayList((List<Task>) message.getObject());
         tasksTableView.setItems(taskList);
-
         // ****IMPORTANT****
         //in the future when one client creates a new task, the steps to update the GUI of all clients should be:
         //- message will send a message to ALL subscribed clients with the new Task

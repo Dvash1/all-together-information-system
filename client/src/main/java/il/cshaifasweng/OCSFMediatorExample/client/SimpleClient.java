@@ -29,7 +29,7 @@ public class SimpleClient extends AbstractClient {
 		} else if (message.getMessage().equals("get tasks")) {
 			EventBus.getDefault().post(new LoadTasksEvent(message));
 		}
-		else if (message.getMessage().equals("get emergency")) {
+		else if (message.getMessage().equals("emergency histogram")) {
 			EventBus.getDefault().post(new getEmergencyData(message));
 		}
 

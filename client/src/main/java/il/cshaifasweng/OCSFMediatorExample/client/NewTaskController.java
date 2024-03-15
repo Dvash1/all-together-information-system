@@ -52,18 +52,17 @@ public class NewTaskController {
             });
             return;
         }
-        // dummy user for now, will get it directly from controller when implemented
-//        User testUser = new User("Billy Gates","999999999","password",true);
+
         RadioButton selectedButton = (RadioButton) toggle;
         String btnText = selectedButton.getText();
         if(btnText.equals("other"))
         {
             btnText = otherTF.getText();
         }
-//        Task testTask = new Task(btnText, LocalDateTime.now(),"Request",testUser);
+
         Task testTask = new Task(btnText, LocalDateTime.now(),"Request",currentUser);
         try {
-            Message message = new Message("create task",testTask);
+            Message message = new Message("create task",testTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
         }
         catch (IOException e) {
