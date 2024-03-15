@@ -18,12 +18,14 @@
             <TableColumn fx:id="taskVolunteerTC" prefWidth="124.0" text="Volunteer" />
         </columns>
       </TableView>
-      <Button fx:id="requestBtn" layoutX="136.0" layoutY="519.0" mnemonicParsing="false" onAction="#openNewTask" prefHeight="25.0" prefWidth="107.0" text="Request help" />
-      <Button fx:id="volunteerBtn" layoutX="565.0" layoutY="519.0" mnemonicParsing="false" onAction="#volunteerToTask" prefHeight="25.0" prefWidth="121.0" text="Volunteer for task" />
+      <Button fx:id="requestBtn" layoutX="94.0" layoutY="519.0" mnemonicParsing="false" onAction="#openNewTask" prefHeight="25.0" prefWidth="121.0" text="Request help" />
+      <Button fx:id="volunteerBtn" layoutX="349.0" layoutY="519.0" mnemonicParsing="false" onAction="#volunteerToTask" prefHeight="25.0" prefWidth="121.0" text="Volunteer for task" />
       <Text layoutX="215.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Open tasks" textAlignment="CENTER" wrappingWidth="380.13671875">
          <font>
             <Font size="29.0" />
          </font>
       </Text>
+      <Button fx:id="completeBtn" layoutX="595.0" layoutY="519.0" mnemonicParsing="false" onAction="#completeTask" prefHeight="25.0" prefWidth="143.0" text="Report task completion" />
+      <Button fx:id="tempBtn" layoutX="68.0" layoutY="34.0" mnemonicParsing="false" onAction="#switchToViewEmergency" text="Emergency calls histogram" />
    </children>
 </AnchorPane>

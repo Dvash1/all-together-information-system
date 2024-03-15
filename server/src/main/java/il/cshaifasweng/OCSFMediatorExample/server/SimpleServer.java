@@ -293,6 +293,13 @@ public class SimpleServer extends AbstractServer {
 				message.setObject(tasks);
 				client.sendToClient(message);
 			}
+			else if(request.equals("get emergency")) {
+				// testing with Tasks because emergency is not implemented yet.
+				User u1 = (User) message.getObject();
+				List<Task> tasks = getCommunityTasks(u1);
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
 			else if (request.equals("get user")) {
 				User u1 = session.get(User.class,2);
 				message.setObject(u1);

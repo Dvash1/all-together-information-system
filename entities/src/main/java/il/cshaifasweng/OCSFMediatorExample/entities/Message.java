@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 public class Message implements Serializable {
     int taskID;
     String message;
-    Object object; // will cast to specific object type when needed, a more general approach
+    Object object; // will cast to specific object type when needed.
 
 
     /*  Main constructor  */

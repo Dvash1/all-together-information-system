@@ -26,5 +26,6 @@
          </font>
       </Text>
       <Button fx:id="completeBtn" layoutX="595.0" layoutY="519.0" mnemonicParsing="false" onAction="#completeTask" prefHeight="25.0" prefWidth="143.0" text="Report task completion" />
+      <Button fx:id="tempBtn" layoutX="68.0" layoutY="34.0" mnemonicParsing="false" onAction="#switchToViewEmergency" text="Emergency calls histogram" />
    </children>
 </AnchorPane>

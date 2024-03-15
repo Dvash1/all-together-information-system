@@ -29,6 +29,9 @@ public class SimpleClient extends AbstractClient {
 		} else if (message.getMessage().equals("get tasks")) {
 			EventBus.getDefault().post(new LoadTasksEvent(message));
 		}
+		else if (message.getMessage().equals("get emergency")) {
+			EventBus.getDefault().post(new getEmergencyData(message));
+		}
 
 		else if (message.getMessage().equals("get user")) {
 			EventBus.getDefault().post(new GetUserEvent(message));

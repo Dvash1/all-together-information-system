@@ -95,8 +95,7 @@ public class NewTaskController {
 
     }
     public void initialize() {
-        // this try catch block SHOULD NOT be here, but in the LogInController.
-        // it's here because SimpleChatClient loads the NewTask.fxml file first, and we need to establish connection to server.
+
         try {
             Message message = new Message(0, "add client");
             SimpleClient.getClient().sendToServer(message);

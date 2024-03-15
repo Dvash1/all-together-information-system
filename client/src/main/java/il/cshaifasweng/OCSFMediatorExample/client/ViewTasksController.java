@@ -7,22 +7,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ViewTasksController {
 
     public static User currentUser;
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     @FXML
     private TableColumn<Task, LocalDateTime> creationTimeTC;
 
@@ -51,6 +50,13 @@ public class ViewTasksController {
     private Button completeBtn;
 
     private ObservableList<Task> taskList ;
+
+
+//*** DELETE ****
+    @FXML
+    private Button tempBtn;
+
+//*** DELETE ****
 
 
     @FXML
@@ -92,6 +98,7 @@ public class ViewTasksController {
 
         Platform.runLater(() -> {
             try {
+                //change back to ViewTasks
                 SimpleChatClient.setRoot("NewTask");
             } catch (IOException e) {
 
@@ -99,6 +106,26 @@ public class ViewTasksController {
             }
         });
     }
+
+
+//**************** DELETE ******************//
+    @FXML
+    void switchToViewEmergency(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                //change back to ViewTasks
+                SimpleChatClient.setRoot("ViewEmergencyCalls");
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+    }
+//**************** DELETE ******************//
+
+
+
+
 
     @FXML
     void volunteerToTask(ActionEvent event) {
@@ -156,7 +183,7 @@ public class ViewTasksController {
 
     // "Log in"
     @Subscribe
-    public void setLoggedUnUser(GetUserEvent event)
+    public void setLoggedInUser(GetUserEvent event)
     {
         Message message = event.getMessage();
         currentUser = (User) message.getObject();
@@ -182,7 +209,7 @@ public class ViewTasksController {
                 }
             }
         });
-        // remove the function when Log in will be implemented
+        // ******* remove the function when Log in will be implemented **********
         try {
             Message newMessage = new Message("get tasks",currentUser);
             SimpleClient.getClient().sendToServer(newMessage);
@@ -191,11 +218,33 @@ public class ViewTasksController {
             e.printStackTrace();
         }
     }
+
+
+
+
+
+
     public void initialize()
     {
         // set values for columns
         requiredTaskTC.setCellValueFactory(new PropertyValueFactory<>("requiredTask"));
         creationTimeTC.setCellValueFactory(new PropertyValueFactory<>("creationTime"));
+        //add formatter to LocalDateTime object
+        creationTimeTC.setCellFactory(column -> new TableCell<Task, LocalDateTime>() {
+            @Override
+            protected void updateItem(LocalDateTime item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                }
+                else
+                {
+                    setText(item.format(formatter));
+                }
+            }
+        });
+
+
         taskStateTC.setCellValueFactory(new PropertyValueFactory<>("taskState"));
         taskCreatorTC.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getTaskCreator().getUserName()));
 
@@ -228,7 +277,7 @@ public class ViewTasksController {
     //        }
 //        });
 
-// should not be here
+
         try {
             Message message = new Message(0, "add client");
             SimpleClient.getClient().sendToServer(message);

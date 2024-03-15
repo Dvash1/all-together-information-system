@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="839.0" prefWidth="1015.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.ViewEmergencyCalls">
+   <children>
+      <DatePicker fx:id="endDate" disable="true" layoutX="571.0" layoutY="160.0" promptText="Choose date" />
+      <DatePicker fx:id="startDate" disable="true" layoutX="270.0" layoutY="160.0" promptText="Choose date" />
+      <Text layoutX="445.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose dates">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Text>
+      <Text layoutX="331.0" layoutY="134.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Start date" />
+      <Text layoutX="635.0" layoutY="134.0" strokeType="OUTSIDE" strokeWidth="0.0" text="End date" />
+      <Text layoutX="380.0" layoutY="227.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose community" textAlignment="CENTER" wrappingWidth="262.13671875">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Text>
+      <RadioButton fx:id="RB1" layoutX="339.0" layoutY="262.0" mnemonicParsing="false" text="All communities" />
+      <RadioButton fx:id="RB2" layoutX="528.0" layoutY="262.0" mnemonicParsing="false" text="My community" />
+      <Button fx:id="displayBtn" disable="true" layoutX="472.0" layoutY="319.0" mnemonicParsing="false" onAction="#displayHistogram" text="Display histogram" />
+      <RadioButton fx:id="RB3" layoutX="280.0" layoutY="67.0" mnemonicParsing="false" onAction="#disablePicker" text="All dates" />
+      <RadioButton fx:id="RB4" layoutX="280.0" layoutY="98.0" mnemonicParsing="false" onAction="#enablePicker" text="Specific dates" />
+      <BarChart fx:id="hist" layoutX="38.0" layoutY="369.0" prefHeight="400.0" prefWidth="898.0" title="Emergency histogram" visible="false">
+        <xAxis>
+          <CategoryAxis label="Date" side="BOTTOM" fx:id="xAxis" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis fx:id="yAxis" label="Amount" side="LEFT" />
+        </yAxis>
+      </BarChart>
+   </children>
+</AnchorPane>
