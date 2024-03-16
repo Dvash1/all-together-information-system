@@ -31,7 +31,7 @@
       <Button fx:id="displayBtn" disable="true" layoutX="472.0" layoutY="319.0" mnemonicParsing="false" onAction="#displayHistogram" text="Display histogram" />
       <RadioButton fx:id="allDatesRB" layoutX="280.0" layoutY="67.0" mnemonicParsing="false" onAction="#disablePicker" text="All dates" />
       <RadioButton fx:id="specificDatesRB" layoutX="280.0" layoutY="98.0" mnemonicParsing="false" onAction="#enablePicker" text="Specific dates" />
-      <BarChart fx:id="hist" layoutX="38.0" layoutY="369.0" prefHeight="400.0" prefWidth="898.0" title="Emergency histogram" visible="false">
+      <BarChart fx:id="hist" animated="false" layoutX="38.0" layoutY="369.0" legendVisible="false" prefHeight="400.0" prefWidth="898.0" title="Emergency histogram" visible="false">
         <xAxis>
           <CategoryAxis label="Date" side="BOTTOM" fx:id="xAxis" />
         </xAxis>
