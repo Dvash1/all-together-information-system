@@ -94,8 +94,8 @@ public class ViewEmergencyCalls implements Initializable {
 //        first we'll check that if the user pressed specific dates, that they are valid.
         if(specificDatesRB.isSelected())
         {
-            LocalDate startDateSelected = (LocalDate) startDate.getValue();
-            LocalDate endDateSelected = (LocalDate) endDate.getValue();
+            LocalDate startDateSelected = startDate.getValue();
+            LocalDate endDateSelected = endDate.getValue();
 
             if(startDateSelected == null || endDateSelected == null)
             {
@@ -141,7 +141,7 @@ public class ViewEmergencyCalls implements Initializable {
         else {
             LocalDateTime startDate = LocalDateTime.of(this.startDate.getValue(), LocalTime.MIN);
             LocalDateTime endDate = LocalDateTime.of(this.endDate.getValue(), LocalTime.MAX);
-            List<LocalDateTime> dateList = new ArrayList<LocalDateTime>();
+            List<LocalDateTime> dateList = new ArrayList<>();
             dateList.add(startDate);
             dateList.add(endDate);
 
@@ -190,13 +190,12 @@ public class ViewEmergencyCalls implements Initializable {
 
 
 
-
-        // update histogram
         Platform.runLater(() -> {
-        hist.getData().clear();
-        hist.getData().add(series);
-        hist.layout();
-        hist.setVisible(true);
+
+            int maxAmount = datesToAmount.values().stream().mapToInt(Integer::intValue).max().orElse(0);
+            ((NumberAxis) hist.getYAxis()).setUpperBound(maxAmount + 1);
+            hist.getData().setAll(series);
+            hist.setVisible(true);
         });
     }
 
@@ -204,6 +203,12 @@ public class ViewEmergencyCalls implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        // remove non integer values such as 0.5,1.5 etc. from Y-axis
+        ((NumberAxis) hist.getYAxis()).setTickUnit(1);
+        ((NumberAxis) hist.getYAxis()).setMinorTickCount(0);
+        hist.getYAxis().setAutoRanging(false);
+
+
 
         try {
             Message message = new Message(0, "add client");
