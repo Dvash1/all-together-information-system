@@ -16,6 +16,7 @@ il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableSWRClient.class
 il\cshaifasweng\OCSFMediatorExample\client\SimpleClient.class
 il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableClient.class
 il\cshaifasweng\OCSFMediatorExample\client\ViewTasksController.class
+il\cshaifasweng\OCSFMediatorExample\client\serverConnectController.class
 il\cshaifasweng\OCSFMediatorExample\client\ocsf\AdaptableClient.class
 il\cshaifasweng\OCSFMediatorExample\client\VolunteerToTaskEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\SecondaryController.class

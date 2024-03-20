@@ -7,8 +7,18 @@ import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 
 public class SimpleClient extends AbstractClient {
 	
-	private static SimpleClient client = null;
+	static SimpleClient client = null;
 
+	private static String serverHost = "localhost";
+	private static int serverPort = 3000;
+
+
+
+	public static void setHostAndPort(String host, int port)
+	{
+		serverHost = host;
+		serverPort = port;
+	}
 	private SimpleClient(String host, int port) {
 		super(host, port);
 	}
@@ -38,10 +48,11 @@ public class SimpleClient extends AbstractClient {
 		}
 
 	}
-	
+
+
 	public static SimpleClient getClient() {
 		if (client == null) {
-			client = new SimpleClient("localhost", 3000);
+			client = new SimpleClient(serverHost, serverPort);
 		}
 		return client;
 	}
