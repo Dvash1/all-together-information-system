@@ -1,9 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -31,8 +33,15 @@ public class SimpleChatClient extends Application {
 
     // compiler is upset that there are no @Subscribe events at SimpleChatClient class, Need to fix it somehow
     @Subscribe
-    public void mashuEvent(getDataEvent event) {
+    public void testEvent(getDataEvent event) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("This is a test");
+            alert.setHeaderText("test");
+            alert.setContentText("Hopefully this is shown to all users");
+            alert.showAndWait();
 
+        });
     }
 
     static void setRoot(String fxml) throws IOException {

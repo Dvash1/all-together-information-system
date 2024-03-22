@@ -56,6 +56,22 @@ public class ViewTasksController {
     @FXML
     private Button tempBtn;
 
+    @FXML
+    private Button testingBtn;
+    @FXML
+    void testFunc(ActionEvent event) {
+
+        try
+        {
+            Message message = new Message("alert everybody");
+            SimpleClient.getClient().sendToServer(message);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 //*** DELETE ****
 
 

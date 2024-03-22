@@ -268,10 +268,7 @@ public class SimpleServer extends AbstractServer {
 			session.beginTransaction();
 
 			if(request.equals("Test")) {
-//				User u1 = new User("Joe Biden","USA","999999999","iforgotmypasswword",true);
-//				Task t1 = new Task("Mow the lawn in the white house",LocalDateTime.now(),"Bakasha",u1);
-//				session.save(u1);
-//				session.save(t1);
+
 				Task task = session.get(Task.class,1);
 				task.setRequiredTask("Bombing Ron Spector!!!");
 				session.update(task);
@@ -283,6 +280,12 @@ public class SimpleServer extends AbstractServer {
 				message.setMessage("Test");
 				client.sendToClient(message);
 			}
+
+
+			else if(request.equals("alert everybody")) {
+				sendToAllClients(message);
+			}
+
 			else if(request.equals("create task"))
 			{
 				Task testTask = (Task) message.getObject();

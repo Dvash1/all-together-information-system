@@ -26,7 +26,7 @@ public class SimpleClient extends AbstractClient {
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		Message message = (Message) msg;
-		if (message.getMessage().equals("Get Data")) {
+		if (message.getMessage().equals("alert everybody")) {
 			EventBus.getDefault().post(new getDataEvent(message));
 		} else if (message.getMessage().equals("Volunteer to task")) {
 			EventBus.getDefault().post(new VolunteerToTaskEvent(message));
