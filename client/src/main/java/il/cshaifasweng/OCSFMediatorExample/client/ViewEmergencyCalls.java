@@ -28,7 +28,7 @@ import javafx.util.StringConverter;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class    ViewEmergencyCalls implements Initializable {
+public class ViewEmergencyCalls implements Initializable {
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private ToggleGroup TG1;

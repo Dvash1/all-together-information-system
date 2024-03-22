@@ -254,6 +254,30 @@ public class SimpleServer extends AbstractServer {
 		return tasks;
 	}
 
+	private static List<User> getCommunityUsers(User user) throws Exception
+	{
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<User> query = cb.createQuery(User.class);
+		Root<User> root = query.from(User.class);
+		Join<User, Community> communityJoin = root.join("community");
+		query.select(root);
+		// fetch only users from the same community
+		query.where(cb.equal(communityJoin.get("communityName"), user.getCommunity().getCommunityName()));
+
+
+
+		List<User> users = session.createQuery(query).getResultList();
+		return users;
+	}
+
+
+
+
+
+
+
+
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -303,6 +327,16 @@ public class SimpleServer extends AbstractServer {
 				message.setObject(tasks);
 				client.sendToClient(message);
 			}
+// retrieve community users for CommunityInformationController
+
+			else if(request.equals("get users")) {
+				User u1 = message.getUser();
+				List<User> Users = getCommunityUsers(u1);
+				message.setObject(Users);
+				client.sendToClient(message);
+			}
+
+
 
 
 // ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
@@ -342,13 +376,20 @@ public class SimpleServer extends AbstractServer {
 
 // ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
 
-
+// 		**** delete when login is implemented ****
 			else if (request.equals("get user")) {
+
 				User u1 = session.get(User.class,2);
 				message.setObject(u1);
 				client.sendToClient(message);
 
 			}
+// 		**** delete when login is implemented ****
+
+
+
+
+
 
 
 			else if (request.equals("Get Data")) {

@@ -72,6 +72,25 @@ public class ViewTasksController {
 
     }
 
+
+
+    @FXML
+    private Button infoBtn;
+
+
+    @FXML
+    void switchToCommunityInformation(ActionEvent event) {
+
+        Platform.runLater(() -> {
+            try {
+                //change back to ViewTasks
+                SimpleChatClient.setRoot("CommunityInformation");
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+    }
 //*** DELETE ****
 
 

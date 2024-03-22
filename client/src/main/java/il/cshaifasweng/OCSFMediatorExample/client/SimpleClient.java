@@ -43,6 +43,13 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new getEmergencyData(message));
 		}
 
+		else if (message.getMessage().equals("get users")) {
+			EventBus.getDefault().post(new getCommunityUsersEvent(message));
+		}
+
+
+
+
 		else if (message.getMessage().equals("get user")) {
 			EventBus.getDefault().post(new GetUserEvent(message));
 		}

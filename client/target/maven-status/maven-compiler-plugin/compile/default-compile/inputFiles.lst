@@ -3,6 +3,7 @@ C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\serverConnectController.java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\Main.java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\GetUserEvent.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController.java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SimpleChatClient.java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\VolunteerToTaskEvent.java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\AbstractClient.java
@@ -18,3 +19,4 @@ C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableClient.java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ViewEmergencyCalls.java
 C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\AdaptableClient.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\getCommunityUsersEvent.java
