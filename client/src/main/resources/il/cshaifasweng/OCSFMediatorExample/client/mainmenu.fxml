@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="434.0" prefWidth="445.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.MainMenuController">
+<AnchorPane fx:id="mainmenuAnchor" prefHeight="434.0" prefWidth="445.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.MainMenuController">
    <children>
       <Button fx:id="tasks_list" layoutX="52.0" layoutY="92.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="126.0" text="Tasks List" />
       <Button fx:id="button" layoutX="250.0" layoutY="92.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="126.0" text="Button" />

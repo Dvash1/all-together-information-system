@@ -12,9 +12,14 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import org.greenrobot.eventbus.EventBus;
@@ -57,6 +62,9 @@ public class PrimaryController {
 
 	@FXML
 	private TextField myTextField5;
+	private Stage stage;
+	private Scene scene;
+	private Parent root;
 
 	@FXML // fx:id="TaskDetailsBox"
 	private AnchorPane TaskDetailsBox; // Value injected by FXMLLoader
@@ -64,13 +72,19 @@ public class PrimaryController {
 
 	@FXML
 	private Button status_button;
+	@FXML
+	private Button loginButton;
+
 	String[] tasks = {"task1","task2","task3","task4","task5","task6"};
 
 	String currentTask;
 
 
 	private int msgId;
-
+	@FXML
+	private void switchToLogin(ActionEvent event) throws IOException {
+		SceneManager.switchScene("login.fxml",event);
+	}
 	@FXML
 	void updateStateTaskEvent(ActionEvent event) {
 		currentTask = myListView.getSelectionModel().getSelectedItem();
@@ -86,26 +100,26 @@ public class PrimaryController {
 	}
 
 	@Subscribe
-	public void taskEvent(NewTaskEvent event){
-		Message message = event.getMessage();
-		Task task = message.getTask();
-		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
-		myTextField2.setText("Created on:" + task.getCreationTime());
-		myTextField3.setText("Task ID:" + task.getId());
-		myTextField4.setText("Task state:" + task.getTaskState());
-		myTextField5.setText("Description:" + task.getRequiredTask());
-
-	}
-	@Subscribe
-	public void updateEvent(UpdateTaskEvent event) {
-		Message message = event.getMessage();
-		Task task = message.getTask();
-		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
-		myTextField2.setText("Created on:" + task.getCreationTime());
-		myTextField3.setText("Task ID:" + task.getId());
-		myTextField4.setText("Task state:" + task.getTaskState());
-		myTextField5.setText("Description:" + task.getRequiredTask());
-	}
+//	public void taskEvent(NewTaskEvent event){
+//		Message message = event.getMessage();
+//		Task task = message.getTask();
+//		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
+//		myTextField2.setText("Created on:" + task.getCreationTime());
+//		myTextField3.setText("Task ID:" + task.getId());
+//		myTextField4.setText("Task state:" + task.getTaskState());
+//		myTextField5.setText("Description:" + task.getRequiredTask());
+//
+//	}
+//	@Subscribe
+//	public void updateEvent(UpdateTaskEvent event) {
+//		Message message = event.getMessage();
+//		Task task = message.getTask();
+//		myTextField1.setText("Created by:" + task.getTaskCreator().getUserName());
+//		myTextField2.setText("Created on:" + task.getCreationTime());
+//		myTextField3.setText("Task ID:" + task.getId());
+//		myTextField4.setText("Task state:" + task.getTaskState());
+//		myTextField5.setText("Description:" + task.getRequiredTask());
+//	}
 	@FXML
 	void initialize() {
 		try {

@@ -13,6 +13,8 @@ public class Task implements Serializable {
 
     private String requiredTask;
     private LocalDateTime creationTime;
+
+    private LocalDateTime completionTime;
     private String taskState;
     @ManyToOne
     @JoinColumn(name = "creator_id",referencedColumnName = "user_id")
@@ -85,4 +87,11 @@ public class Task implements Serializable {
         this.taskVolunteer = taskVolunteer;
     }
 
+    public LocalDateTime getCompletionTime() {
+        return completionTime;
+    }
+
+    public void setCompletionTime(LocalDateTime completionTime) {
+        this.completionTime = completionTime;
+    }
 }

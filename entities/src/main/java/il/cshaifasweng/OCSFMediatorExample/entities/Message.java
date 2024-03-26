@@ -4,59 +4,76 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Message implements Serializable {
-    int id;
-    LocalDateTime timeStamp;
+    int taskID;
     String message;
-    Task task;
+    Object object; // will cast to specific object type when needed.
+    User user; // message sending user
 
 
     /*  Main constructor  */
-    public Message(int id, LocalDateTime timeStamp, String message, Task task) {
-        this.id = id;
-        this.timeStamp = timeStamp;
+    public Message(int taskID, String message, Object object,User user) {
+        this.taskID = taskID;
         this.message = message;
-        this.task = task;
+        this.object = object;
+        this.user = user;
     }
 
 
     /*  Null constructor  */
-    public Message(int id, String message) {
-        this.id = id;
-        this.timeStamp = LocalDateTime.now();
+    public Message(int taskID, String message) {
+        this.taskID = taskID;
         this.message = message;
-        this.task = null;
+        this.object = null;
+    }
+    public Message(String message,Object object,User user) {
+        this.message = message;
+        this.object = object;
+        this.user = user;
+    }
+    public Message(String message,User user) {
+        this.message = message;
+        this.object = null;
+        this.user = user;
+    }
+    public Message(String message) {
+        this.message = message;
+        this.object = null;
     }
 
 
-    public int getId() {
-        return id;
+
+    public int getTaskID() {
+        return taskID;
     }
 
-    public Task getTask() {
-        return task;
-    }
-
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
-    }
 
     public String getMessage() {
         return message;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setTaskID(int taskID) {
+        this.taskID = taskID;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
-    }
 
     public void setMessage(String message) {
         this.message = message;
     }
 
-    public void setTask(Task task) {
-        this.task = task;
+    public Object getObject() {
+        return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
+

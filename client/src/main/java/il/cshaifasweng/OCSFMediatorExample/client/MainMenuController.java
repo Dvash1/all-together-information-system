@@ -10,10 +10,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+
+import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
 
 public class MainMenuController {
     @FXML
@@ -26,6 +29,8 @@ public class MainMenuController {
     private Label hi_label;
     @FXML
     private TextField ip_address;
+    @FXML
+    private AnchorPane mainmenuAnchor;
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -36,6 +41,10 @@ public class MainMenuController {
     }
     @FXML
     void logout(ActionEvent event) throws IOException {
-        SceneManager.switchScene("login.fxml",event);
+//        SceneManager.switchScene("login.fxml",event);
+        scene = new Scene(loadFXML("login"), 434, 445);
+        stage = (Stage) mainmenuAnchor.getScene().getWindow();
+        stage.setScene(scene);
+//        stage.setScene(scene);
     }
 }

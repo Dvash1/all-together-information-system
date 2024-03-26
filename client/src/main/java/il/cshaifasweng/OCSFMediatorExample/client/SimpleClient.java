@@ -5,7 +5,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 
-public class SimpleClient extends AbstractClient {
+public class 	SimpleClient extends AbstractClient {
 	
 	private static SimpleClient client = null;
 
@@ -16,11 +16,18 @@ public class SimpleClient extends AbstractClient {
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		Message message = (Message) msg;
-		if(message.getMessage().equals("Get Data")) {
+		String request = message.getMessage();
+		if(request.equals("Get Data")) {
 			EventBus.getDefault().post(new NewTaskEvent(message));
 		}
-		else if (message.getMessage().equals("Update State")) {
+		if (request.equals("Update State")) {
 			EventBus.getDefault().post(new UpdateTaskEvent(message));
+		}
+		if(request.startsWith("Login")) {
+			EventBus.getDefault().post(new LoginEvent(message));
+		}
+		if(request.startsWith("Forgot Password")) {
+			EventBus.getDefault().post(new LoginEvent(message));
 		}
 
 	}

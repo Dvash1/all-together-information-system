@@ -2,14 +2,14 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 
-public class UpdateTaskEvent {
+public class ForgotPasswordEvent {
     private Message message;
 
     public Message getMessage() {
         return message;
     }
 
-    public UpdateTaskEvent(Message message) {
+    public ForgotPasswordEvent(Message message) {
         this.message = message;
     }
 }
