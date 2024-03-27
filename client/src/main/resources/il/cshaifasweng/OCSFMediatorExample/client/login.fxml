@@ -12,10 +12,9 @@
    <children>
       <AnchorPane fx:id="main_login_anchor" prefHeight="200.0" prefWidth="200.0">
          <children>
-            <AnchorPane fx:id="login_form" prefHeight="434.0" prefWidth="445.0" visible="false">
+            <AnchorPane fx:id="login_form" prefHeight="434.0" prefWidth="445.0">
                <children>
-                  <Button fx:id="secondaryButton" layoutX="23.0" layoutY="23.0" onAction="#switchToPrimary" text="Switch to Tasks" />
-                  <Button layoutX="154.0" layoutY="311.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="103.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
+                  <Button fx:id="secondaryButton" layoutX="6.0" layoutY="2.0" onAction="#switchToPrimary" text="Switch to Tasks" />
                   <Pane layoutX="123.0" layoutY="68.0" prefHeight="230.0" prefWidth="201.0" style="-fx-background-color: lightblue;">
                      <children>
                         <PasswordField fx:id="password_field" layoutX="26.0" layoutY="77.0" promptText="Password" />
@@ -28,8 +27,8 @@
             </AnchorPane>
             <AnchorPane fx:id="forgot_form" prefHeight="434.0" prefWidth="445.0" visible="false">
                <children>
-                  <Button fx:id="backButton" layoutX="14.0" layoutY="408.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
-                  <Pane layoutX="56.0" layoutY="78.0" prefHeight="278.0" prefWidth="321.0" style="-fx-background-color: lightblue;">
+                  <Button fx:id="backButton_forgot" layoutX="14.0" layoutY="408.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
+                  <Pane layoutX="62.0" layoutY="40.0" prefHeight="278.0" prefWidth="321.0" style="-fx-background-color: lightblue;">
                      <children>
                         <TextField fx:id="username_field_forgot" layoutX="47.0" layoutY="36.0" prefHeight="25.0" prefWidth="228.0" promptText="Username" />
                         <ComboBox fx:id="question_bar_forgot" layoutX="47.0" layoutY="90.0" prefHeight="25.0" prefWidth="228.0" promptText="Select Question" />
@@ -39,10 +38,10 @@
                   </Pane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="forgot_form1" prefHeight="434.0" prefWidth="445.0">
+            <AnchorPane fx:id="new_password_form" prefHeight="434.0" prefWidth="445.0" visible="false">
                <children>
                   <Button fx:id="backButton_new_pass" layoutX="14.0" layoutY="408.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
-                  <Pane layoutX="56.0" layoutY="78.0" prefHeight="278.0" prefWidth="321.0" style="-fx-background-color: lightblue;">
+                  <Pane layoutX="56.0" layoutY="33.0" prefHeight="285.0" prefWidth="328.0" style="-fx-background-color: lightblue;">
                      <children>
                         <TextField fx:id="new_password_field" layoutX="47.0" layoutY="54.0" prefHeight="25.0" prefWidth="228.0" promptText="Password" />
                         <Button fx:id="new_password_proceed" layoutX="131.0" layoutY="198.0" mnemonicParsing="false" onAction="#new_password" text="Proceed" />
@@ -51,6 +50,7 @@
                   </Pane>
                </children>
             </AnchorPane>
+            <Button layoutX="154.0" layoutY="319.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="103.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
          </children>
       </AnchorPane>
    </children>
