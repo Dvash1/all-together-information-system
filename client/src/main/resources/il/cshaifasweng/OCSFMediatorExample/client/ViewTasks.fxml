@@ -29,5 +29,6 @@
       <Button fx:id="tempBtn" layoutX="68.0" layoutY="34.0" mnemonicParsing="false" onAction="#switchToViewEmergency" text="Emergency calls histogram" />
       <Button fx:id="testingBtn" layoutX="647.0" layoutY="28.0" mnemonicParsing="false" onAction="#testFunc" text="Click me!" />
       <Button fx:id="infoBtn" layoutX="334.0" layoutY="561.0" mnemonicParsing="false" onAction="#switchToCommunityInformation" text="Community information" />
+      <Button fx:id="menuButton" layoutX="26.0" layoutY="561.0" mnemonicParsing="false" onAction="#switchToMenu" text="Back to menu" />
    </children>
 </AnchorPane>

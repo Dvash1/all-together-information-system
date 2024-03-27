@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import static il.cshaifasweng.OCSFMediatorExample.client.ViewTasksController.currentUser;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -114,6 +115,23 @@ public class CommunityInformationController {
     }
 
 
+    // Going back to menu button
+    @FXML
+    private Button menuButton;
+
+    @FXML
+    void switchToMenu(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                //change back to ViewTasks
+                SimpleChatClient.setRoot("ViewTasks"); // ***** Switch this to correct root when menu is implemented
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+
+    }
 
 
     @Subscribe

@@ -49,6 +49,7 @@ public class ViewTasksController {
     @FXML
     private Button completeBtn;
 
+
     private ObservableList<Task> taskList ;
 
 
@@ -90,6 +91,24 @@ public class ViewTasksController {
                 e.printStackTrace();
             }
         });
+    }
+
+    // Going back to menu button
+    @FXML
+    private Button menuButton;
+
+    @FXML
+    void switchToMenu(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                //change back to ViewTasks
+                SimpleChatClient.setRoot("ConnectToServer"); // ***** Switch this to correct root when menu is implemented
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+
     }
 //*** DELETE ****
 

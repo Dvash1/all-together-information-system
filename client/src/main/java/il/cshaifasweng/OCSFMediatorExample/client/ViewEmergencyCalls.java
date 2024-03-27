@@ -65,7 +65,23 @@ public class ViewEmergencyCalls implements Initializable {
     @FXML
     private NumberAxis yAxis;
 
+    // Going back to menu button
+    @FXML
+    private Button menuButton;
 
+    @FXML
+    void switchToMenu(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                //change back to ViewTasks
+                SimpleChatClient.setRoot("ViewTasks"); // ***** Switch this to correct root when menu is implemented
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+
+    }
 
 
     @FXML

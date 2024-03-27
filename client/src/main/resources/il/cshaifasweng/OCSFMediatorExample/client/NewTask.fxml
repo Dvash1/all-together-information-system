@@ -21,5 +21,6 @@
       <RadioButton fx:id="B4" layoutX="32.0" layoutY="160.0" mnemonicParsing="false" text="my mown needs to be lawned" />
       <Button fx:id="submitBtn" layoutX="252.0" layoutY="273.0" mnemonicParsing="false" onAction="#createNewTask" text="Submit request" />
       <TextField fx:id="otherTF" layoutX="104.0" layoutY="201.0" prefHeight="25.0" prefWidth="447.0" />
+      <Button fx:id="menuButton" layoutX="32.0" layoutY="25.0" mnemonicParsing="false" onAction="#switchToMenu" text="Back" />
    </children>
 </AnchorPane>
