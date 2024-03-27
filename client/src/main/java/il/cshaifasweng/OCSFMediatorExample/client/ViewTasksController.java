@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+// There are some bugs regarding enabling/disabling of buttons when users volunteer/withdraw from a task. (when multiple clients are browsing open tasks)
+// Log in needs to be properly to handle them, because some bugs occur only when the same user is hovering the same task, and our does not allow a user to be logged on more than one client.
 public class ViewTasksController {
 
     public static User currentUser;
@@ -49,10 +51,38 @@ public class ViewTasksController {
     @FXML
     private Button completeBtn;
 
+    @FXML
+    private Button withdrawBtn;
     private ObservableList<Task> taskList ;
+
+    @FXML
+    private TextArea messageToManagerTA;
+
+
 
 
 //*** DELETE ****
+    @FXML
+    private Button approveBtn;
+    @FXML
+    void switchToApproveRequest(ActionEvent event) {
+
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("ApproveRequest");
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+    }
+//*** DELETE ****
+
+
+//*** DELETE ****
+
+
     @FXML
     private Button tempBtn;
 
@@ -73,7 +103,6 @@ public class ViewTasksController {
     }
 
 
-
     @FXML
     private Button infoBtn;
 
@@ -83,7 +112,7 @@ public class ViewTasksController {
 
         Platform.runLater(() -> {
             try {
-                //change back to ViewTasks
+                EventBus.getDefault().unregister(this);
                 SimpleChatClient.setRoot("CommunityInformation");
             } catch (IOException e) {
 
@@ -92,48 +121,43 @@ public class ViewTasksController {
         });
     }
 //*** DELETE ****
-
-
-    @FXML
-    void completeTask(ActionEvent event) {
-
-        Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
-        selectedTask.setTaskState("Complete");
-        selectedTask.setCompletionTime(LocalDateTime.now());
+//**************** DELETE ******************//
+@FXML
+void switchToViewEmergency(ActionEvent event) {
+    Platform.runLater(() -> {
         try {
-            Message message = new Message("Update task",selectedTask,currentUser);
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
+            EventBus.getDefault().unregister(this);
+            SimpleChatClient.setRoot("ViewEmergencyCalls");
+        } catch (IOException e) {
+
             e.printStackTrace();
         }
+    });
+}
+//**************** DELETE ******************//
 
-    }
+
+
 
     @Subscribe
-    public void completeTaskUpdate(CompleteTaskEvent event) {
+    public void displayNewTask(ApprovedTaskEvent event) {
 
+        System.out.println("displayNewTask called");
         Message message = event.getMessage();
-        Task updatedTask = (Task) message.getObject();
-        Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
-
-        int index = taskList.indexOf(selectedTask);
-        taskList.set(index, updatedTask);
-
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Task completed");
-            alert.setHeaderText(null);
-            alert.setContentText("You have successfully completed the task.\nA message has been sent to your community manager.(NOT REALLY NEED TO IMPLEMENT)");
-            alert.showAndWait();
-        });
+        Task task = (Task) message.getObject();
+        // only add if they are from the same community
+        if (task.getTaskCreator().getCommunity().getCommunityName().equals(currentUser.getCommunity().getCommunityName())) {
+            taskList.add(task);
+        }
     }
+
     @FXML
     void openNewTask(ActionEvent event) {
 
         Platform.runLater(() -> {
             try {
-                //change back to ViewTasks
+
+                EventBus.getDefault().unregister(this);
                 SimpleChatClient.setRoot("NewTask");
             } catch (IOException e) {
 
@@ -141,23 +165,120 @@ public class ViewTasksController {
             }
         });
     }
-
-
-//**************** DELETE ******************//
     @FXML
-    void switchToViewEmergency(ActionEvent event) {
-        Platform.runLater(() -> {
-            try {
-                //change back to ViewTasks
-                SimpleChatClient.setRoot("ViewEmergencyCalls");
-            } catch (IOException e) {
+    void completeTask(ActionEvent event) {
 
-                e.printStackTrace();
-            }
-        });
+        Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
+        selectedTask.setTaskState("Complete");
+        selectedTask.setCompletionTime(LocalDateTime.now());
+        String text = messageToManagerTA.getText();
+        messageToManagerTA.clear();
+
+        try {
+            Message message = new Message("Update task",selectedTask,currentUser);
+            SimpleClient.getClient().sendToServer(message);
+
+
+//            Message messageToManager = new Message("Send to Manager",text,currentUser);
+//            SimpleClient.getClient().sendToServer(messageToManager);
+
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Task completed");
+                alert.setHeaderText(null);
+                alert.setContentText("You have successfully completed the task.\nA message has been sent to your community manager.(NOT REALLY NEED TO IMPLEMENT)");
+                alert.showAndWait();
+            });
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
-//**************** DELETE ******************//
 
+
+
+    @Subscribe
+    public void completeTaskUpdate(CompleteTaskEvent event)
+    {
+        // in general, we need to verify that the tasks we're adding is from the same community (because we are sending to all clients)
+        // however, because the task ids are unique, this should not be an issue in this scenario.
+
+        Message message = event.getMessage();
+        Task updatedTask = (Task) message.getObject();
+        // search for matching index in the observableList,then update task
+        for (int i = 0;i< taskList.size();i++)
+        {
+            Task task = taskList.get(i);
+            if(task.getId() == updatedTask.getId())
+            {
+                // if a different client is selecting the to be removed row
+
+                if(tasksTableView.getSelectionModel().getSelectedItem() == task)
+                {
+                    completeBtn.setDisable(true);
+                    tasksTableView.getSelectionModel().clearSelection();
+                }
+                taskList.remove(task);
+                break;
+            }
+        }
+    }
+
+
+    @FXML
+    void withdrawVolunteering(ActionEvent event)
+    {
+        Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
+        selectedTask.setTaskState("Request");
+        selectedTask.setTaskVolunteer(null);
+
+        completeBtn.setDisable(true);
+        withdrawBtn.setDisable(true);
+
+
+        try {
+            Message message = new Message("Withdraw from task",selectedTask,currentUser);
+            SimpleClient.getClient().sendToServer(message);
+
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("You have successfully withdraw from volunteering");
+                alert.showAndWait();
+            });
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Subscribe
+    public void updateTaskWithdraw(WithdrawEvent event)
+    {
+
+        Message message = event.getMessage();
+        Task updatedTask = (Task) message.getObject();
+
+
+
+        for (int i = 0;i< taskList.size();i++)
+        {
+            Task task = taskList.get(i);
+            if(task.getId() == updatedTask.getId())
+            {
+                taskList.set(i,updatedTask);
+            }
+        }
+        Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
+        if(selectedTask != null && selectedTask.getId() == updatedTask.getId())
+        {
+            volunteerBtn.setDisable(false);
+        }
+
+
+    }
 
 
 
@@ -165,12 +286,21 @@ public class ViewTasksController {
     @FXML
     void volunteerToTask(ActionEvent event) {
 
+
         Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
         selectedTask.setTaskState("In Progress");
         selectedTask.setTaskVolunteer(currentUser);
         try {
             Message message = new Message("Update task",selectedTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
+
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setHeaderText(null);
+                alert.setContentText("You have successfully volunteered for the task.\nYou have 24 hours");
+                alert.showAndWait();
+            });
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -178,29 +308,40 @@ public class ViewTasksController {
     }
 
 
-
+// same as function for complete task, need to merge them to one.
     @Subscribe
 	public void updateToInProgress(VolunteerToTaskEvent event)
     {
+        // in general, we need to verify that the tasks we're adding is from the same community (because we are sending to all clients)
+        // however, because the task ids are unique, this should not be an issue in this scenario.
         Message message = event.getMessage();
         Task updatedTask = (Task) message.getObject();
+
         Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
+        // disable volunteer button in the chance that multiple users are hovering the same task
+        if(selectedTask != null && selectedTask.getId() == updatedTask.getId())
+        {
+            volunteerBtn.setDisable(true);
+        }
 
-        int index = taskList.indexOf(selectedTask);
-        taskList.set(index,updatedTask);
 
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setHeaderText(null);
-            alert.setContentText("You have successfully volunteered for the task.\nYou have 24 hours");
-            alert.showAndWait();
-        });
+        for (int i = 0;i< taskList.size();i++)
+        {
+            Task task = taskList.get(i);
+            if(task.getId() == updatedTask.getId())
+            {
+                taskList.set(i,updatedTask);
+            }
+        }
+
 
     }
+
+
     @Subscribe
-    public void loadTasks(LoadTasksEvent event)
+    public void loadTasks(LoadOpenTasksEvent event)
     {
+        System.out.println("loadTasks called");
         Message message = event.getMessage();
         taskList = FXCollections.observableArrayList((List<Task>) message.getObject());
         tasksTableView.setItems(taskList);
@@ -219,6 +360,7 @@ public class ViewTasksController {
     @Subscribe
     public void setLoggedInUser(GetUserEvent event)
     {
+        System.out.println("setLoggedInUser called");
         Message message = event.getMessage();
         currentUser = (User) message.getObject();
 
@@ -238,14 +380,17 @@ public class ViewTasksController {
                 //getTaskVolunteer() might return null, so we must check for that as well
                 if (selectedTask.getTaskVolunteer() != null && selectedTask.getTaskState().equals("In Progress") && selectedTask.getTaskVolunteer().getId() == currentUser.getId()) {
                     completeBtn.setDisable(false);
+                    withdrawBtn.setDisable(false);
+
                 } else {
                     completeBtn.setDisable(true);
+                    withdrawBtn.setDisable(true);
                 }
             }
         });
         // ******* remove the function when Log in will be implemented **********
         try {
-            Message newMessage = new Message("get tasks",currentUser);
+            Message newMessage = new Message("get open tasks",currentUser);
             SimpleClient.getClient().sendToServer(newMessage);
         }
         catch (IOException e) {
@@ -260,6 +405,10 @@ public class ViewTasksController {
 
     public void initialize()
     {
+        EventBus.getDefault().register(this);
+
+        messageToManagerTA.setText("");
+
         // set values for columns
         requiredTaskTC.setCellValueFactory(new PropertyValueFactory<>("requiredTask"));
         creationTimeTC.setCellValueFactory(new PropertyValueFactory<>("creationTime"));
@@ -290,6 +439,7 @@ public class ViewTasksController {
 
         });
 
+
 //        // enable/disable volunteering&task completion buttons
 //        tasksTableView.setOnMouseClicked(e -> {
 //            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
@@ -312,14 +462,8 @@ public class ViewTasksController {
 //        });
 
 
-        try {
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
-            EventBus.getDefault().register(this);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+
+
         try {
             Message message = new Message("get user");
             SimpleClient.getClient().sendToServer(message);
@@ -331,7 +475,7 @@ public class ViewTasksController {
         // uncomment when Log in is implemented
         //
 //        try {
-//            Message message = new Message("get tasks",currentUser);
+//            Message message = new Message("get open tasks",currentUser);
 //            SimpleClient.getClient().sendToServer(message);
 //        }
 //        catch (IOException e) {

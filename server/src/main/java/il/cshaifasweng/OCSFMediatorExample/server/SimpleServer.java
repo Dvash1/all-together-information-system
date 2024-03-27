@@ -218,6 +218,7 @@ public class SimpleServer extends AbstractServer {
 
 
 
+	//replace task with 'Emergency' class
 	private static List<Task> getAllTasks(List<LocalDateTime> dateList) throws Exception {
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
@@ -234,6 +235,9 @@ public class SimpleServer extends AbstractServer {
 		return tasks;
 	}
 
+	// Do not touch this function, it is being used in ViewTasksController & CommunityInformationController
+	// Instead create a similar method for 'Emergency' class
+	// remove dateList parameter when 'Emergency' class is implemented, dates are only relevant to viewing emergency calls.
 	private static List<Task> getCommunityTasks(User user,List<LocalDateTime> dateList) throws Exception
 	{
 
@@ -254,9 +258,27 @@ public class SimpleServer extends AbstractServer {
 		return tasks;
 	}
 
-	private static List<User> getCommunityUsers(User user) throws Exception
+	// used in ViewTasksController, in order to display all open tasks
+	private static List<Task> getOpenTasks(User user) throws Exception
 	{
 
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Task> query = cb.createQuery(Task.class);
+		Root<Task> root = query.from(Task.class);
+		Join<Task, User> creatorJoin = root.join("taskCreator");
+		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
+		query.select(root);
+		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
+				cb.or(cb.equal(root.get("taskState"), "Request"),
+						cb.equal(root.get("taskState"), "In Progress")));
+
+		List<Task> tasks = session.createQuery(query).getResultList();
+		return tasks;
+	}
+
+
+	private static List<User> getCommunityUsers(User user) throws Exception
+	{
 		CriteriaBuilder cb = session.getCriteriaBuilder();
 		CriteriaQuery<User> query = cb.createQuery(User.class);
 		Root<User> root = query.from(User.class);
@@ -264,15 +286,27 @@ public class SimpleServer extends AbstractServer {
 		query.select(root);
 		// fetch only users from the same community
 		query.where(cb.equal(communityJoin.get("communityName"), user.getCommunity().getCommunityName()));
-
-
-
 		List<User> users = session.createQuery(query).getResultList();
 		return users;
 	}
 
 
+	private static List<Task> getWaitingTasks(User user) throws Exception
+	{
 
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Task> query = cb.createQuery(Task.class);
+		Root<Task> root = query.from(Task.class);
+		Join<Task, User> creatorJoin = root.join("taskCreator");
+		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
+		query.select(root);
+		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
+				cb.equal(root.get("taskState"),"Awaiting approval"));
+
+
+		List<Task> tasks = session.createQuery(query).getResultList();
+		return tasks;
+	}
 
 
 
@@ -281,9 +315,6 @@ public class SimpleServer extends AbstractServer {
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-
-
-
 		Message message = (Message) msg;
 		String request = message.getMessage();
 		try {
@@ -291,38 +322,39 @@ public class SimpleServer extends AbstractServer {
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 
-			if(request.equals("Test")) {
-
-				Task task = session.get(Task.class,1);
-				task.setRequiredTask("Bombing Ron Spector!!!");
-				session.update(task);
-				session.flush();
-
-				session.getTransaction().commit();
-
-				message.setObject(task);
-				message.setMessage("Test");
-				client.sendToClient(message);
-			}
-
-
-			else if(request.equals("alert everybody")) {
+			if(request.equals("alert everybody")) {
 				sendToAllClients(message);
 			}
 
+			//create task, for now send the message to all the clients
+			// however its more logical to send the message only to the community manager that needs to approve
 			else if(request.equals("create task"))
 			{
 				Task testTask = (Task) message.getObject();
 				session.save(testTask);
 				session.flush();
 				session.getTransaction().commit();
-				client.sendToClient(message);
+//				client.sendToClient(message);
+				sendToAllClients(message);
 
 			}
+
+
+
+// used for CommunityInformationController (and ViewEmergencyCalls for now)
 			else if(request.equals("get tasks")) {
 				User u1 = message.getUser();
 				List<Task> tasks = getCommunityTasks(u1,null);
-				// for now fetches all Tasks in database from the same community
+				// fetches all Tasks in database from the same community
+
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+// used for ViewTasksController
+			else if(request.equals("get open tasks")) {
+				User u1 = message.getUser();
+				List<Task> tasks = getOpenTasks(u1);
+				// fetches all OPEN (AND APPROVED) TASKS in database from the same community
 
 				message.setObject(tasks);
 				client.sendToClient(message);
@@ -336,10 +368,20 @@ public class SimpleServer extends AbstractServer {
 				client.sendToClient(message);
 			}
 
+			//called when ApproveRequestController is loaded
+			else if (request.equals("get awaiting approval requests"))
+			{
+				User currentUser = message.getUser();
+				List<Task> tasks = getWaitingTasks(currentUser);
+				message.setObject(tasks);
+				client.sendToClient(message);
+
+			}
 
 
 
 // ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
+// note : this worked fine before i made changes to getCommunityTasks
 			else if(request.equals("emergency everything"))
 			{
 				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
@@ -388,32 +430,69 @@ public class SimpleServer extends AbstractServer {
 
 
 
-
-
-
-
 			else if (request.equals("Get Data")) {
 				Task task = session.get(Task.class,message.getTaskID());
 				message.setObject(task);
 				client.sendToClient(message);
 
 			}
+			// withdrawing is being handled separately because you could change a state to be "Request" in two ways.
+			else if(request.equals("Withdraw from task"))
+			{
+				Task task = (Task) message.getObject();
+				session.update(task);
+				session.flush();
+				session.getTransaction().commit();
+				sendToAllClients(message);
+			}
+
+
 			else if (request.equals("Update task")) {
 
 				Task task = (Task) message.getObject();
 				session.update(task);
 				session.flush();
-				if (task.getTaskState().equals("In Progress"))
+				session.getTransaction().commit();
+				if(task.getTaskState().equals("Request"))
+				{
+					message.setMessage("Publish approved task");
+				}
+
+				else if (task.getTaskState().equals("In Progress"))
 				{
 					message.setMessage("Volunteer to task");
+				}
+				else if (task.getTaskState().equals("Denied"))
+				{
+					message.setMessage("Request denied");
+
+					// ***MISSING IMPLEMENTATION***
+					// need to send message to community member that requested the help
 				}
 				else
 				{
 					message.setMessage("Complete task");
 				}
-				client.sendToClient(message);
-				session.getTransaction().commit();
+				sendToAllClients(message);
+//				client.sendToClient(message);
+
 			}
+
+//			else if (request.equals("Send denial message"))
+//			{
+//				User user = message.getUser(); // User we need to send a message to
+//				String denialText = (String) message.getObject(); // message from community we need to send to user
+//
+//				// implementation needed :
+//				// find ConnectionToClient object of the user (if connected)
+//				// send that client a message
+//
+//			}
+
+
+
+
+
 
 
 
@@ -444,13 +523,54 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	public void sendToAllClients(Message message) {
+		System.out.println("Number of connected clients :" + SubscribersList.size());
+		// idea:
+		// rewrite this code to handle no socket exception, by moving the try/catch into the for loop,
+		// and just like in clientDisconnected, remove the corresponding subscribedClient(s)
+		// maybe hold a list of all the subscribedClient(s) that caused the exception, then remove them one by one.
 		try {
 			for (SubscribedClient SubscribedClient : SubscribersList) {
 				SubscribedClient.getClient().sendToClient(message);
 			}
+
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 	}
 
+	@Override
+	protected synchronized void clientDisconnected(ConnectionToClient client)
+	{
+		System.out.println("a client has disconnected");
+//		super.clientDisconnected(client);
+		synchronized (SubscribersList) {
+			// Find the SubscribedClient that corresponds to the ConnectionToClient to remove
+			SubscribedClient clientToRemove = null;
+			for (SubscribedClient subscribedClient : SubscribersList) {
+				if (subscribedClient.getClient() == client) {
+					clientToRemove = subscribedClient;
+					break;
+				}
+			}
+
+// Remove the SubscribedClient from the list
+			if (clientToRemove != null) {
+				SubscribersList.remove(clientToRemove);
+				//remove client from hashmap as well
+			}
+		}
+	}
+
 }
+
+
+// to implement :
+//1.
+// add two hashmaps, mapping ConnectionToClient to Integer (User ID) and vice versa
+// when user logs in : add mapping
+// when user logs out : remove mapping
+// if manager wants to send a message to a user in his community, or when a new task is posted, first search for related ConnectionToClient object
+
+//2.add new entry to database, containing awaiting messages to user/manager. (fetch list when user logs in)
+// OneToMany
+// query using CriteriaQuery, delete using CriteriaDelete

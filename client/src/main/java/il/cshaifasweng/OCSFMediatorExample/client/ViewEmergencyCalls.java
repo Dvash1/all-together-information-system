@@ -1,5 +1,10 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+// *******IMPORTANT*******
+// because emergency class is not implemented yet, this code is missing an implementation of "live updating" (update the histogram whenever someone presses the emergency button)
+// a simple solution could be to add the emergency object to the observable list, if the requirements are met.
+//
+
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.Task;
 import javafx.application.Platform;
@@ -51,6 +56,9 @@ public class ViewEmergencyCalls implements Initializable {
     private Button displayBtn;
 
     @FXML
+    private Button backBtn;
+
+    @FXML
     private DatePicker endDate;
 
     @FXML
@@ -67,6 +75,18 @@ public class ViewEmergencyCalls implements Initializable {
 
 
 
+    @FXML
+    void showPreviousScene(ActionEvent event)
+    {
+        try {
+            EventBus.getDefault().unregister(this);
+            SimpleChatClient.setRoot("ViewTasks");
+        }
+        catch (IOException e) {
+
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     void disablePicker(ActionEvent event) {
@@ -203,21 +223,14 @@ public class ViewEmergencyCalls implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        EventBus.getDefault().register(this);
+
         // remove non integer values such as 0.5,1.5 etc. from Y-axis
         ((NumberAxis) hist.getYAxis()).setTickUnit(1);
         ((NumberAxis) hist.getYAxis()).setMinorTickCount(0);
         hist.getYAxis().setAutoRanging(false);
 
 
-
-        try {
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
-            EventBus.getDefault().register(this);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
 
         // create ToggleGroup for buttons
         TG1 = new ToggleGroup();
@@ -270,3 +283,4 @@ public class ViewEmergencyCalls implements Initializable {
     }
 
 }
+

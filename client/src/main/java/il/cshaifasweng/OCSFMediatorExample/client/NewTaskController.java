@@ -37,6 +37,24 @@ public class NewTaskController {
     private Button submitBtn;
 
     @FXML
+    private Button backBtn;
+
+
+
+    @FXML
+    void showPreviousScene(ActionEvent event)
+    {
+        try {
+            EventBus.getDefault().unregister(this);
+            SimpleChatClient.setRoot("ViewTasks");
+        }
+        catch (IOException e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     void createNewTask(ActionEvent event) {
         // check if any button was selected
         Toggle toggle = toggleGroup.getSelectedToggle();
@@ -60,10 +78,11 @@ public class NewTaskController {
             btnText = otherTF.getText();
         }
 
-        Task testTask = new Task(btnText, LocalDateTime.now(),"Request",currentUser);
+        Task testTask = new Task(btnText, LocalDateTime.now(),"Awaiting approval",currentUser);
         try {
             Message message = new Message("create task",testTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
+            System.out.println("send to server from NewTaskController");
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -72,8 +91,9 @@ public class NewTaskController {
 
 
     @Subscribe
-    public void newTaskCreated(NewTaskEvent event)
+    public void newTaskCreated(CreateTaskEvent event)
     {
+        EventBus.getDefault().unregister(this);
         Message message = event.getMessage();
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -81,6 +101,7 @@ public class NewTaskController {
             alert.setHeaderText(null);
             alert.setContentText("Your request has been added,a message has been sent to your community manager (Not really)");
             alert.showAndWait();
+
             // close down new task window, go back to viewtasks
             Platform.runLater(() -> {
                 try {
@@ -94,15 +115,9 @@ public class NewTaskController {
 
     }
     public void initialize() {
+        System.out.println("newTaskController initialized");
+        EventBus.getDefault().register(this);
 
-        try {
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
-            EventBus.getDefault().register(this);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
 
         // create new toggle group and add all buttons to it
         toggleGroup = new ToggleGroup();

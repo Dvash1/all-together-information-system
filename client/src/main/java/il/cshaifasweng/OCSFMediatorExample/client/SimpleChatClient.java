@@ -16,16 +16,19 @@ import static il.cshaifasweng.OCSFMediatorExample.client.ViewTasksController.cur
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+
 /**
  * JavaFX App
  */
 public class SimpleChatClient extends Application {
 
     private static Scene scene;
-    private SimpleClient client;
+
+
 
     @Override
     public void start(Stage stage) throws IOException {
+
     	EventBus.getDefault().register(this);
 //    	client = SimpleClient.getClient();
 //    	client.openConnection();
@@ -49,13 +52,13 @@ public class SimpleChatClient extends Application {
         stage.show();
     }
 
-    // compiler is upset that there are no @Subscribe events at SimpleChatClient class, Need to fix it somehow
+
     @Subscribe
     public void testEvent(getDataEvent event) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("This is a test");
-            alert.setHeaderText("test");
+            alert.setHeaderText("");
             alert.setContentText("Hopefully this is shown to all users");
             alert.showAndWait();
 
@@ -78,12 +81,21 @@ public class SimpleChatClient extends Application {
 		// TODO Auto-generated method stub
     	EventBus.getDefault().unregister(this);
 		super.stop();
-        Platform.exit();
-        System.exit(0);
+//        Platform.exit();
+//        System.exit(0);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args)
+    {
         launch();
+        try {
+            System.out.println("closing connection to server");
+            SimpleClient client = SimpleClient.getClient();
+            client.closeConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
 }

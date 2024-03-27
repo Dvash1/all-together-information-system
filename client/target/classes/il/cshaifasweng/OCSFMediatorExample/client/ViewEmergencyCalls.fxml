@@ -39,5 +39,6 @@
           <NumberAxis fx:id="yAxis" label="Amount" side="LEFT" />
         </yAxis>
       </BarChart>
+      <Button fx:id="backBtn" layoutX="47.0" layoutY="25.0" mnemonicParsing="false" onAction="#showPreviousScene" prefHeight="25.0" prefWidth="56.0" text="Back" />
    </children>
 </AnchorPane>

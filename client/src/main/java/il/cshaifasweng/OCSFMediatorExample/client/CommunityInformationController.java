@@ -61,6 +61,8 @@ public class CommunityInformationController {
     @FXML
     private TableColumn<Task, User> volunteerTC1;
 
+    @FXML
+    private Button backBtn;
     // lists of all users&tasks from the same community (as the logged-in user)
     private List<User> users;
 
@@ -73,7 +75,168 @@ public class CommunityInformationController {
     @FXML
     private Button exportBtnSecond;
 
+    @FXML
+    void showPreviousScene(ActionEvent event)
+    {
+        try {
+            EventBus.getDefault().unregister(this);
+            SimpleChatClient.setRoot("ViewTasks");
+        }
+        catch (IOException e) {
 
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @Subscribe
+    public void displayNewTask(CreateTaskEvent event)
+    {
+
+        Message message = event.getMessage();
+        Task task = (Task) message.getObject();
+        // only add if they are from the same community
+        if (task.getTaskCreator().getCommunity().getCommunityName().equals(currentUser.getCommunity().getCommunityName())) {
+
+            tasks.add(task);
+            User selectedUser = memberList.getSelectionModel().getSelectedItem();
+            // if the current selected user in the listview is also the one that asked for help, we will add him manually to the tableview
+            if(selectedUser != null && selectedUser.getId() == task.getTaskCreator().getId())
+            {
+                taskListTC1.add(task);
+            }
+
+        }
+
+    }
+
+    @Subscribe
+    public void displayNewVolunteer(VolunteerToTaskEvent event)
+    {
+        Message message = event.getMessage();
+        Task newTask = (Task) message.getObject();
+        User selectedUser = memberList.getSelectionModel().getSelectedItem();
+
+        updateTaskInList(newTask);
+        // in general, we need to verify that the tasks we're adding is from the same community (because we are sending to all clients)
+        // however, because the task ids are unique, this should not be an issue in this scenario.
+
+//        if (newTask.getTaskCreator().getCommunity().getCommunityName().equals(currentUser.getCommunity().getCommunityName()))
+//            {
+//                updateTaskInList(newTask);
+//            }
+        // if the current selected user just volunteered to a task, we'll update the GUI
+        if(selectedUser != null)
+        {
+            if (newTask.getTaskVolunteer() != null && selectedUser.getId() == newTask.getTaskVolunteer().getId()) {
+                taskListTC2.add(newTask);
+
+            }
+            // if someone volunteered to a task the current selected user requested help with, we'll update the GUI
+            else if (newTask.getTaskCreator().getId() == selectedUser.getId()) {
+                for (int i = 0; i < taskListTC1.size(); i++) {
+                    Task task = taskListTC1.get(i);
+                    if (task.getId() == newTask.getId()) {
+                        taskListTC1.set(i, newTask);
+                    }
+                }
+            }
+        }
+    }
+
+    @Subscribe
+    public void withdrawVolunteering(WithdrawEvent event)
+    {
+        Message message = event.getMessage();
+        Task newTask = (Task) message.getObject();
+        updateTaskInList(newTask);
+
+        User selectedUser = memberList.getSelectionModel().getSelectedItem();
+        if (selectedUser != null)
+        {
+            for (int i = 0; i < taskListTC2.size(); i++) {
+                Task task = taskListTC2.get(i);
+                if (task.getId() == newTask.getId()) {
+                    taskListTC2.remove(task);
+                    break;
+                }
+            }
+            for (int i = 0; i < taskListTC1.size(); i++) {
+                Task task = taskListTC1.get(i);
+                if (task.getId() == newTask.getId()) {
+                    taskListTC1.set(i, newTask);
+                    break;
+                }
+
+            }
+        }
+    }
+
+    @Subscribe
+    public void displayApprovedTask(ApprovedTaskEvent event)
+    {
+        Message message = event.getMessage();
+        Task newTask = (Task) message.getObject();
+        updateTaskInList(newTask);
+        updateTaskState(newTask);
+    }
+
+    @Subscribe
+    public void displayDeniedTask(DeniedTaskEvent event)
+    {
+        System.out.println("displayDeniedTask called");
+        Message message = event.getMessage();
+        Task newTask = (Task) message.getObject();
+        updateTaskInList(newTask);
+        updateTaskState(newTask);
+    }
+
+    @Subscribe
+    public void displayCompletedTask(CompleteTaskEvent event)
+    {
+        Message message = event.getMessage();
+        Task newTask = (Task) message.getObject();
+        updateTaskInList(newTask);
+        updateTaskState(newTask);
+    }
+
+
+
+
+    // call this function when only the state of a task is updated (awaiting approval -> Request,In progress -> Completed,  etc)
+    private void updateTaskState(Task newTask)
+    {
+        User selectedUser = memberList.getSelectionModel().getSelectedItem();
+        // if the current selected user just completed a task, we'll update the GUI
+        if (selectedUser != null)
+        {
+            if(newTask.getTaskVolunteer() != null && selectedUser.getId() == newTask.getTaskVolunteer().getId())
+            {
+                for (int i = 0;i< taskListTC2.size();i++)
+                {
+                    Task task = taskListTC2.get(i);
+                    if(task.getId() == newTask.getId())
+                    {
+                        taskListTC2.set(i,newTask);
+                    }
+                }
+
+            }
+            // if someone completed a task the current selected user requested help with, we'll update the GUI
+            else if(newTask.getTaskCreator().getId() == selectedUser.getId())
+            {
+                for (int i = 0;i< taskListTC1.size();i++)
+                {
+                    Task task = taskListTC1.get(i);
+                    if(task.getId() == newTask.getId())
+                    {
+                        taskListTC1.set(i,newTask);
+                    }
+                }
+            }
+        }
+    }
 
     private void exportData(TableView<Task> table) {
         FileChooser fileChooser = new FileChooser();
@@ -114,6 +277,19 @@ public class CommunityInformationController {
     }
 
 
+    private void updateTaskInList(Task newTask)
+    {
+        // search for index, then replace with the updated task
+        for (int i = 0;i< tasks.size();i++)
+        {
+            Task task = tasks.get(i);
+            if(task.getId() == newTask.getId())
+            {
+                tasks.set(i,newTask);
+            }
+        }
+    }
+
 
 
     @Subscribe
@@ -128,7 +304,7 @@ public class CommunityInformationController {
     }
 
     @Subscribe
-    public void getTasks(LoadTasksEvent event)
+    public void getTasks(LoadAllTasksEvent event)
     {
         Message message = event.getMessage();
         tasks = new ArrayList<>();
@@ -138,6 +314,10 @@ public class CommunityInformationController {
 
     public void initialize()
     {
+
+        EventBus.getDefault().register(this);
+
+
         // set what the cell in the listview should display when holding a User class object
         // in this case, we'll display the users full name
         memberList.setCellFactory(param -> new ListCell<User>() {
@@ -207,7 +387,6 @@ public class CommunityInformationController {
             }
         });
 
-
         taskStateTC2.setCellValueFactory(new PropertyValueFactory<>("taskState"));
         requesterTC2.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getTaskCreator().getUserName()));
 
@@ -240,17 +419,8 @@ public class CommunityInformationController {
 
 
 
-
 //send messages to server
 
-        try {
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
-            EventBus.getDefault().register(this);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
 
         try {
             Message newMessage = new Message("get tasks",currentUser);
@@ -270,6 +440,7 @@ public class CommunityInformationController {
 
 
     }
+
 
 
 

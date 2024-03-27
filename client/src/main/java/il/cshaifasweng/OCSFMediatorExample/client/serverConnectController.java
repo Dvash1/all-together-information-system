@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 import static il.cshaifasweng.OCSFMediatorExample.client.SimpleClient.client;
+
+import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -32,6 +34,9 @@ public class serverConnectController
             SimpleClient.setHostAndPort(host,port);
             SimpleClient client = SimpleClient.getClient();
             client.openConnection(); // can throw an exception
+
+            Message message = new Message(0, "add client");
+            client.sendToServer(message);
 
             Platform.runLater(() ->{
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
