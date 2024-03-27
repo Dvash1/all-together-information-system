@@ -36,6 +36,24 @@ public class NewTaskController {
     @FXML
     private Button submitBtn;
 
+    // Going back to menu button
+    @FXML
+    private Button menuButton;
+
+    @FXML
+    void switchToMenu(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                //change back to ViewTasks
+                SimpleChatClient.setRoot("ViewTasks"); // ***** Switch this to correct root when menu is implemented
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+
+    }
+
     @FXML
     private Button backBtn;
 
