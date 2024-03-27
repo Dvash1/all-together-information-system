@@ -322,15 +322,31 @@ public class SimpleServer extends AbstractServer {
 				String name = forgotDetails[0];
 				String selectedQuestion = forgotDetails[1];
 				String answer = forgotDetails[2];
-
 				User user = getUserByName(name);
+
 				if (user != null && user.getSecretQuestion().equals(selectedQuestion) && user.getSecretQuestionAnswer().equals(answer)) {
 					message.setMessage("Forgot Password: Match");
 				}
 				else {
 					message.setMessage("Forgot Password: Fail");
 				}
-				System.out.println("message sent: "+message.getMessage());
+				System.out.println("message sent: " + message.getMessage());
+				client.sendToClient(message);
+			}
+			else if(request.equals("New Password Request")){
+				String[] details = (String[])message.getObject();
+				String name = details[0];
+				String newPassword = details[1];
+				User user = getUserByName(name);
+				user.setPassword(newPassword);
+				session.flush();
+				if(user.getPassword().equals(newPassword)) {
+					message.setMessage("Password Change Succeed");
+				}
+				else {
+					message.setMessage("Password Change Failed");
+				}
+				System.out.println("message sent: " + message.getMessage());
 				client.sendToClient(message);
 			}
 //			if(request.equals("Test")) {

@@ -27,9 +27,11 @@ public class 	SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new LoginEvent(message));
 		}
 		if(request.startsWith("Forgot Password")) {
-			EventBus.getDefault().post(new LoginEvent(message));
+			EventBus.getDefault().post(new ForgotPasswordEvent(message));
 		}
-
+		if(request.startsWith("Password")) {
+			EventBus.getDefault().post(new PasswordChangeEvent(message));
+		}
 	}
 	
 	public static SimpleClient getClient() {

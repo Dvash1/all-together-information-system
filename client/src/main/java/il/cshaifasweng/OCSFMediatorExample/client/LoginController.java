@@ -82,54 +82,7 @@ public class LoginController {
         alert.show();
         //TODO: add the emergency to the database (time,when,where,who,whom,whose,wok)
     }
-    private String[] securityQuestions = {
-        "What is your favorite color?", "What is your pet's name?", "What is your mother's maiden name?", "What city were you born in?",
-        "What is the name of your first school?", "What is your favorite movie?", "What is your favorite food?",
-        "Who is your favorite author?", "What is your dream vacation destination?", "What is your favorite animal?", "What is your favorite hobby?",
-        "What is your favorite sport?", "What is your favorite season?", "What is your favorite TV show?", "What is your favorite holiday?", "What is your favorite music genre?",
-        "What is your favorite subject?", "What is your favorite book?", "What is your favorite movie genre?", "What is your favorite dessert?", "What is your favorite fruit?",
-        "What is your favorite drink?", "What is your favorite board game?", "What is your favorite TV series?",
-        "What is your favorite outdoor activity?", "What is your favorite indoor activity?", "What is your favorite ice cream flavor?"
-    };
-    @FXML
-    void forgot_password(ActionEvent event) throws IOException {
-        if (username_field_forgot.getText().isEmpty()
-                || question_bar_forgot.getSelectionModel().getSelectedItem() == null
-                || answer_field_forgot.getText().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please fill all blank fields");
-            alert.setTitle("Error Message");
-            alert.setHeaderText(null);
-            alert.show();
-        }
 
-        String username = username_field_forgot.getText();
-        String selectedQuestion = (String) question_bar_forgot.getSelectionModel().getSelectedItem();
-        String answer = answer_field_forgot.getText();
-
-        String[] forgotDetails = new String[]{username,selectedQuestion,answer};
-        Message message = new Message( "Forgot Password Request",forgotDetails,null);
-        SimpleClient.getClient().sendToServer(message);
-    }
-
-    @Subscribe
-    public void password_change_form(ForgotPasswordEvent event) throws IOException {
-        String message = event.getMessage().getMessage();
-        if(message.equals("Forgot Password: Match")) {
-            Platform.runLater(() -> {
-                login_form.setVisible(true);
-                forgot_form.setVisible(false);
-                new_password_form.setVisible(false);
-            });
-        }
-        else {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
-                alert.setTitle("Login Failed");
-                alert.setHeaderText("Login Failed");
-                alert.show();
-            });
-        }
-    }
     @FXML
     void switch_form(ActionEvent event) {
         if(event.getSource() == forgot_password_button) {
@@ -143,7 +96,6 @@ public class LoginController {
             new_password_form.setVisible(false);
         }
     }
-
     @FXML
     void login_button_push(ActionEvent event) throws IOException {
         String username = login_field.getText();
@@ -179,9 +131,99 @@ public class LoginController {
             });
         }
     }
+    private String[] securityQuestions = {
+            "What is your favorite color?", "What is your pet's name?", "What is your mother's maiden name?", "What city were you born in?",
+            "What is the name of your first school?", "What is your favorite movie?", "What is your favorite food?",
+            "Who is your favorite author?", "What is your dream vacation destination?", "What is your favorite animal?", "What is your favorite hobby?",
+            "What is your favorite sport?", "What is your favorite season?", "What is your favorite TV show?", "What is your favorite holiday?", "What is your favorite music genre?",
+            "What is your favorite subject?", "What is your favorite book?", "What is your favorite movie genre?", "What is your favorite dessert?", "What is your favorite fruit?",
+            "What is your favorite drink?", "What is your favorite board game?", "What is your favorite TV series?",
+            "What is your favorite outdoor activity?", "What is your favorite indoor activity?", "What is your favorite ice cream flavor?"
+    };
+    @FXML
+    void forgot_password(ActionEvent event) throws IOException {
+        if (username_field_forgot.getText().isEmpty()
+                || question_bar_forgot.getSelectionModel().getSelectedItem() == null
+                || answer_field_forgot.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please fill all blank fields");
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.show();
+        }
+
+        String username = username_field_forgot.getText();
+        String selectedQuestion = (String) question_bar_forgot.getSelectionModel().getSelectedItem();
+        String answer = answer_field_forgot.getText();
+
+        String[] forgotDetails = new String[]{username,selectedQuestion,answer};
+        Message message = new Message( "Forgot Password Request",forgotDetails,null);
+        SimpleClient.getClient().sendToServer(message);
+    }
+
+    @Subscribe
+    public void password_change_form(ForgotPasswordEvent event) throws IOException {
+        String message = event.getMessage().getMessage();
+        if(message.equals("Forgot Password: Match")) {
+            Platform.runLater(() -> {
+                login_form.setVisible(false);
+                forgot_form.setVisible(false);
+                new_password_form.setVisible(true);
+            });
+        }
+        else {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
+                alert.setTitle("Login Failed");
+                alert.setHeaderText("Login Failed");
+                alert.show();
+            });
+        }
+    }
+    // push
     @FXML
     void new_password(ActionEvent event) throws IOException {
-
+        if (new_password_field.getText().isEmpty() || confirm_password_field.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please fill all blank fields");
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.show();
+        }
+        else if (!new_password_field.getText().equals(confirm_password_field.getText())) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Passwords do not match");
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.show();
+        }
+        else {
+            String userName = username_field_forgot.getText();
+            String password = new_password_field.getText();
+            String[] details = new String[]{userName,password};
+            Message message = new Message( "New Password Request",details,null);
+            SimpleClient.getClient().sendToServer(message);
+        }
+    }
+    @Subscribe
+    public void passwordChanged(PasswordChangeEvent event) {
+        String message = event.getMessage().getMessage();
+        if(message.equals("Password Change Succeed")) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Your password has successfully been changed!");
+                alert.setTitle("Password change");
+                alert.setHeaderText(null);
+                alert.show();
+                login_form.setVisible(true);
+                forgot_form.setVisible(false);
+                new_password_form.setVisible(false);
+            });
+        }
+        else {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Password Change Failed!");
+                alert.setTitle("Password Change Failed");
+                alert.setHeaderText(null);
+                alert.show();
+            });
+        }
     }
     @FXML
     void switchToPrimary(ActionEvent event) throws IOException {
