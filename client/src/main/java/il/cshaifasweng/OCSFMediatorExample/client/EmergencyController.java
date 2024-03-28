@@ -58,14 +58,7 @@ public class EmergencyController {
         }
     }
     public void initialize() {
-        try {
-            EventBus.getDefault().register(this);
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        EventBus.getDefault().register(this);
     }
 
 }

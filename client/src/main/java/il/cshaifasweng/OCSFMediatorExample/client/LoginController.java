@@ -116,22 +116,26 @@ public class LoginController {
     @Subscribe
     public void login(LoginEvent event) throws IOException {
         //TODO check why there's an exception when signing out and in again.
+
         System.out.println("IN login");
         String message = event.getMessage().getMessage();
         if(message.equals("Login Succeed")) {
+            System.out.println("Log in succeeded");
             Platform.runLater(() -> {
                 try {
-//                    EventBus.getDefault().unregister(this);
+                    EventBus.getDefault().unregister(this);
                     SimpleChatClient.setRoot("mainmenu");
-//                    scene = new Scene(loadFXML("mainmenu"), 434, 445);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
 //                stage = (Stage) login_form.getScene().getWindow();
 //                stage.setScene(scene);
             });
         }
+
+
         else {
+            System.out.println("Log in failed");
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
                 alert.setTitle("Login Failed");
@@ -241,13 +245,14 @@ public class LoginController {
     }
     public void initialize() {
         question_bar_forgot.getItems().addAll(securityQuestions);
-        try {
-            EventBus.getDefault().register(this);
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        EventBus.getDefault().register(this);
+//        try {
+//            EventBus.getDefault().register(this);
+////            Message message = new Message(0, "add client");
+////            SimpleClient.getClient().sendToServer(message);
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }

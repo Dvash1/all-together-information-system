@@ -28,7 +28,7 @@ public class SimpleChatClient extends Application {
     	EventBus.getDefault().register(this);
     	client = SimpleClient.getClient();
     	client.openConnection();
-        scene = new Scene(loadFXML("login"), 640, 480);
+        scene = new Scene(loadFXML("ConnectToServer"), 640, 480);
         stage.setScene(scene);
         stage.show();
     }

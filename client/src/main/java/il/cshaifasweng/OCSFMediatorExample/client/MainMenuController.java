@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -55,21 +56,25 @@ public class MainMenuController {
     }
     @FXML
     void logout(ActionEvent event) throws IOException {
-        SceneManager.switchScene("login.fxml",event);
-//        scene = new Scene(loadFXML("login"), 434, 445);
-//        stage = (Stage) mainmenuAnchor.getScene().getWindow();
-//        stage.setScene(scene);
-//        stage.setScene(scene);
+        try {
+            EventBus.getDefault().unregister(this);
+            SimpleChatClient.setRoot("login");
+        }
+        catch (IOException e) {
+
+            e.printStackTrace();
+        }
     }
 
     public void initialize() {
-        try {
-            EventBus.getDefault().register(this);
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            println("hello");
+////            EventBus.getDefault().register(this);
+////            Message message = new Message(0, "add client");
+////            SimpleClient.getClient().sendToServer(message);
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }
