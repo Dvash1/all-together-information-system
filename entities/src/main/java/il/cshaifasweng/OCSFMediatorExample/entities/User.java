@@ -23,23 +23,26 @@ public class User implements Serializable {
     private boolean isManager;
     private String secretQuestion;
     private String secretQuestionAnswer;
+    private String phoneNumber;
 
-    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager, Community community) {
+    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber, Community community) {
         this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.password = password;
         this.secretQuestion = secretQuestion;
         this.secretQuestionAnswer = secretQuestionAnswer;
         this.isManager = isManager;
+        this.phoneNumber = phoneNumber;
         this.community = community;
     }
-    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager) {
+    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber) {
         this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.password = password;
         this.secretQuestion = secretQuestion;
         this.secretQuestionAnswer = secretQuestionAnswer;
         this.isManager = isManager;
+        this.phoneNumber = phoneNumber;
     }
     public User()
     {
@@ -106,5 +109,13 @@ public class User implements Serializable {
 
     public void setSecretQuestionAnswer(String secretQuestionAnswer) {
         this.secretQuestionAnswer = secretQuestionAnswer;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

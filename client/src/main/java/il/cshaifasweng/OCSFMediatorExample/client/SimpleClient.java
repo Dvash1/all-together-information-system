@@ -32,6 +32,9 @@ public class 	SimpleClient extends AbstractClient {
 		if(request.startsWith("Password")) {
 			EventBus.getDefault().post(new PasswordChangeEvent(message));
 		}
+		if(request.startsWith("Emergency")) {
+			EventBus.getDefault().post(new EmergencyEvent(message));
+		}
 	}
 	
 	public static SimpleClient getClient() {
