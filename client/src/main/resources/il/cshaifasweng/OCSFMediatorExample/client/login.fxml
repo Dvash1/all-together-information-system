@@ -19,7 +19,7 @@
                      <children>
                         <PasswordField fx:id="password_field" layoutX="26.0" layoutY="77.0" promptText="Password" />
                         <Button fx:id="login_button" layoutX="76.0" layoutY="124.0" mnemonicParsing="false" onAction="#login_button_push" text="Log In" />
-                        <TextField fx:id="login_field" layoutX="26.0" layoutY="35.0" promptText="Username" />
+                        <TextField fx:id="login_field" layoutX="26.0" layoutY="35.0" promptText="Teudat Zehut" />
                         <Button fx:id="forgot_password_button" layoutX="41.0" layoutY="168.0" mnemonicParsing="false" onAction="#switch_form" prefHeight="25.0" prefWidth="120.0" text="Forgot Password" />
                      </children>
                   </Pane>
@@ -30,7 +30,7 @@
                   <Button fx:id="backButton_forgot" layoutX="14.0" layoutY="408.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
                   <Pane layoutX="62.0" layoutY="40.0" prefHeight="278.0" prefWidth="321.0" style="-fx-background-color: lightblue;">
                      <children>
-                        <TextField fx:id="username_field_forgot" layoutX="47.0" layoutY="36.0" prefHeight="25.0" prefWidth="228.0" promptText="Username" />
+                        <TextField fx:id="teudatzehut_field_forgot" layoutX="47.0" layoutY="36.0" prefHeight="25.0" prefWidth="228.0" promptText="Teudat Zehut" />
                         <ComboBox fx:id="question_bar_forgot" layoutX="47.0" layoutY="90.0" prefHeight="25.0" prefWidth="228.0" promptText="Select Question" />
                         <TextField fx:id="answer_field_forgot" layoutX="47.0" layoutY="139.0" prefHeight="25.0" prefWidth="228.0" promptText="Answer" />
                         <Button fx:id="proceed_forgot_password" layoutX="131.0" layoutY="198.0" mnemonicParsing="false" onAction="#forgot_password" text="Proceed" />

@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -62,7 +63,7 @@ public class LoginController {
     private Button secondaryButton;
 
     @FXML
-    private TextField username_field_forgot;
+    private TextField teudatzehut_field_forgot;
     @FXML
     private TextField new_password_field;
     @FXML
@@ -73,14 +74,17 @@ public class LoginController {
     private Scene scene;
     private Parent root;
 
+    private static int number_of_login_attempts = 0;
+
     @FXML
-    void emergency_button_press(ActionEvent event) {
-        //pop-ups alarm that shows that a new emergency call has been forwarded
-        Alert alert = new Alert(Alert.AlertType.INFORMATION,"Your emergency call has been forwarded");
-        alert.setTitle("Emergency Button");
-        alert.setHeaderText("New Emergency Call Forwarded!");
-        alert.show();
-        //TODO: add the emergency to the database (time,when,where,who,whom,whose,wok)
+    void emergency_button_press(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("emergency.fxml"));
+        Scene scene = new Scene(root);
+        Stage primaryStage = new Stage();
+        primaryStage.setTitle("Emergency Window");
+        primaryStage.setScene(scene);
+        primaryStage.initModality(Modality.APPLICATION_MODAL);
+        primaryStage.show();
     }
 
     @FXML
@@ -98,6 +102,9 @@ public class LoginController {
     }
     @FXML
     void login_button_push(ActionEvent event) throws IOException {
+        if(number_of_login_attempts >= 6) {
+
+        }
         String username = login_field.getText();
         String password = password_field.getText();
         String[] loginDetails = new String[]{username,password};
@@ -114,12 +121,14 @@ public class LoginController {
         if(message.equals("Login Succeed")) {
             Platform.runLater(() -> {
                 try {
-                    scene = new Scene(loadFXML("mainmenu"), 434, 445);
+//                    EventBus.getDefault().unregister(this);
+                    SimpleChatClient.setRoot("mainmenu");
+//                    scene = new Scene(loadFXML("mainmenu"), 434, 445);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                stage = (Stage) login_form.getScene().getWindow();
-                stage.setScene(scene);
+//                stage = (Stage) login_form.getScene().getWindow();
+//                stage.setScene(scene);
             });
         }
         else {
@@ -142,7 +151,7 @@ public class LoginController {
     };
     @FXML
     void forgot_password(ActionEvent event) throws IOException {
-        if (username_field_forgot.getText().isEmpty()
+        if (teudatzehut_field_forgot.getText().isEmpty()
                 || question_bar_forgot.getSelectionModel().getSelectedItem() == null
                 || answer_field_forgot.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please fill all blank fields");
@@ -151,7 +160,7 @@ public class LoginController {
             alert.show();
         }
 
-        String username = username_field_forgot.getText();
+        String username = teudatzehut_field_forgot.getText();
         String selectedQuestion = (String) question_bar_forgot.getSelectionModel().getSelectedItem();
         String answer = answer_field_forgot.getText();
 
@@ -176,6 +185,7 @@ public class LoginController {
                 alert.setTitle("Login Failed");
                 alert.setHeaderText("Login Failed");
                 alert.show();
+                number_of_login_attempts += 1;
             });
         }
     }
@@ -195,9 +205,9 @@ public class LoginController {
             alert.show();
         }
         else {
-            String userName = username_field_forgot.getText();
+            String teudatzehut = teudatzehut_field_forgot.getText();
             String password = new_password_field.getText();
-            String[] details = new String[]{userName,password};
+            String[] details = new String[]{teudatzehut,password};
             Message message = new Message( "New Password Request",details,null);
             SimpleClient.getClient().sendToServer(message);
         }

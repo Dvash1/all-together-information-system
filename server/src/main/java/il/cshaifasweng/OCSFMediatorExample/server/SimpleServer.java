@@ -1,9 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.Community;
-import il.cshaifasweng.OCSFMediatorExample.entities.Message;
-import il.cshaifasweng.OCSFMediatorExample.entities.Task;
-import il.cshaifasweng.OCSFMediatorExample.entities.User;
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
@@ -13,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 
+import java.util.HashMap;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -32,7 +30,7 @@ import javax.persistence.criteria.*;
 
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
-
+	private static HashMap<String,SubscribedClient> idToClient = new HashMap<>();
 	private static Session session;
 
 	private static SessionFactory getSessionFactory() throws
@@ -42,6 +40,8 @@ public class SimpleServer extends AbstractServer {
 		configuration.addAnnotatedClass(Task.class);
 		configuration.addAnnotatedClass(User.class);
 		configuration.addAnnotatedClass(Community.class);
+		configuration.addAnnotatedClass(Emergency.class);
+
 
 		ServiceRegistry serviceRegistry = new
 				StandardServiceRegistryBuilder()
@@ -67,18 +67,19 @@ public class SimpleServer extends AbstractServer {
 			//check if database is empty first
 			if (getAllTasks(null).isEmpty()) {
 				// first community
-				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true);
+				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true,"0523842728");
 				Community c1 = new Community("Kfir",u1);
 				u1.setCommunity(c1);
-				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false, c1);
-				User u3 = new User("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", false, c1);
-				User u4 = new User("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", false, c1);
-				User u5 = new User("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary", false, c1);
-				User u6 = new User("Emily Davis", "364892175", "password", "What is your favorite movie?", "The Shawshank Redemption", false, c1);
-				User u7 = new User("Daniel Wilson", "485739216", "123456", "What is your favorite food?", "Pizza", false, c1);
-				User u8 = new User("Olivia Martinez", "627183945", "pass123", "Who is your favorite author?", "J.K. Rowling", false, c1);
-				User u9 = new User("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", false, c1);
-				User u10 = new User("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog", false, c1);
+				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false,"0538453293" ,c1);
+				User u3 = new User("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", false, "0523456789", c1);
+				User u4 = new User("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", false, "0501234565", c1);
+				User u5 = new User("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary", false, "0579876543", c1);
+				User u6 = new User("Emily Davis", "364892175", "password", "What is your favorite movie?", "The Shawshank Redemption", false, "0512345678", c1);
+				User u7 = new User("Daniel Wilson", "485739216", "123456", "What is your favorite food?", "Pizza", false, "0587654321", c1);
+				User u8 = new User("Olivia Martinez", "627183945", "pass123", "Who is your favorite author?", "J.K. Rowling", false, "0543210987", c1);
+				User u9 = new User("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", false, "0567890123", c1);
+				User u10 = new User("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog", false, "0532109876", c1);
+
 				Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
 				Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "Request", u3);
 				Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "Request", u4);
@@ -113,18 +114,19 @@ public class SimpleServer extends AbstractServer {
 
 				// second community
 
-				User u11 = new User("Emma Thompson", "746158392", "pass456", "What is your favorite hobby?", "Reading", true);
+				User u11 = new User("Emma Thompson", "746158392", "pass456", "What is your favorite hobby?", "Reading", true,"0598765432");
 				Community c2 = new Community("Lemons",u11);
 				u11.setCommunity(c2);
-				User u12 = new User("James White", "538294617", "abc456", "What is your favorite sport?", "Football", false, c2);
-				User u13 = new User("Ava Green", "921475386", "password789", "What is your favorite season?", "Spring", false, c2);
-				User u14 = new User("Ethan Harris", "364892175", "qwerty123", "What is your favorite TV show?", "Friends", false, c2);
-				User u15 = new User("Mia Lee", "485739216", "pass789", "What is your favorite holiday?", "Christmas", false, c2);
-				User u16 = new User("Jacob Hall", "627183945", "abc789", "What is your favorite music genre?", "Pop", false, c2);
-				User u17 = new User("Isabella Young", "819276435", "passwordabc", "What is your favorite subject?", "History", false, c2);
-				User u18 = new User("Noah King", "294617583", "qwertyabc", "What is your favorite color?", "Green", false, c2);
-				User u19 = new User("Sophie Baker", "173849265", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, c2);
-				User u20 = new User("William Cook", "582716394", "abcqwerty", "What is your favorite movie genre?", "Action", false, c2);;
+				User u12 = new User("James White", "538294617", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
+				User u13 = new User("Ava Green", "921475386", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
+				User u14 = new User("Ethan Harris", "364892175", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
+				User u15 = new User("Mia Lee", "485739216", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
+				User u16 = new User("Jacob Hall", "627183945", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
+				User u17 = new User("Isabella Young", "819276435", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
+				User u18 = new User("Noah King", "294617583", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
+				User u19 = new User("Sophie Baker", "173849265", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
+				User u20 = new User("William Cook", "582716394", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
+
 
 				Task t6 = new Task("mow the lawn", LocalDateTime.now().minusHours(3), "Request", u11);
 				Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "Request", u12);
@@ -159,18 +161,19 @@ public class SimpleServer extends AbstractServer {
 
 				// third community
 
-				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true);
+				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true,"0598765432");
 				Community c3 = new Community("Ono",u21);
 				u21.setCommunity(c3);
-				User u22 = new User("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", false, c3);
-				User u23 = new User("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", false, c3);
-				User u24 = new User("Zoe Evans", "485726391", "abc123!@#", "What is your favorite board game?", "Monopoly", false, c3);
-				User u25 = new User("Harper Edwards", "582619347", "password123!@#", "What is your favorite animal?", "Cat", false, c3);
-				User u26 = new User("Benjamin Collins", "726391845", "qwerty!@#$", "What is your favorite TV series?", "Breaking Bad", false, c3);
-				User u27 = new User("Aria Stewart", "917364825", "pass!@#$%", "What is your favorite outdoor activity?", "Hiking", false, c3);
-				User u28 = new User("Lucas Watson", "364819257", "abc!@#$%^", "What is your favorite indoor activity?", "Reading", false, c3);
-				User u29 = new User("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", false, c3);
-				User u30 = new User("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather", false, c3);
+				User u22 = new User("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", false, "0554321091", c3);
+				User u23 = new User("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", false, "0523456780", c3);
+				User u24 = new User("Zoe Evans", "485726391", "abc123!@#", "What is your favorite board game?", "Monopoly", false, "0501234563", c3);
+				User u25 = new User("Harper Edwards", "582619347", "password123!@#", "What is your favorite animal?", "Cat", false, "0579876545", c3);
+				User u26 = new User("Benjamin Collins", "726391845", "qwerty!@#$", "What is your favorite TV series?", "Breaking Bad", false, "0512345675", c3);
+				User u27 = new User("Aria Stewart", "917364825", "pass!@#$%", "What is your favorite outdoor activity?", "Hiking", false, "0587654323", c3);
+				User u28 = new User("Lucas Watson", "364819257", "abc!@#$%^", "What is your favorite indoor activity?", "Reading", false, "0543210989", c3);
+				User u29 = new User("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", false, "0567890120", c3);
+				User u30 = new User("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather", false, "0532109874", c3);
+
 
 				Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "Request", u21);
 				Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);
@@ -275,10 +278,10 @@ public class SimpleServer extends AbstractServer {
 		List<User> users = session.createQuery("FROM User ORDER BY userName", User.class).getResultList();
 		return users;
 	}
-	private static User getUserByName(String userName) throws Exception {
+	private static User getUserByTeudatZehut(String teudatZehut) throws Exception {
 		List<User> users = getAllUsers();
 		for (User user : users) {
-			if (userName.equals(user.getUserName())) {
+			if (teudatZehut.equals(user.getTeudatZehut())) {
 				return user; // User with the specified username found
 			}
 		}
@@ -300,11 +303,12 @@ public class SimpleServer extends AbstractServer {
 			// When a user needs to connect
 			if(request.equals("Login Request")){
 				String[] loginDetails = (String[])message.getObject();
-				String name = loginDetails[0];
+				String teudatZehut = loginDetails[0];
 				String password = loginDetails[1];
-				User user = getUserByName(name);
-				if (user != null) {
+				User user = getUserByTeudatZehut(teudatZehut);
+				if (user != null && !idToClient.containsKey(teudatZehut)) {
 					if(password.equals(user.getPassword())) {
+//						idToClient.put()
 						message.setMessage("Login Succeed");
 					}
 					else {
@@ -312,17 +316,22 @@ public class SimpleServer extends AbstractServer {
 					}
 				}
 				else {
-					message.setMessage("Login Failed: No Such User Exists");
+					if(user == null) {
+						message.setMessage("Login Failed: No Such User Exists");
+					}
+					else {
+						message.setMessage("Login Failed: Someone is already connected to the given ID");
+					}
 				}
 				System.out.println("message sent: "+message.getMessage());
 				client.sendToClient(message);
 			}
 			else if(request.equals("Forgot Password Request")){
 				String[] forgotDetails = (String[])message.getObject();
-				String name = forgotDetails[0];
+				String teudatZehut = forgotDetails[0];
 				String selectedQuestion = forgotDetails[1];
 				String answer = forgotDetails[2];
-				User user = getUserByName(name);
+				User user = getUserByTeudatZehut(teudatZehut);
 
 				if (user != null && user.getSecretQuestion().equals(selectedQuestion) && user.getSecretQuestionAnswer().equals(answer)) {
 					message.setMessage("Forgot Password: Match");
@@ -333,18 +342,33 @@ public class SimpleServer extends AbstractServer {
 				System.out.println("message sent: " + message.getMessage());
 				client.sendToClient(message);
 			}
-			else if(request.equals("New Password Request")){
-				String[] details = (String[])message.getObject();
-				String name = details[0];
+			else if(request.equals("New Password Request")) {
+				String[] details = (String[]) message.getObject();
+				String teudatZehut = details[0];
 				String newPassword = details[1];
-				User user = getUserByName(name);
-				user.setPassword(newPassword);
-				session.flush();
-				if(user.getPassword().equals(newPassword)) {
-					message.setMessage("Password Change Succeed");
+				User user = getUserByTeudatZehut(teudatZehut);
+				if (user != null) {
+					user.setPassword(newPassword);
+					session.flush();
+					if (user.getPassword().equals(newPassword)) {
+						message.setMessage("Password Change Succeed");
+					}
+				} else {
+					message.setMessage("Password Change Failed");
+				}
+			}
+			else if(request.equals("Emergency Request")){
+				String teudatzehut = (String)message.getObject();
+				System.out.println("teudatzehut: " + teudatzehut);
+				User user = getUserByTeudatZehut(teudatzehut);
+				if(user != null) {
+					Emergency emergency = new Emergency(user, LocalDateTime.now());
+					session.save(emergency);
+					session.getTransaction().commit();
+					message.setMessage("Emergency Call Succeed");
 				}
 				else {
-					message.setMessage("Password Change Failed");
+					message.setMessage("Emergency Call Failed");
 				}
 				System.out.println("message sent: " + message.getMessage());
 				client.sendToClient(message);
