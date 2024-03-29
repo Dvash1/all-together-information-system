@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import java.io.IOException;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
+import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -116,14 +117,17 @@ public class LoginController {
     @Subscribe
     public void login(LoginEvent event) throws IOException {
         //TODO check why there's an exception when signing out and in again.
-
+        // **TODO: please check why sometimes when you try to log in with teudatzehut and password that are in the db it doesnt match?
         System.out.println("IN login");
-        String message = event.getMessage().getMessage();
-        if(message.equals("Login Succeed")) {
+        Message message = event.getMessage();
+        String message_text = message.getMessage();
+        User user = message.getUser();
+        if(message_text.equals("Login Succeed")) {
             System.out.println("Log in succeeded");
             Platform.runLater(() -> {
                 try {
                     EventBus.getDefault().unregister(this);
+                    SimpleChatClient.setUser(user);
                     SimpleChatClient.setRoot("mainmenu");
                 } catch (IOException e) {
                     e.printStackTrace();

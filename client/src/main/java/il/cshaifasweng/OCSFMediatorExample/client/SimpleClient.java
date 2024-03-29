@@ -5,11 +5,14 @@ import org.greenrobot.eventbus.EventBus;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 
-public class 	SimpleClient extends AbstractClient {
+public class SimpleClient extends AbstractClient {
 
 	private static String serverHost = "localhost";
 	private static int serverPort = 3000;
 	static SimpleClient client = null;
+
+	private String userName = null;
+
 
 	private SimpleClient(String host, int port) {
 		super(host, port);

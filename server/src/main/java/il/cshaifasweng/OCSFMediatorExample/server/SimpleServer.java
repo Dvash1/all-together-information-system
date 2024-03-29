@@ -279,6 +279,7 @@ public class SimpleServer extends AbstractServer {
 		return users;
 	}
 	private static User getUserByTeudatZehut(String teudatZehut) throws Exception {
+		// TODO: Add a normal query instead of this hardcoded going over the entire list.
 		List<User> users = getAllUsers();
 		for (User user : users) {
 			if (teudatZehut.equals(user.getTeudatZehut())) {
@@ -306,10 +307,11 @@ public class SimpleServer extends AbstractServer {
 				String teudatZehut = loginDetails[0];
 				String password = loginDetails[1];
 				User user = getUserByTeudatZehut(teudatZehut);
-				if (user != null && !idToClient.containsKey(teudatZehut)) {
+				if (user != null && !idToClient.containsKey(teudatZehut)) { // TODO: @ron wtf is idToClient?
 					if(password.equals(user.getPassword())) {
 //						idToClient.put()
 						message.setMessage("Login Succeed");
+						message.setUser(user);
 					}
 					else {
 						message.setMessage("Login Failed: Wrong Password");

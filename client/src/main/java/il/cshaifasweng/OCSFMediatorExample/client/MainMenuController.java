@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
+import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,41 +24,66 @@ import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFX
 
 public class MainMenuController {
     @FXML
-    private Button button;
+    private Button communityButton;
 
     @FXML
     private Label hi_label;
 
     @FXML
-    private Button logout;
+    private Button histogramButton;
 
     @FXML
-    private AnchorPane mainmenu_anchor_all;
+    private Button logoutButton;
+
+    @FXML
+    private AnchorPane mainmenuAnchor;
+
     @FXML
     private AnchorPane mainmenu_anchor_manager;
 
     @FXML
-    private Button tasks_list;
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
+    private Button managerButton;
+
+    @FXML
+    private Button tasksListButton;
+
+    @FXML
+    void switchToCommunityInfo(ActionEvent event) {
+
+    }
+
+    @FXML
+    void switchToHistograms(ActionEvent event) {
+
+    }
+
+    @FXML
+    void switchToTasks(ActionEvent event) {
+
+    }
 
     @FXML
     void showUsername(String username){
         hi_label.setText("Hello " + username);
     }
+
     @FXML
     void manager_options_pressed(ActionEvent event) {
-//        if(USER IS MANAGER){
-//            mainmenu_anchor_all.setVisible(false);
-//            mainmenu_anchor_manager.setVisible(true);
-//        }
-
+        User user = SimpleChatClient.getUser();
+        if (user != null && user.isManager()) {
+            if (mainmenu_anchor_manager.isVisible()) {
+                mainmenu_anchor_manager.setVisible(false);
+            }
+            else {
+                mainmenu_anchor_manager.setVisible(true);
+            }
+        }
     }
     @FXML
     void logout(ActionEvent event) throws IOException {
         try {
-            EventBus.getDefault().unregister(this);
+            EventBus.getDefault().unregister(this); // TODO: check why you get a warning after pressing this?
+            SimpleChatClient.setUser(null);
             SimpleChatClient.setRoot("login");
         }
         catch (IOException e) {
@@ -67,14 +93,18 @@ public class MainMenuController {
     }
 
     public void initialize() {
-//        try {
-//            println("hello");
-////            EventBus.getDefault().register(this);
-////            Message message = new Message(0, "add client");
-////            SimpleClient.getClient().sendToServer(message);
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        User user = SimpleChatClient.getUser(); // Write into the label the username.
+        mainmenu_anchor_manager.setVisible(false);
+        managerButton.setVisible(false);
+        if (user != null) {
+            showUsername(user.getUserName());
+            if (user.isManager()) {
+                managerButton.setVisible(true);
+            }
+        }
+        else {
+            System.out.println("for some reason, user is null and this is not okay, okay?");
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +24,9 @@ public class SimpleChatClient extends Application {
     private static Scene scene;
     private SimpleClient client;
 
+    private static User user = null; // This is the client's user. TODO: need to make this a PRIVATE and not shared across member.
+
+
     @Override
     public void start(Stage stage) throws IOException {
     	EventBus.getDefault().register(this);
@@ -37,6 +41,18 @@ public class SimpleChatClient extends Application {
     public void mashuEvent(NewTaskEvent event) {
 
     }
+
+
+    public static void setUser(User user) {
+        SimpleChatClient.user = user;
+    }
+
+    public static User getUser() {
+        return user;
+    }
+
+
+
 
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
