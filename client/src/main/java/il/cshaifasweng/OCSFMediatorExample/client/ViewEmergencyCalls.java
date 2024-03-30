@@ -3,7 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 // *******IMPORTANT*******
 // because emergency class is not implemented yet, this code is missing an implementation of "live updating" (update the histogram whenever someone presses the emergency button)
 // a simple solution could be to add the emergency object to the observable list, if the requirements are met.
-//
+// TODO: after an emergency button has been processed, send a msg to relevant clients to update them.
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.Task;
