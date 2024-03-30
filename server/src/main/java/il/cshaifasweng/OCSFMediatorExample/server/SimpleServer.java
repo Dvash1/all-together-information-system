@@ -273,6 +273,41 @@ public class SimpleServer extends AbstractServer {
 		return users;
 	}
 
+	private static List<Task> getWaitingTasks(User user) throws Exception
+	{
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Task> query = cb.createQuery(Task.class);
+		Root<Task> root = query.from(Task.class);
+		Join<Task, User> creatorJoin = root.join("taskCreator");
+		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
+		query.select(root);
+		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
+				cb.equal(root.get("taskState"),"Awaiting approval"));
+
+
+		List<Task> tasks = session.createQuery(query).getResultList();
+		return tasks;
+	}
+
+	// used in ViewTasksController, in order to display all open tasks
+	private static List<Task> getOpenTasks(User user) throws Exception
+	{
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Task> query = cb.createQuery(Task.class);
+		Root<Task> root = query.from(Task.class);
+		Join<Task, User> creatorJoin = root.join("taskCreator");
+		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
+		query.select(root);
+		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
+				cb.or(cb.equal(root.get("taskState"), "Request"),
+						cb.equal(root.get("taskState"), "In Progress")));
+
+		List<Task> tasks = session.createQuery(query).getResultList();
+		return tasks;
+	}
+
 	// Idea: we can implement a hashmap for efficient way to search users, but I'm not sure how it works
 	private static List<User> getAllUsers() throws Exception {
 		List<User> users = session.createQuery("FROM User ORDER BY userName", User.class).getResultList();
@@ -375,39 +410,161 @@ public class SimpleServer extends AbstractServer {
 				System.out.println("message sent: " + message.getMessage());
 				client.sendToClient(message);
 			}
-//			if(request.equals("Test")) {
-////				User u1 = new User("Joe Biden","USA","999999999","iforgotmypasswword",true);
-////				Task t1 = new Task("Mow the lawn in the white house",LocalDateTime.now(),"Bakasha",u1);
-////				session.save(u1);
-////				session.save(t1);
-//				Task task = session.get(Task.class,1);
-//				task.setRequiredTask("Bombing Ron Spector!!!");
-//				session.update(task);
-//				session.flush();
-//
-//				session.getTransaction().commit();
-//
-//				message.setTask(task);
-//				message.setMessage("Test");
+
+			//create task, for now send the message to all the clients
+			// however its more logical to send the message only to the community manager that needs to approve
+			else if(request.equals("create task"))
+			{
+				Task testTask = (Task) message.getObject();
+				session.save(testTask);
+				session.flush();
+				session.getTransaction().commit();
 //				client.sendToClient(message);
-//			}
-//			else if (request.equals("Get Data")) {
-//				Task task = session.get(Task.class,message.getId());
-//				message.setTask(task);
-//
+				sendToAllClients(message);
+
+			}
+
+
+
+// used for CommunityInformationController (and ViewEmergencyCalls for now)
+			else if(request.equals("get tasks")) {
+				User u1 = message.getUser();
+				List<Task> tasks = getCommunityTasks(u1,null);
+				// fetches all Tasks in database from the same community
+
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+// used for ViewTasksController
+			else if(request.equals("get open tasks")) {
+				User u1 = message.getUser();
+				List<Task> tasks = getOpenTasks(u1);
+				// fetches all OPEN (AND APPROVED) TASKS in database from the same community
+
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+// retrieve community users for CommunityInformationController
+
+			else if(request.equals("get users")) {
+				User u1 = message.getUser();
+				List<User> Users = getCommunityUsers(u1);
+				message.setObject(Users);
+				client.sendToClient(message);
+			}
+
+			//called when ApproveRequestController is loaded
+			else if (request.equals("get awaiting approval requests"))
+			{
+				User currentUser = message.getUser();
+				List<Task> tasks = getWaitingTasks(currentUser);
+				message.setObject(tasks);
+				client.sendToClient(message);
+
+			}
+
+
+			// ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
+// note : this worked fine before i made changes to getCommunityTasks
+			else if(request.equals("emergency everything"))
+			{
+				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+				List<Task> tasks = getAllTasks(null);
+				message.setMessage("emergency histogram");
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+			else if(request.equals("emergency my community all dates"))
+			{
+				User u1 = (User) message.getUser();
+				List<Task> tasks = getCommunityTasks(u1,null);
+				message.setMessage("emergency histogram");
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+			else if(request.equals("emergency all community specific dates"))
+			{
+				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+				List<Task> tasks = getAllTasks(dates);
+				message.setMessage("emergency histogram");
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+			else if(request.equals("emergency my community specific dates"))
+			{
+				User u1 = (User) message.getUser();
+				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+				List<Task> tasks = getCommunityTasks(u1,dates);
+				message.setMessage("emergency histogram");
+				message.setObject(tasks);
+				client.sendToClient(message);
+			}
+
+// ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
+
+
+
+			else if (request.equals("Get Data")) {
+				Task task = session.get(Task.class,message.getTaskID());
+				message.setObject(task);
+				client.sendToClient(message);
+
+			}
+			// withdrawing is being handled separately because you could change a state to be "Request" in two ways.
+			else if(request.equals("Withdraw from task"))
+			{
+				Task task = (Task) message.getObject();
+				session.update(task);
+				session.flush();
+				session.getTransaction().commit();
+				sendToAllClients(message);
+			}
+
+
+			else if (request.equals("Update task")) {
+
+				Task task = (Task) message.getObject();
+				session.update(task);
+				session.flush();
+				session.getTransaction().commit();
+				if(task.getTaskState().equals("Request"))
+				{
+					message.setMessage("Publish approved task");
+				}
+
+				else if (task.getTaskState().equals("In Progress"))
+				{
+					message.setMessage("Volunteer to task");
+				}
+				else if (task.getTaskState().equals("Denied"))
+				{
+					message.setMessage("Request denied");
+
+					// ***MISSING IMPLEMENTATION***
+					// need to send message to community member that requested the help
+				}
+				else
+				{
+					message.setMessage("Complete task");
+				}
+				sendToAllClients(message);
 //				client.sendToClient(message);
+
+			}
+
+//			else if (request.equals("Send denial message"))
+//			{
+//				User user = message.getUser(); // User we need to send a message to
+//				String denialText = (String) message.getObject(); // message from community we need to send to user
+//
+//				// implementation needed :
+//				// find ConnectionToClient object of the user (if connected)
+//				// send that client a message
 //
 //			}
-//			else if (request.equals("Update State")) {
-//				Task task = session.get(Task.class,message.getId());
-//				task.setTaskState("Betipul");
-//				message.setTask(task);
-//
-//				session.update(task);
-//				session.flush();
-//
-//				client.sendToClient(message);
-//			}
+
+
+
 			else if (request.equals("add client")){
 				SubscribedClient connection = new SubscribedClient(client);
 				SubscribersList.add(connection);

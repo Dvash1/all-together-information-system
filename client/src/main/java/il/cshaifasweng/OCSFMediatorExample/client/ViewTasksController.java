@@ -21,7 +21,7 @@ import java.util.List;
 // Log in needs to be properly to handle them, because some bugs occur only when the same user is hovering the same task, and our does not allow a user to be logged on more than one client.
 public class ViewTasksController {
 
-    public static User currentUser;
+    public static User currentUser = SimpleChatClient.getUser();
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     @FXML
@@ -480,23 +480,23 @@ void switchToViewEmergency(ActionEvent event) {
 
 
 
-        try {
-            Message message = new Message("get user");
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // uncomment when Log in is implemented
-        //
 //        try {
-//            Message message = new Message("get open tasks",currentUser);
+//            Message message = new Message("get user");
 //            SimpleClient.getClient().sendToServer(message);
 //        }
 //        catch (IOException e) {
 //            e.printStackTrace();
 //        }
+
+        // uncomment when Log in is implemented
+        //
+        try {
+            Message message = new Message("get open tasks",currentUser);
+            SimpleClient.getClient().sendToServer(message);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
