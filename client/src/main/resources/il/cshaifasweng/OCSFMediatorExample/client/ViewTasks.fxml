@@ -19,7 +19,7 @@
             <TableColumn fx:id="taskVolunteerTC" prefWidth="124.0" text="Volunteer" />
         </columns>
       </TableView>
-      <Button fx:id="requestBtn" layoutX="9.0" layoutY="223.0" mnemonicParsing="false" onAction="#openNewTask" prefHeight="25.0" prefWidth="110.0" text="Request help" />
+      <Button fx:id="requestBtn" layoutX="931.0" layoutY="288.0" mnemonicParsing="false" onAction="#openNewTask" prefHeight="25.0" prefWidth="110.0" text="Request help" />
       <Button fx:id="volunteerBtn" disable="true" layoutX="917.0" layoutY="159.0" mnemonicParsing="false" onAction="#volunteerToTask" prefHeight="25.0" prefWidth="138.0" text="Volunteer for task" />
       <Text layoutX="287.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Open tasks" textAlignment="CENTER" wrappingWidth="380.13671875">
          <font>
@@ -27,10 +27,10 @@
          </font>
       </Text>
       <Button fx:id="completeBtn" disable="true" layoutX="463.0" layoutY="655.0" mnemonicParsing="false" onAction="#completeTask" prefHeight="25.0" prefWidth="143.0" text="Report task completion" />
-      <Button fx:id="tempBtn" layoutX="629.0" layoutY="41.0" mnemonicParsing="false" onAction="#switchToViewEmergency" text="Emergency calls histogram" />
-      <Button fx:id="testingBtn" layoutX="32.0" layoutY="315.0" mnemonicParsing="false" onAction="#testFunc" text="Click me!" />
-      <Button fx:id="infoBtn" layoutX="14.0" layoutY="41.0" mnemonicParsing="false" onAction="#switchToCommunityInformation" text="Community information" />
-      <Button fx:id="approveBtn" layoutX="9.0" layoutY="123.0" mnemonicParsing="false" onAction="#switchToApproveRequest" text="Approve requests" />
+      <Button fx:id="tempBtn" layoutX="3.0" layoutY="288.0" mnemonicParsing="false" onAction="#switchToViewEmergency" text="Emergency calls histogram" />
+      <Button fx:id="testingBtn" layoutX="807.0" layoutY="41.0" mnemonicParsing="false" onAction="#testFunc" text="Click me!" />
+      <Button fx:id="infoBtn" layoutX="13.0" layoutY="159.0" mnemonicParsing="false" onAction="#switchToCommunityInformation" text="Community information" />
+      <Button fx:id="approveBtn" layoutX="31.0" layoutY="223.0" mnemonicParsing="false" onAction="#switchToApproveRequest" text="Approve requests" />
       <TextArea fx:id="messageToManagerTA" layoutX="204.0" layoutY="557.0" prefHeight="91.0" prefWidth="661.0" />
       <Text layoutX="187.0" layoutY="543.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add a message :">
          <font>
@@ -38,5 +38,6 @@
          </font>
       </Text>
       <Button fx:id="withdrawBtn" disable="true" layoutX="917.0" layoutY="223.0" mnemonicParsing="false" onAction="#withdrawVolunteering" text="Withdraw volunteering" />
+      <Button fx:id="backBtn" layoutX="59.0" layoutY="668.0" mnemonicParsing="false" onAction="#showPreviousScene" text="Back" />
    </children>
 </AnchorPane>

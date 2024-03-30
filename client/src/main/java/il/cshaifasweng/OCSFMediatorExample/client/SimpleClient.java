@@ -6,26 +6,29 @@ import org.greenrobot.eventbus.EventBus;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 
 public class SimpleClient extends AbstractClient {
-	
-	static SimpleClient client = null;
 
 	private static String serverHost = "localhost";
 	private static int serverPort = 3000;
+	static SimpleClient client = null;
+
+	private String userName = null;
 
 
+	private SimpleClient(String host, int port) {
+		super(host, port);
+	}
 
 	public static void setHostAndPort(String host, int port)
 	{
 		serverHost = host;
 		serverPort = port;
 	}
-	private SimpleClient(String host, int port) {
-		super(host, port);
-	}
 
 	@Override
 	protected void handleMessageFromServer(Object msg) {
+		// TODO: make this a switch instead? :))
 		Message message = (Message) msg;
+		String request = message.getMessage();
 		if (message.getMessage().equals("alert everybody"))
 		{
 			EventBus.getDefault().post(new getDataEvent(message));
@@ -94,12 +97,23 @@ public class SimpleClient extends AbstractClient {
 			EventBus.getDefault().post(new NoVolunteerEvent(message));
 		}
 
+		else if(request.startsWith("Login")) {
+			EventBus.getDefault().post(new LoginEvent(message));
+		}
+		else if(request.startsWith("Forgot Password")) {
+			EventBus.getDefault().post(new ForgotPasswordEvent(message));
+		}
+		else if(request.startsWith("Password")) {
+			EventBus.getDefault().post(new PasswordChangeEvent(message));
+		}
+		else if(request.startsWith("Emergency")) {
+			EventBus.getDefault().post(new EmergencyEvent(message));
+		}
 	}
-
-
+	
 	public static SimpleClient getClient() {
 		if (client == null) {
-			client = new SimpleClient(serverHost, serverPort);
+			client = new SimpleClient("localhost", 3000);
 		}
 		return client;
 	}

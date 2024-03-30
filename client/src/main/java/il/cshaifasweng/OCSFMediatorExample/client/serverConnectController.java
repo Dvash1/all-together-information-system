@@ -44,7 +44,7 @@ public class serverConnectController
                 alert.setContentText("Connection to server established.\nWelcome to ATIS.");
                 alert.showAndWait();
                 try {
-                    SimpleChatClient.setRoot("ViewTasks");
+                    SimpleChatClient.setRoot("login");
                 } catch (IOException e) {
 
                     e.printStackTrace();
@@ -66,4 +66,3 @@ public class serverConnectController
     }
 
 }
-
