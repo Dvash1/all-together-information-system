@@ -1,6 +1,5 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import static il.cshaifasweng.OCSFMediatorExample.client.ViewTasksController.currentUser;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 
 public class CommunityInformationController {
 
-
+    private User currentUser = SimpleChatClient.getUser();
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     @FXML
     private ListView<User> memberList;

@@ -30,7 +30,7 @@ import javax.persistence.criteria.*;
 
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
-	private static HashMap<String,SubscribedClient> idToClient = new HashMap<>();
+	private static HashMap<String,ConnectionToClient> idToClient = new HashMap<>();
 	private static Session session;
 
 	private static SessionFactory getSessionFactory() throws
@@ -342,11 +342,31 @@ public class SimpleServer extends AbstractServer {
 				String teudatZehut = loginDetails[0];
 				String password = loginDetails[1];
 				User user = getUserByTeudatZehut(teudatZehut);
-				if (user != null && !idToClient.containsKey(teudatZehut)) { // TODO: @ron wtf is idToClient?
+				boolean subscriberFound = false;
+				if (user != null && !idToClient.containsKey(teudatZehut)) {
 					if(password.equals(user.getPassword())) {
-//						idToClient.put()
-						message.setMessage("Login Succeed");
-						message.setUser(user);
+
+						// Bind client to id.
+						for(SubscribedClient subscriber: SubscribersList) {
+							if (subscriber.getClient() == client) {
+								// Take the client from the signature and compare
+								idToClient.put(teudatZehut, client); // TODO: check if works.
+								subscriberFound = true;
+							}
+						}
+						if (subscriberFound) { // We log in only after making sure the client is subscribed
+							message.setMessage("Login Succeed");
+							message.setUser(user);
+						}
+						else { // Client wasn't subscribed. Shouldn't happen, debug this if happened.
+							try {
+								message.setMessage("Login Failed: Something went wrong. You aren't connected?");
+								throw new RuntimeException("You aren't connected");
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
 					}
 					else {
 						message.setMessage("Login Failed: Wrong Password");
@@ -600,4 +620,39 @@ public class SimpleServer extends AbstractServer {
 		}
 	}
 
+	@Override
+	protected synchronized void clientDisconnected(ConnectionToClient client)
+	{
+		System.out.println("a client has disconnected");
+//		super.clientDisconnected(client);
+		synchronized (SubscribersList) {
+			// Find the SubscribedClient that corresponds to the ConnectionToClient to remove
+			SubscribedClient clientToRemove = null;
+			for (SubscribedClient subscribedClient : SubscribersList) {
+				if (subscribedClient.getClient() == client) {
+					clientToRemove = subscribedClient;
+					break;
+				}
+			}
+
+// Remove the SubscribedClient from the list
+			if (clientToRemove != null) {
+				SubscribersList.remove(clientToRemove);
+				//remove client from hashmap as well
+			}
+		}
+	}
+
 }
+
+
+// to implement :
+//1.
+// add two hashmaps, mapping ConnectionToClient to Integer (User ID) and vice versa
+// when user logs in : add mapping
+// when user logs out : remove mapping
+// if manager wants to send a message to a user in his community, or when a new task is posted, first search for related ConnectionToClient object
+
+//2.add new entry to database, containing awaiting messages to user/manager. (fetch list when user logs in)
+// OneToMany
+// query using CriteriaQuery, delete using CriteriaDelete
