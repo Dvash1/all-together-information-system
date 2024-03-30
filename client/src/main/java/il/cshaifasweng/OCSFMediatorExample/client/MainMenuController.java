@@ -49,17 +49,41 @@ public class MainMenuController {
 
     @FXML
     void switchToCommunityInfo(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("CommunityInformation");
+            } catch (IOException e) {
 
+                e.printStackTrace();
+            }
+        });
     }
 
     @FXML
     void switchToHistograms(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("ViewEmergencyCalls");
+            } catch (IOException e) {
 
+                e.printStackTrace();
+            }
+        });
     }
 
     @FXML
     void switchToTasks(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("ViewTasks");
+            } catch (IOException e) {
 
+                e.printStackTrace();
+            }
+        });
     }
 
     @FXML

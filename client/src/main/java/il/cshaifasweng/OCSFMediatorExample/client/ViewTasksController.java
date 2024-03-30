@@ -106,6 +106,22 @@ public class ViewTasksController {
     @FXML
     private Button infoBtn;
 
+    @FXML
+    private Button backBtn;
+
+
+    @FXML
+    void showPreviousScene(ActionEvent event)
+    {
+        try {
+            EventBus.getDefault().unregister(this);
+            SimpleChatClient.setRoot("mainmenu");
+        }
+        catch (IOException e) {
+
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     void switchToCommunityInformation(ActionEvent event) {
