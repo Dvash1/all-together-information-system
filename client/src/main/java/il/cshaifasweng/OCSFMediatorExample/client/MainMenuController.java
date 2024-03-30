@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.greenrobot.eventbus.EventBus;
 import org.w3c.dom.Text;
@@ -22,6 +23,8 @@ import java.io.IOException;
 
 import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
 
+
+// TODO: we dont actually need to unregister from event bus when switching because there is no even here. But if there was, ADD it.
 public class MainMenuController {
     @FXML
     private Button communityButton;
@@ -48,6 +51,8 @@ public class MainMenuController {
     private Button tasksListButton;
 
     @FXML
+    private Button emergencyButton;
+    @FXML
     void switchToCommunityInfo(ActionEvent event) {
         Platform.runLater(() -> {
             try {
@@ -58,6 +63,17 @@ public class MainMenuController {
                 e.printStackTrace();
             }
         });
+    }
+
+    @FXML
+    void emergency_button_press(ActionEvent event) throws IOException { //** TODO: Emergency button needs to work differently here, I just copied from log in.
+        Parent root = FXMLLoader.load(getClass().getResource("emergency.fxml"));
+        Scene scene = new Scene(root);
+        Stage primaryStage = new Stage();
+        primaryStage.setTitle("Emergency Window");
+        primaryStage.setScene(scene);
+        primaryStage.initModality(Modality.APPLICATION_MODAL);
+        primaryStage.show();
     }
 
     @FXML
@@ -106,7 +122,8 @@ public class MainMenuController {
     @FXML
     void logout(ActionEvent event) throws IOException {
         try {
-            EventBus.getDefault().unregister(this); // TODO: check why you get a warning after pressing this?
+
+            EventBus.getDefault().unregister(this);
             SimpleChatClient.setUser(null);
             SimpleChatClient.setRoot("login");
         }
@@ -117,6 +134,7 @@ public class MainMenuController {
     }
 
     public void initialize() {
+//        EventBus.getDefault().register(this); **** IF an event bus event is this file, this is needed.
         User user = SimpleChatClient.getUser(); // Write into the label the username.
         mainmenu_anchor_manager.setVisible(false);
         managerButton.setVisible(false);

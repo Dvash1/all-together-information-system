@@ -14,7 +14,6 @@
          <children>
             <AnchorPane fx:id="login_form" prefHeight="434.0" prefWidth="445.0">
                <children>
-                  <Button fx:id="secondaryButton" layoutX="6.0" layoutY="2.0" onAction="#switchToPrimary" text="Switch to Tasks" />
                   <Pane layoutX="123.0" layoutY="68.0" prefHeight="230.0" prefWidth="201.0" style="-fx-background-color: lightblue;">
                      <children>
                         <PasswordField fx:id="password_field" layoutX="26.0" layoutY="77.0" promptText="Password" />
@@ -50,7 +49,7 @@
                   </Pane>
                </children>
             </AnchorPane>
-            <Button layoutX="154.0" layoutY="319.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="103.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
+            <Button fx:id="emergencyButton" layoutX="154.0" layoutY="319.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="103.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
          </children>
       </AnchorPane>
    </children>

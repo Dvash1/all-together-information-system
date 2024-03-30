@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
 
+// TODO: we should probably make setroot also change the scene's size. serverConnect is like, my entire screen lmao
 public class LoginController {
     @FXML
     private TextField answer_field_forgot;

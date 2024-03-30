@@ -455,7 +455,7 @@ void switchToViewEmergency(ActionEvent event) {
 
         });
 
-
+        currentUser = SimpleChatClient.getUser();
 //        // enable/disable volunteering&task completion buttons
 //        tasksTableView.setOnMouseClicked(e -> {
 //            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
@@ -480,23 +480,23 @@ void switchToViewEmergency(ActionEvent event) {
 
 
 
-        try {
-            Message message = new Message("get user");
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // uncomment when Log in is implemented
-        //
 //        try {
-//            Message message = new Message("get open tasks",currentUser);
+//            Message message = new Message("get user");
 //            SimpleClient.getClient().sendToServer(message);
 //        }
 //        catch (IOException e) {
 //            e.printStackTrace();
 //        }
+
+        // uncomment when Log in is implemented
+        //
+        try {
+            Message message = new Message("get open tasks",currentUser);
+            SimpleClient.getClient().sendToServer(message);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
