@@ -121,8 +121,10 @@ public class MainMenuController {
     void logout(ActionEvent event) throws IOException {
         try {
             // TODO: make a log out event and delete teudatzehut of current user from the hashmap in simpleserver.
-            Message newMessage = new Message("Log Out", SimpleChatClient.getUser());
+            Message newMessage = new Message("Log Out");
+            newMessage.setObject(SimpleChatClient.getUser());
             SimpleClient.getClient().sendToServer(newMessage);
+
 
 
         }
