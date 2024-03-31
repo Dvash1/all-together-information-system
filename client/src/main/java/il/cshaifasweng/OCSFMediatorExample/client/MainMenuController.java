@@ -1,6 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
+import il.cshaifasweng.OCSFMediatorExample.entities.User;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.greenrobot.eventbus.EventBus;
 import org.w3c.dom.Text;
@@ -20,56 +23,130 @@ import java.io.IOException;
 
 import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
 
+
+// TODO: we dont actually need to unregister from event bus when switching because there is no even here. But if there was, ADD it.
 public class MainMenuController {
     @FXML
-    private Button button;
+    private Button communityButton;
 
     @FXML
     private Label hi_label;
 
     @FXML
-    private Button logout;
+    private Button histogramButton;
 
     @FXML
-    private AnchorPane mainmenu_anchor_all;
+    private Button logoutButton;
+
+    @FXML
+    private AnchorPane mainmenuAnchor;
+
     @FXML
     private AnchorPane mainmenu_anchor_manager;
 
     @FXML
-    private Button tasks_list;
-    private Stage stage;
-    private Scene scene;
-    private Parent root;
+    private Button managerButton;
+
+    @FXML
+    private Button tasksListButton;
+
+    @FXML
+    private Button emergencyButton;
+    @FXML
+    void switchToCommunityInfo(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("CommunityInformation");
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @FXML
+    void emergency_button_press(ActionEvent event) throws IOException { //** TODO: Emergency button needs to work differently here, I just copied from log in.
+        Parent root = FXMLLoader.load(getClass().getResource("emergency.fxml"));
+        Scene scene = new Scene(root);
+        Stage primaryStage = new Stage();
+        primaryStage.setTitle("Emergency Window");
+        primaryStage.setScene(scene);
+        primaryStage.initModality(Modality.APPLICATION_MODAL);
+        primaryStage.show();
+    }
+
+    @FXML
+    void switchToHistograms(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("ViewEmergencyCalls");
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @FXML
+    void switchToTasks(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("ViewTasks");
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+    }
 
     @FXML
     void showUsername(String username){
         hi_label.setText("Hello " + username);
     }
+
     @FXML
     void manager_options_pressed(ActionEvent event) {
-//        if(USER IS MANAGER){
-//            mainmenu_anchor_all.setVisible(false);
-//            mainmenu_anchor_manager.setVisible(true);
-//        }
-
+        User user = SimpleChatClient.getUser();
+        if (user != null && user.isManager()) {
+            if (mainmenu_anchor_manager.isVisible()) {
+                mainmenu_anchor_manager.setVisible(false);
+            }
+            else {
+                mainmenu_anchor_manager.setVisible(true);
+            }
+        }
     }
     @FXML
     void logout(ActionEvent event) throws IOException {
-        SceneManager.switchScene("login.fxml",event);
-//        scene = new Scene(loadFXML("login"), 434, 445);
-//        stage = (Stage) mainmenuAnchor.getScene().getWindow();
-//        stage.setScene(scene);
-//        stage.setScene(scene);
+        try {
+            // TODO: make a log out event and delete teudatzehut of current user from the hashmap in simpleserver.
+            EventBus.getDefault().unregister(this);
+            SimpleChatClient.setUser(null);
+            SimpleChatClient.setRoot("login");
+        }
+        catch (IOException e) {
+
+            e.printStackTrace();
+        }
     }
 
     public void initialize() {
-        try {
-            EventBus.getDefault().register(this);
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
+//        EventBus.getDefault().register(this); // **** IF an event bus event is this file, this is needed.
+        User user = SimpleChatClient.getUser(); // Write into the label the username.
+        mainmenu_anchor_manager.setVisible(false);
+        managerButton.setVisible(false);
+        if (user != null) {
+            showUsername(user.getUserName());
+            if (user.isManager()) {
+                managerButton.setVisible(true);
+            }
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        else {
+            System.out.println("for some reason, user is null and this is not okay, okay?");
         }
+
     }
 }

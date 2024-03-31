@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import java.io.IOException;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
+import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -21,6 +22,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
 
+// TODO: we should probably make setroot also change the scene's size. serverConnect is like, my entire screen lmao
 public class LoginController {
     @FXML
     private TextField answer_field_forgot;
@@ -30,8 +32,10 @@ public class LoginController {
 
     @FXML
     private Button backButton_new_pass;
+
     @FXML
     private AnchorPane forgot_form;
+
     @FXML
     private AnchorPane new_password_form;
 
@@ -115,23 +119,29 @@ public class LoginController {
     }
     @Subscribe
     public void login(LoginEvent event) throws IOException {
-        //TODO check why there's an exception when signing out and in again.
+        // **TODO: please check why sometimes when you try to log in with teudatzehut and password that are in the db it doesnt match?
         System.out.println("IN login");
-        String message = event.getMessage().getMessage();
-        if(message.equals("Login Succeed")) {
+        Message message = event.getMessage();
+        String message_text = message.getMessage();
+        User user = message.getUser();
+        if(message_text.equals("Login Succeed")) {
+            System.out.println("Log in succeeded");
             Platform.runLater(() -> {
                 try {
-//                    EventBus.getDefault().unregister(this);
+                    EventBus.getDefault().unregister(this);
+                    SimpleChatClient.setUser(user);
                     SimpleChatClient.setRoot("mainmenu");
-//                    scene = new Scene(loadFXML("mainmenu"), 434, 445);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
 //                stage = (Stage) login_form.getScene().getWindow();
 //                stage.setScene(scene);
             });
         }
+
+
         else {
+            System.out.println("Log in failed");
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
                 alert.setTitle("Login Failed");
@@ -241,13 +251,6 @@ public class LoginController {
     }
     public void initialize() {
         question_bar_forgot.getItems().addAll(securityQuestions);
-        try {
-            EventBus.getDefault().register(this);
-            Message message = new Message(0, "add client");
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        EventBus.getDefault().register(this);
     }
 }

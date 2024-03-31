@@ -83,7 +83,14 @@ public class PrimaryController {
 	private int msgId;
 	@FXML
 	private void switchToLogin(ActionEvent event) throws IOException {
-		SceneManager.switchScene("login.fxml",event);
+		try {
+			EventBus.getDefault().unregister(this);
+			SimpleChatClient.setRoot("login");
+		}
+		catch (IOException e) {
+
+			e.printStackTrace();
+		}
 	}
 	@FXML
 	void updateStateTaskEvent(ActionEvent event) {
@@ -99,7 +106,7 @@ public class PrimaryController {
 
 	}
 
-	@Subscribe
+//	@Subscribe
 //	public void taskEvent(NewTaskEvent event){
 //		Message message = event.getMessage();
 //		Task task = message.getTask();
