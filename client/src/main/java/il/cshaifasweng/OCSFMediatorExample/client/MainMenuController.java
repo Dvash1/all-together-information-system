@@ -9,14 +9,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
@@ -123,9 +121,10 @@ public class MainMenuController {
     void logout(ActionEvent event) throws IOException {
         try {
             // TODO: make a log out event and delete teudatzehut of current user from the hashmap in simpleserver.
-            EventBus.getDefault().unregister(this);
-            SimpleChatClient.setUser(null);
-            SimpleChatClient.setRoot("login");
+            Message newMessage = new Message("Log Out", SimpleChatClient.getUser());
+            SimpleClient.getClient().sendToServer(newMessage);
+
+
         }
         catch (IOException e) {
 
@@ -133,8 +132,24 @@ public class MainMenuController {
         }
     }
 
+    @Subscribe
+    public void logOutFinish(LogOutEvent event) {
+
+        String response = event.getMessage().getMessage();
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setUser(null);
+                SimpleChatClient.setRoot("login");
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+    }
+
     public void initialize() {
-//        EventBus.getDefault().register(this); // **** IF an event bus event is this file, this is needed.
+        EventBus.getDefault().register(this); // **** IF an event bus event is this file, this is needed.
         User user = SimpleChatClient.getUser(); // Write into the label the username.
         mainmenu_anchor_manager.setVisible(false);
         managerButton.setVisible(false);
