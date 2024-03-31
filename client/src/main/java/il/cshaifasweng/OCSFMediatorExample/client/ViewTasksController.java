@@ -450,38 +450,39 @@ void switchToViewEmergency(ActionEvent event) {
 
         });
 
-//        currentUser = SimpleChatClient.getUser();
-//        // enable/disable volunteering&task completion buttons
-//        tasksTableView.setOnMouseClicked(e -> {
-//            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
-//            // check if user can volunteer to the task
-//            // can also override the equals function in User instead of comparing ID's
-//            if (selectedTask.getTaskState().equals("Request") && selectedTask.getTaskCreator().getId() != currentUser.getId()) {
-//
-//                volunteerBtn.setDisable(false);
-//            } else {
-//                volunteerBtn.setDisable(true);
-//            }
-        //getTaskVolunteer() might return null so we must check for that as well
-    //        if (selectedTask.getTaskVolunteer() != null && selectedTask.getTaskState().equals("In Progress") && selectedTask.getTaskVolunteer().getId() != currentUser.getId())
-    //        {
-    //            completeBtn.setDisable(false);
-    //        }
-    //        else {
-    //            completeBtn.setDisable(true);
-    //        }
-//        });
+        currentUser = SimpleChatClient.getUser();
+        // enable/disable volunteering&task completion buttons
+        tasksTableView.setOnMouseClicked(e -> {
+            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
+            // check if user can volunteer to the task
+            // can also override the equals function in Task instead of comparing ID's
+            if(selectedTask != null)
+            {
+                if (selectedTask.getTaskState().equals("Request") && selectedTask.getTaskCreator().getId() != currentUser.getId()) {
 
+                    volunteerBtn.setDisable(false);
+                } else {
+                    volunteerBtn.setDisable(true);
+                }
+                //getTaskVolunteer() might return null, so we must check for that as well
+                if (selectedTask.getTaskVolunteer() != null && selectedTask.getTaskState().equals("In Progress") && selectedTask.getTaskVolunteer().getId() == currentUser.getId()) {
+                    completeBtn.setDisable(false);
+                    withdrawBtn.setDisable(false);
 
-
-
-//        try {
-//            Message message = new Message("get user");
-//            SimpleClient.getClient().sendToServer(message);
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//        }
+                } else {
+                    completeBtn.setDisable(true);
+                    withdrawBtn.setDisable(true);
+                }
+            }
+        });
+        // ******* remove the function when Log in will be implemented **********
+        try {
+            Message newMessage = new Message("get open tasks",currentUser);
+            SimpleClient.getClient().sendToServer(newMessage);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // uncomment when Log in is implemented
         //

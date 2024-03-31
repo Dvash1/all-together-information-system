@@ -73,7 +73,10 @@ public class SimpleClient extends AbstractClient {
 		{
 			EventBus.getDefault().post(new AwaitingApprovalTasksEvent(message));
 		}
-
+		else if (message.getMessage().equals("log out"))
+		{
+			EventBus.getDefault().post(new LogOutEvent(message));
+		}
 		else if (message.getMessage().equals("get users"))
 		{
 			EventBus.getDefault().post(new getCommunityUsersEvent(message));

@@ -31,6 +31,7 @@ import javax.persistence.criteria.*;
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
 	private static HashMap<String,ConnectionToClient> idToClient = new HashMap<>();
+	private static HashMap<ConnectionToClient,String> clientToId = new HashMap<>();
 	private static Session session;
 
 	private static SessionFactory getSessionFactory() throws
@@ -350,7 +351,8 @@ public class SimpleServer extends AbstractServer {
 						for(SubscribedClient subscriber: SubscribersList) {
 							if (subscriber.getClient() == client) {
 								// Take the client from the signature and compare
-								idToClient.put(teudatZehut, client); // TODO: check if works.
+								idToClient.put(teudatZehut, client); // TODO: check if both work.
+								clientToId.put(client,teudatZehut);
 								subscriberFound = true;
 							}
 						}
@@ -382,6 +384,30 @@ public class SimpleServer extends AbstractServer {
 				}
 				System.out.println("message sent: "+message.getMessage());
 				client.sendToClient(message);
+			}
+			else if(request.equals("Log Out")){
+				System.out.println("In Log Out");
+				User user = (User) message.getObject();
+
+				System.out.print("The ID logging out is:");
+				System.out.println(user.getId());
+
+
+				if (user != null) {
+					String teudatZehut = user.getTeudatZehut();
+					// remove from both hash maps
+
+					clientToId.remove(idToClient.get(teudatZehut)); // Remove from clientToId too.
+					idToClient.remove(teudatZehut); // Remove from idToClient the client.
+
+					System.out.println("Successfully logged out");
+					message.setMessage("log out");
+					client.sendToClient(message);
+					
+				}
+				// TODO: also add for if user is null
+
+
 			}
 			else if(request.equals("Forgot Password Request")){
 				String[] forgotDetails = (String[])message.getObject();
@@ -639,6 +665,8 @@ public class SimpleServer extends AbstractServer {
 			if (clientToRemove != null) {
 				SubscribersList.remove(clientToRemove);
 				//remove client from hashmap as well
+				idToClient.remove(clientToId.get(clientToRemove.getClient())); // Remove from idToClient the client.
+				clientToId.remove(clientToRemove.getClient()); // Remove from clientToId too.
 			}
 		}
 	}
