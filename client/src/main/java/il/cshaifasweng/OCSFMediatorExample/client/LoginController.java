@@ -32,8 +32,10 @@ public class LoginController {
 
     @FXML
     private Button backButton_new_pass;
+
     @FXML
     private AnchorPane forgot_form;
+
     @FXML
     private AnchorPane new_password_form;
 
@@ -117,7 +119,6 @@ public class LoginController {
     }
     @Subscribe
     public void login(LoginEvent event) throws IOException {
-        //TODO check why there's an exception when signing out and in again.
         // **TODO: please check why sometimes when you try to log in with teudatzehut and password that are in the db it doesnt match?
         System.out.println("IN login");
         Message message = event.getMessage();
@@ -251,13 +252,5 @@ public class LoginController {
     public void initialize() {
         question_bar_forgot.getItems().addAll(securityQuestions);
         EventBus.getDefault().register(this);
-//        try {
-//            EventBus.getDefault().register(this);
-////            Message message = new Message(0, "add client");
-////            SimpleClient.getClient().sendToServer(message);
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 }

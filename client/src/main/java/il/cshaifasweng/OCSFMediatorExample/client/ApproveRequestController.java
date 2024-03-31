@@ -13,7 +13,6 @@ import javassist.Loader;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import static il.cshaifasweng.OCSFMediatorExample.client.ViewTasksController.currentUser;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -21,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ApproveRequestController {
-
+    private User currentUser = SimpleChatClient.getUser();
     private ToggleGroup toggleGroup;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     @FXML

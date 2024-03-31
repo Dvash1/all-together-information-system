@@ -122,7 +122,7 @@ public class MainMenuController {
     @FXML
     void logout(ActionEvent event) throws IOException {
         try {
-
+            // TODO: make a log out event and delete teudatzehut of current user from the hashmap in simpleserver.
             EventBus.getDefault().unregister(this);
             SimpleChatClient.setUser(null);
             SimpleChatClient.setRoot("login");
@@ -134,7 +134,7 @@ public class MainMenuController {
     }
 
     public void initialize() {
-//        EventBus.getDefault().register(this); **** IF an event bus event is this file, this is needed.
+//        EventBus.getDefault().register(this); // **** IF an event bus event is this file, this is needed.
         User user = SimpleChatClient.getUser(); // Write into the label the username.
         mainmenu_anchor_manager.setVisible(false);
         managerButton.setVisible(false);

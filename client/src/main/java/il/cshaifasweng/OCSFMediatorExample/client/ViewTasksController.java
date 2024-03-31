@@ -21,7 +21,7 @@ import java.util.List;
 // Log in needs to be properly to handle them, because some bugs occur only when the same user is hovering the same task, and our does not allow a user to be logged on more than one client.
 public class ViewTasksController {
 
-    public static User currentUser;
+    public static User currentUser = SimpleChatClient.getUser();
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     @FXML
@@ -61,7 +61,6 @@ public class ViewTasksController {
 
 
 
-//*** DELETE ****
     @FXML
     private Button approveBtn;
     @FXML
@@ -77,10 +76,7 @@ public class ViewTasksController {
             }
         });
     }
-//*** DELETE ****
 
-
-//*** DELETE ****
 
 
     @FXML
@@ -136,7 +132,6 @@ public class ViewTasksController {
             }
         });
     }
-//*** DELETE ****
 //**************** DELETE ******************//
 @FXML
 void switchToViewEmergency(ActionEvent event) {
@@ -340,7 +335,7 @@ void switchToViewEmergency(ActionEvent event) {
             volunteerBtn.setDisable(true);
         }
 
-
+        // Update observableList
         for (int i = 0;i< taskList.size();i++)
         {
             Task task = taskList.get(i);
@@ -455,7 +450,7 @@ void switchToViewEmergency(ActionEvent event) {
 
         });
 
-        currentUser = SimpleChatClient.getUser();
+//        currentUser = SimpleChatClient.getUser();
 //        // enable/disable volunteering&task completion buttons
 //        tasksTableView.setOnMouseClicked(e -> {
 //            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
