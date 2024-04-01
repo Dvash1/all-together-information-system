@@ -350,63 +350,11 @@ void switchToViewEmergency(ActionEvent event) {
 
 
     @Subscribe
-    public void loadTasks(LoadOpenTasksEvent event)
-    {
+    public void loadTasks(LoadOpenTasksEvent event) {
         System.out.println("loadTasks called");
         Message message = event.getMessage();
         taskList = FXCollections.observableArrayList((List<Task>) message.getObject());
         tasksTableView.setItems(taskList);
-        // ****IMPORTANT****
-        //in the future when one client creates a new task, the steps to update the GUI of all clients should be:
-        //- message will send a message to ALL subscribed clients with the new Task
-        //- we create a new Event class that will do the following line :
-        // check that the currentUser and the newly created task come from the same community
-        // check that the current displayed scene is the view tasks one ***
-        // call : taskList.add(new task to be added)
-        // this should update all the clients interfaces automatically ( assuming they are browsing tasks)
-        // *** we might not have to check the current scene, maybe adding the task to taskList will be enough.
-    }
-
-    // "Log in"
-    @Subscribe
-    public void setLoggedInUser(GetUserEvent event)
-    {
-        System.out.println("setLoggedInUser called");
-        Message message = event.getMessage();
-        currentUser = (User) message.getObject();
-
-        // enable/disable volunteering&task completion buttons
-        tasksTableView.setOnMouseClicked(e -> {
-            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
-            // check if user can volunteer to the task
-            // can also override the equals function in Task instead of comparing ID's
-            if(selectedTask != null)
-            {
-                if (selectedTask.getTaskState().equals("Request") && selectedTask.getTaskCreator().getId() != currentUser.getId()) {
-
-                    volunteerBtn.setDisable(false);
-                } else {
-                    volunteerBtn.setDisable(true);
-                }
-                //getTaskVolunteer() might return null, so we must check for that as well
-                if (selectedTask.getTaskVolunteer() != null && selectedTask.getTaskState().equals("In Progress") && selectedTask.getTaskVolunteer().getId() == currentUser.getId()) {
-                    completeBtn.setDisable(false);
-                    withdrawBtn.setDisable(false);
-
-                } else {
-                    completeBtn.setDisable(true);
-                    withdrawBtn.setDisable(true);
-                }
-            }
-        });
-        // ******* remove the function when Log in will be implemented **********
-        try {
-            Message newMessage = new Message("get open tasks",currentUser);
-            SimpleClient.getClient().sendToServer(newMessage);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -475,7 +423,6 @@ void switchToViewEmergency(ActionEvent event) {
                 }
             }
         });
-        // ******* remove the function when Log in will be implemented **********
         try {
             Message newMessage = new Message("get open tasks",currentUser);
             SimpleClient.getClient().sendToServer(newMessage);
@@ -483,17 +430,6 @@ void switchToViewEmergency(ActionEvent event) {
         catch (IOException e) {
             e.printStackTrace();
         }
-
-        // uncomment when Log in is implemented
-        //
-        try {
-            Message message = new Message("get open tasks",currentUser);
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
 
     }
 }
