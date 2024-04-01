@@ -93,7 +93,7 @@ public class LoginController {
 
     @FXML
     void switch_form(ActionEvent event) {
-        if(event.getSource() == forgot_password_button) {
+        if(event.getSource() == forgot_password_button || event.getSource() == backButton_new_pass) {
             login_form.setVisible(false);
             forgot_form.setVisible(true);
             new_password_form.setVisible(false);
@@ -169,14 +169,15 @@ public class LoginController {
             alert.setHeaderText(null);
             alert.show();
         }
+        else {
+            String username = teudatzehut_field_forgot.getText();
+            String selectedQuestion = (String) question_bar_forgot.getSelectionModel().getSelectedItem();
+            String answer = answer_field_forgot.getText();
 
-        String username = teudatzehut_field_forgot.getText();
-        String selectedQuestion = (String) question_bar_forgot.getSelectionModel().getSelectedItem();
-        String answer = answer_field_forgot.getText();
-
-        String[] forgotDetails = new String[]{username,selectedQuestion,answer};
-        Message message = new Message( "Forgot Password Request",forgotDetails,null);
-        SimpleClient.getClient().sendToServer(message);
+            String[] forgotDetails = new String[]{username, selectedQuestion, answer};
+            Message message = new Message("Forgot Password Request", forgotDetails, null);
+            SimpleClient.getClient().sendToServer(message);
+        }
     }
 
     @Subscribe
@@ -191,7 +192,7 @@ public class LoginController {
         }
         else {
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such ID, or the password is wrong");
                 alert.setTitle("Login Failed");
                 alert.setHeaderText("Login Failed");
                 alert.show();
@@ -225,6 +226,7 @@ public class LoginController {
     @Subscribe
     public void passwordChanged(PasswordChangeEvent event) {
         String message = event.getMessage().getMessage();
+        System.out.println("passwordChanged: " + message);
         if(message.equals("Password Change Succeed")) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Your password has successfully been changed!");

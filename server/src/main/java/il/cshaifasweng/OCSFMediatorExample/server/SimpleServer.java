@@ -325,11 +325,45 @@ public class SimpleServer extends AbstractServer {
 
 	}
 
+	private static List<Emergency> getAllEmergencyCases(List<LocalDateTime> dateList) throws Exception {
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Emergency> query = cb.createQuery(Emergency.class);
+		Root<Emergency> root = query.from(Emergency.class);
+		Join<Emergency, User> creatorJoin = root.join("user");
+		query.select(root);
+		if (dateList != null)
+		{
+			query.where(cb.between(root.get("callTime"), dateList.get(0), dateList.get(1)));
+
+		}
+		List<Emergency> emergencies = session.createQuery(query).getResultList();
+		return emergencies;
+	}
+
+	private static List<Emergency> getCommunityEmergencies(User user,List<LocalDateTime> dateList) throws Exception
+	{
+
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<Emergency> query = cb.createQuery(Emergency.class);
+		Root<Emergency> root = query.from(Emergency.class);
+		Join<Emergency, User> creatorJoin = root.join("user");
+		query.select(root);
+		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()));
+
+		if(dateList != null)
+		{
+			query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
+					cb.between(root.get("creationTime"), dateList.get(0), dateList.get(1)));
+		}
+		List<Emergency> emergencys = session.createQuery(query).getResultList();
+		return emergencys;
+	}
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
 		String request = message.getMessage();
-		System.out.println("request is: "+ request);
+		System.out.println("handleMessageFromClient - request is: " + request);
 		try {
 			SessionFactory sessionFactory = getSessionFactory();
 			session = sessionFactory.openSession();
@@ -413,6 +447,7 @@ public class SimpleServer extends AbstractServer {
 				} else {
 					message.setMessage("Password Change Failed");
 				}
+				client.sendToClient(message);
 			}
 			else if(request.equals("Emergency Request")){
 				String teudatzehut = (String)message.getObject();
@@ -427,7 +462,6 @@ public class SimpleServer extends AbstractServer {
 				else {
 					message.setMessage("Emergency Call Failed");
 				}
-				System.out.println("message sent: " + message.getMessage());
 				client.sendToClient(message);
 			}
 
@@ -489,34 +523,34 @@ public class SimpleServer extends AbstractServer {
 			else if(request.equals("emergency everything"))
 			{
 				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Task> tasks = getAllTasks(null);
+				List<Emergency> emergencies = getAllEmergencyCases(null);
 				message.setMessage("emergency histogram");
-				message.setObject(tasks);
+				message.setObject(emergencies);
 				client.sendToClient(message);
 			}
 			else if(request.equals("emergency my community all dates"))
 			{
 				User u1 = (User) message.getUser();
-				List<Task> tasks = getCommunityTasks(u1,null);
+				List<Emergency> emergencies = getCommunityEmergencies(u1,null);
 				message.setMessage("emergency histogram");
-				message.setObject(tasks);
+				message.setObject(emergencies);
 				client.sendToClient(message);
 			}
 			else if(request.equals("emergency all community specific dates"))
 			{
 				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Task> tasks = getAllTasks(dates);
+				List<Emergency> emergencies = getAllEmergencyCases(dates);
 				message.setMessage("emergency histogram");
-				message.setObject(tasks);
+				message.setObject(emergencies);
 				client.sendToClient(message);
 			}
 			else if(request.equals("emergency my community specific dates"))
 			{
 				User u1 = (User) message.getUser();
 				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Task> tasks = getCommunityTasks(u1,dates);
+				List<Emergency> emergencies = getCommunityEmergencies(u1,dates);
 				message.setMessage("emergency histogram");
-				message.setObject(tasks);
+				message.setObject(emergencies);
 				client.sendToClient(message);
 			}
 
@@ -606,6 +640,7 @@ public class SimpleServer extends AbstractServer {
 			exception.printStackTrace();
 		}
 		finally {
+			System.out.println("handleMessageFromClient - message sent: " + message.getMessage());
 			session.close();
 		}
 	}

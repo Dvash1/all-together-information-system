@@ -29,6 +29,7 @@ public class SimpleClient extends AbstractClient {
 		// TODO: make this a switch instead? :))
 		Message message = (Message) msg;
 		String request = message.getMessage();
+		System.out.println("handleMessageFromServer: "+request);
 		if (message.getMessage().equals("alert everybody"))
 		{
 			EventBus.getDefault().post(new getDataEvent(message));

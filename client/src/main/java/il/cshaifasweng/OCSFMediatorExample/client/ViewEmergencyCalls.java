@@ -5,6 +5,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 // a simple solution could be to add the emergency object to the observable list, if the requirements are met.
 // TODO: after an emergency button has been processed, send a msg to relevant clients to update them.
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Emergency;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.Task;
 import javafx.application.Platform;
@@ -203,11 +204,11 @@ public class ViewEmergencyCalls implements Initializable {
     {
 
         Message message = event.getMessage();
-        List<Task> taskList = (List<Task>) message.getObject();
+        List<Emergency> emergenciesList = (List<Emergency>) message.getObject();
         Map<String, Integer> datesToAmount = new TreeMap<>();
         // Populate datesToAmount
-        for (Task task : taskList) {
-            LocalDate date = task.getCreationTime().toLocalDate();
+        for (Emergency emergency : emergenciesList) {
+            LocalDate date = emergency.getCallTime().toLocalDate();
             String dateString = date.toString();
             datesToAmount.put(dateString, datesToAmount.getOrDefault(dateString, 0) + 1);
         }
