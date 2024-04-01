@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Emergency;
+import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -11,6 +13,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -24,7 +27,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Optional;
 
-import static il.cshaifasweng.OCSFMediatorExample.client.ViewTasksController.currentUser;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.EventBus;
@@ -79,7 +81,31 @@ public class SimpleChatClient extends Application {
         });
     }
 
+    public static void sendEmergencyRequest(User requestingUser)
+    {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("");
+        alert.setContentText("Are you sure you want to proceed?");
+        alert.setGraphic(null);
 
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Emergency emergencyRequest = new Emergency(requestingUser,LocalDateTime.now());
+            Message emergencyMessage = new Message("Emergency Request",emergencyRequest,requestingUser);
+            try {
+                SimpleClient client = SimpleClient.getClient();
+                client.sendToServer(emergencyMessage);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+    }
     public static void setUser(User user) {
         SimpleChatClient.user = user;
     }
@@ -107,8 +133,6 @@ public class SimpleChatClient extends Application {
         // TODO Auto-generated method stub
         EventBus.getDefault().unregister(this);
         super.stop();
-//        Platform.exit();
-//        System.exit(0);
     }
 
 	public static void main(String[] args) {

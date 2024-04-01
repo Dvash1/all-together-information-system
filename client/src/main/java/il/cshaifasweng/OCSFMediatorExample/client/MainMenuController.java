@@ -50,6 +50,9 @@ public class MainMenuController {
 
     @FXML
     private Button emergencyButton;
+
+    private User user;
+
     @FXML
     void switchToCommunityInfo(ActionEvent event) {
         Platform.runLater(() -> {
@@ -64,14 +67,15 @@ public class MainMenuController {
     }
 
     @FXML
-    void emergency_button_press(ActionEvent event) throws IOException { //** TODO: Emergency button needs to work differently here, I just copied from log in.
-        Parent root = FXMLLoader.load(getClass().getResource("emergency.fxml"));
-        Scene scene = new Scene(root);
-        Stage primaryStage = new Stage();
-        primaryStage.setTitle("Emergency Window");
-        primaryStage.setScene(scene);
-        primaryStage.initModality(Modality.APPLICATION_MODAL);
-        primaryStage.show();
+    void emergency_button_press(ActionEvent event) throws IOException {
+        SimpleChatClient.sendEmergencyRequest(user);
+//        Parent root = FXMLLoader.load(getClass().getResource("emergency.fxml"));
+//        Scene scene = new Scene(root);
+//        Stage primaryStage = new Stage();
+//        primaryStage.setTitle("Emergency Window");
+//        primaryStage.setScene(scene);
+//        primaryStage.initModality(Modality.APPLICATION_MODAL);
+//        primaryStage.show();
     }
 
     @FXML
@@ -152,18 +156,16 @@ public class MainMenuController {
 
     public void initialize() {
         EventBus.getDefault().register(this); // **** IF an event bus event is this file, this is needed.
-        User user = SimpleChatClient.getUser(); // Write into the label the username.
+        user = SimpleChatClient.getUser(); // Write into the label the username.
         mainmenu_anchor_manager.setVisible(false);
         managerButton.setVisible(false);
-        if (user != null) {
-            showUsername(user.getUserName());
-            if (user.isManager()) {
-                managerButton.setVisible(true);
-            }
+        showUsername(user.getUserName());
+        if (user.isManager())
+        {
+            managerButton.setVisible(true);
         }
-        else {
-            System.out.println("for some reason, user is null and this is not okay, okay?");
-        }
+
+
 
     }
 }

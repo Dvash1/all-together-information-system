@@ -88,6 +88,16 @@ public class SimpleServer extends AbstractServer {
 				t4.setCompletionTime(LocalDateTime.now().minusDays(5));
 				Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
 
+				Emergency e1 = new Emergency(u1, LocalDateTime.now().minusDays(2));
+				Emergency e2 = new Emergency(u2, LocalDateTime.now().minusDays(4));
+				Emergency e3 = new Emergency(u3, LocalDateTime.now().minusDays(1));
+				Emergency e4 = new Emergency(u4, LocalDateTime.now().minusDays(3));
+				Emergency e5 = new Emergency(u5, LocalDateTime.now().minusDays(5));
+				Emergency e6 = new Emergency(u6, LocalDateTime.now().minusDays(2));
+				Emergency e7 = new Emergency(u7, LocalDateTime.now().minusDays(4));
+				Emergency e8 = new Emergency(u8, LocalDateTime.now().minusDays(1));
+				Emergency e9 = new Emergency(u9, LocalDateTime.now().minusDays(3));
+				Emergency e10 = new Emergency(u10, LocalDateTime.now().minusDays(5));
 
 
 				session.save(u1);
@@ -112,8 +122,22 @@ public class SimpleServer extends AbstractServer {
 				session.save(t5);
 				session.flush();
 
+				session.save(e1);
+				session.save(e2);
+				session.save(e3);
+				session.save(e4);
+				session.save(e5);
+				session.flush();
+
+				session.save(e6);
+				session.save(e7);
+				session.save(e8);
+				session.save(e9);
+				session.save(e10);
+				session.flush();
+
 // second community
-				User u11 = new User("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", true, "0598765432");
+				User u11 = new User("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", true, "0598735430");
 				Community c2 = new Community("Lemons", u11);
 				u11.setCommunity(c2);
 				User u12 = new User("James White", "444555666", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
@@ -133,6 +157,16 @@ public class SimpleServer extends AbstractServer {
 				Task t9 = new Task("clean the garage", LocalDateTime.now().minusDays(3), "Request", u14);
 				Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Request", u15);
 
+				Emergency e11 = new Emergency(u11, LocalDateTime.now().minusDays(3));
+				Emergency e12 = new Emergency(u12, LocalDateTime.now().minusDays(1));
+				Emergency e13 = new Emergency(u13, LocalDateTime.now().minusDays(2));
+				Emergency e14 = new Emergency(u14, LocalDateTime.now().minusDays(4));
+				Emergency e15 = new Emergency(u15, LocalDateTime.now().minusDays(5));
+				Emergency e16 = new Emergency(u16, LocalDateTime.now().minusDays(2));
+				Emergency e17 = new Emergency(u17, LocalDateTime.now().minusDays(3));
+				Emergency e18 = new Emergency(u18, LocalDateTime.now().minusDays(1));
+				Emergency e19 = new Emergency(u19, LocalDateTime.now().minusDays(4));
+				Emergency e20 = new Emergency(u20, LocalDateTime.now().minusDays(5));
 
 				session.save(u11);
 				session.save(c2);
@@ -156,6 +190,21 @@ public class SimpleServer extends AbstractServer {
 				session.save(t10);
 				session.flush();
 
+
+				session.save(e11);
+				session.save(e12);
+				session.save(e13);
+				session.save(e14);
+				session.save(e15);
+				session.flush();
+
+				session.save(e16);
+				session.save(e17);
+				session.save(e18);
+				session.save(e19);
+				session.save(e20);
+				session.flush();
+
 // third community
 				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true, "0598765432");
 				Community c3 = new Community("Ono", u21);
@@ -176,6 +225,17 @@ public class SimpleServer extends AbstractServer {
 				t13.setCompletionTime(LocalDateTime.now().minusWeeks(2));
 				Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "Request", u24);
 				Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Request", u25);
+
+				Emergency e21 = new Emergency(u21, LocalDateTime.now().minusDays(2));
+				Emergency e22 = new Emergency(u22, LocalDateTime.now().minusDays(4));
+				Emergency e23 = new Emergency(u23, LocalDateTime.now().minusDays(1));
+				Emergency e24 = new Emergency(u24, LocalDateTime.now().minusDays(3));
+				Emergency e25 = new Emergency(u25, LocalDateTime.now().minusDays(5));
+				Emergency e26 = new Emergency(u26, LocalDateTime.now().minusDays(2));
+				Emergency e27 = new Emergency(u27, LocalDateTime.now().minusDays(4));
+				Emergency e28 = new Emergency(u28, LocalDateTime.now().minusDays(1));
+				Emergency e29 = new Emergency(u29, LocalDateTime.now().minusDays(3));
+				Emergency e30 = new Emergency(u30, LocalDateTime.now().minusDays(5));
 
 				session.save(u21);
 				session.save(c3);
@@ -199,6 +259,20 @@ public class SimpleServer extends AbstractServer {
 				session.save(t15);
 				session.flush();
 
+
+				session.save(e21);
+				session.save(e22);
+				session.save(e23);
+				session.save(e24);
+				session.save(e25);
+				session.flush();
+
+				session.save(e26);
+				session.save(e27);
+				session.save(e28);
+				session.save(e29);
+				session.save(e30);
+				session.flush();
 			}
 
 			session.getTransaction().commit();
@@ -332,7 +406,7 @@ public class SimpleServer extends AbstractServer {
 		if(dateList != null)
 		{
 			query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
-					cb.between(root.get("creationTime"), dateList.get(0), dateList.get(1)));
+					cb.between(root.get("callTime"), dateList.get(0), dateList.get(1)));
 		}
 		List<Emergency> emergencys = session.createQuery(query).getResultList();
 		return emergencys;
@@ -342,6 +416,14 @@ public class SimpleServer extends AbstractServer {
 
 		User user = session.createQuery("FROM User WHERE teudatZehut = :teudatZehutValue", User.class)
 				.setParameter("teudatZehutValue", teudatZehut)
+				.uniqueResult();
+		return user;
+	}
+
+	private static User getUserByPhoneNumber(String phoneNumber) throws Exception {
+
+		User user = session.createQuery("FROM User WHERE phoneNumber = :phoneNumberValue", User.class)
+				.setParameter("phoneNumberValue", phoneNumber)
 				.uniqueResult();
 		return user;
 	}
@@ -465,22 +547,60 @@ public class SimpleServer extends AbstractServer {
 					message.setMessage("Password Change Failed");
 				}
 			}
+
+
+
+
 			else if(request.equals("Emergency Request")){
-				String teudatzehut = (String)message.getObject();
-				System.out.println("teudatzehut: " + teudatzehut);
-				User user = getUserByTeudatZehut(teudatzehut);
-				if(user != null) {
-					Emergency emergency = new Emergency(user, LocalDateTime.now());
-					session.save(emergency);
+				User user ;
+				Emergency newEmergency = null;
+				// button was pressed when logged in
+				if(message.getUser() != null )
+				{
+
+					newEmergency = (Emergency) message.getObject();
+					user = newEmergency.getUser(); // or message.getUser()
+					session.save(newEmergency);
+					session.flush();
 					session.getTransaction().commit();
-					message.setMessage("Emergency Call Succeed");
+					message.setMessage("Emergency Call Succeeded");
 				}
-				else {
-					message.setMessage("Emergency Call Failed");
+				// button pressed from Log in menu
+				else
+				{
+					String phoneNumber = (String)message.getObject();
+					user = getUserByPhoneNumber(phoneNumber);
+
+					//found user in database with matching phone number
+					if(user != null)
+					{
+						newEmergency = new Emergency(user,LocalDateTime.now());
+						session.save(newEmergency);
+						session.flush();
+						session.getTransaction().commit();
+						message.setMessage("Emergency Call Succeeded");
+					}
+					else
+					// no user with matching phone number, send error message to user
+					{
+						message.setMessage("Emergency Call Failed");
+					}
 				}
+
 				System.out.println("message sent: " + message.getMessage());
 				client.sendToClient(message);
+				if(message.getMessage().equals("Emergency Call Succeeded"))
+				{
+					// For now im sending the message to all clients
+					// But we might want to send it specifically to the community manager
+					//
+					Message update = new Message("update histogram",newEmergency,user);
+					sendToAllClients(update);
+				}
 			}
+
+
+
 
 			//create task, for now send the message to all the clients
 			// however its more logical to send the message only to the community manager that needs to approve

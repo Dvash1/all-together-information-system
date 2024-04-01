@@ -12,12 +12,21 @@ public class Emergency implements Serializable {
     @Column(name = "emergency_id")
     private int id;
     @ManyToOne
-    @JoinColumn(name = "creator_id",referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id",referencedColumnName = "user_id")
     private User user;
-//    @ManyToOne
-//    @JoinColumn(name = "creator_id",referencedColumnName = "community_id")
-//    private Community community;
+
+    private String userName;
+
+    private String teudatZehut;
+    @ManyToOne
+    @JoinColumn(name = "community",referencedColumnName = "communityName")
+    private Community community;
+
     private LocalDateTime callTime;
+
+
+
+
 
     public Emergency(){
 
@@ -25,6 +34,9 @@ public class Emergency implements Serializable {
     public Emergency(User user, LocalDateTime callTime) {
         this.user = user;
         this.callTime = callTime;
+        this.community = user.getCommunity();
+        this.userName = user.getUserName();
+        this.teudatZehut = user.getTeudatZehut();
     }
 
     public int getId() {
@@ -44,5 +56,21 @@ public class Emergency implements Serializable {
 
     public void setCallTime(LocalDateTime callTime) {
         this.callTime = callTime;
+    }
+
+    public String getTeudatZehut() {
+        return teudatZehut;
+    }
+
+    public void setTeudatZehut(String teudatZehut) {
+        this.teudatZehut = teudatZehut;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

@@ -12,8 +12,8 @@
 
 <AnchorPane prefHeight="839.0" prefWidth="1015.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.ViewEmergencyCalls">
    <children>
-      <DatePicker fx:id="endDate" disable="true" layoutX="571.0" layoutY="160.0" promptText="Choose date" />
-      <DatePicker fx:id="startDate" disable="true" layoutX="270.0" layoutY="160.0" promptText="Choose date" />
+      <DatePicker fx:id="endDatePicker" disable="true" layoutX="571.0" layoutY="160.0" promptText="Choose date" />
+      <DatePicker fx:id="startDatePicker" disable="true" layoutX="270.0" layoutY="160.0" promptText="Choose date" />
       <Text layoutX="445.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose dates">
          <font>
             <Font size="22.0" />
