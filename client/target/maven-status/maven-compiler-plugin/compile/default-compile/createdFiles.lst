@@ -1,6 +1,7 @@
 il\cshaifasweng\OCSFMediatorExample\client\ocsf\AbstractClient.class
 il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController$3.class
 il\cshaifasweng\OCSFMediatorExample\client\ApproveRequestController$1.class
+il\cshaifasweng\OCSFMediatorExample\client\LogOutEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\PrimaryController$1.class
 il\cshaifasweng\OCSFMediatorExample\client\getEmergencyData.class
 il\cshaifasweng\OCSFMediatorExample\client\Main.class
