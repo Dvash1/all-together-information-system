@@ -31,6 +31,7 @@ import javax.persistence.criteria.*;
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
 	private static HashMap<String,ConnectionToClient> idToClient = new HashMap<>();
+	private static HashMap<ConnectionToClient,String> clientToId = new HashMap<>();
 	private static Session session;
 
 	private static SessionFactory getSessionFactory() throws
@@ -67,10 +68,10 @@ public class SimpleServer extends AbstractServer {
 			//check if database is empty first
 			if (getAllTasks(null).isEmpty()) {
 				// first community
-				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true,"0523842728");
-				Community c1 = new Community("Kfir",u1);
+				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true, "0523842728");
+				Community c1 = new Community("Kfir", u1);
 				u1.setCommunity(c1);
-				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false,"0538453293" ,c1);
+				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false, "0538453293", c1);
 				User u3 = new User("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", false, "0523456789", c1);
 				User u4 = new User("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", false, "0501234565", c1);
 				User u5 = new User("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary", false, "0579876543", c1);
@@ -80,12 +81,14 @@ public class SimpleServer extends AbstractServer {
 				User u9 = new User("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", false, "0567890123", c1);
 				User u10 = new User("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog", false, "0532109876", c1);
 
-				Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
+				Task t1 = new Task("walk the dogs", LocalDateTime.now(), "Request", u2);
 				Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "Request", u3);
 				Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "Request", u4);
-				Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1), "Complete", u5,u7);
+				Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1), "Complete", u5, u7);
 				t4.setCompletionTime(LocalDateTime.now().minusDays(5));
 				Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
+
+
 
 				session.save(u1);
 				session.save(c1);
@@ -102,7 +105,6 @@ public class SimpleServer extends AbstractServer {
 				session.save(u10);
 				session.flush();
 
-
 				session.save(t1);
 				session.save(t2);
 				session.save(t3);
@@ -110,30 +112,27 @@ public class SimpleServer extends AbstractServer {
 				session.save(t5);
 				session.flush();
 
-
-
-				// second community
-
-				User u11 = new User("Emma Thompson", "746158392", "pass456", "What is your favorite hobby?", "Reading", true,"0598765432");
-				Community c2 = new Community("Lemons",u11);
+// second community
+				User u11 = new User("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", true, "0598765432");
+				Community c2 = new Community("Lemons", u11);
 				u11.setCommunity(c2);
-				User u12 = new User("James White", "538294617", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
-				User u13 = new User("Ava Green", "921475386", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
-				User u14 = new User("Ethan Harris", "364892175", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
-				User u15 = new User("Mia Lee", "485739216", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
-				User u16 = new User("Jacob Hall", "627183945", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
-				User u17 = new User("Isabella Young", "819276435", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
-				User u18 = new User("Noah King", "294617583", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
-				User u19 = new User("Sophie Baker", "173849265", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
-				User u20 = new User("William Cook", "582716394", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
-
+				User u12 = new User("James White", "444555666", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
+				User u13 = new User("Ava Green", "777888999", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
+				User u14 = new User("Ethan Harris", "222333444", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
+				User u15 = new User("Mia Lee", "555666777", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
+				User u16 = new User("Jacob Hall", "888999000", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
+				User u17 = new User("Isabella Young", "333444555", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
+				User u18 = new User("Noah King", "666777888", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
+				User u19 = new User("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
+				User u20 = new User("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
 
 				Task t6 = new Task("mow the lawn", LocalDateTime.now().minusHours(3), "Request", u11);
 				Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "Request", u12);
-				Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13,u17);
+				Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13, u17);
 				t8.setCompletionTime(LocalDateTime.now().minusDays(2));
 				Task t9 = new Task("clean the garage", LocalDateTime.now().minusDays(3), "Request", u14);
 				Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Request", u15);
+
 
 				session.save(u11);
 				session.save(c2);
@@ -150,7 +149,6 @@ public class SimpleServer extends AbstractServer {
 				session.save(u20);
 				session.flush();
 
-
 				session.save(t6);
 				session.save(t7);
 				session.save(t8);
@@ -158,11 +156,9 @@ public class SimpleServer extends AbstractServer {
 				session.save(t10);
 				session.flush();
 
-
-				// third community
-
-				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true,"0598765432");
-				Community c3 = new Community("Ono",u21);
+// third community
+				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true, "0598765432");
+				Community c3 = new Community("Ono", u21);
 				u21.setCommunity(c3);
 				User u22 = new User("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", false, "0554321091", c3);
 				User u23 = new User("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", false, "0523456780", c3);
@@ -174,14 +170,12 @@ public class SimpleServer extends AbstractServer {
 				User u29 = new User("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", false, "0567890120", c3);
 				User u30 = new User("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather", false, "0532109874", c3);
 
-
 				Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "Request", u21);
 				Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);
 				Task t13 = new Task("trim the hedges", LocalDateTime.now().minusWeeks(3), "Complete", u23, u27);
 				t13.setCompletionTime(LocalDateTime.now().minusWeeks(2));
 				Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "Request", u24);
 				Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Request", u25);
-
 
 				session.save(u21);
 				session.save(c3);
@@ -198,13 +192,13 @@ public class SimpleServer extends AbstractServer {
 				session.save(u30);
 				session.flush();
 
-
 				session.save(t11);
 				session.save(t12);
 				session.save(t13);
 				session.save(t14);
 				session.save(t15);
 				session.flush();
+
 			}
 
 			session.getTransaction().commit();
@@ -308,21 +302,12 @@ public class SimpleServer extends AbstractServer {
 		return tasks;
 	}
 
-	// Idea: we can implement a hashmap for efficient way to search users, but I'm not sure how it works
-	private static List<User> getAllUsers() throws Exception {
-		List<User> users = session.createQuery("FROM User ORDER BY userName", User.class).getResultList();
-		return users;
-	}
 	private static User getUserByTeudatZehut(String teudatZehut) throws Exception {
-		// TODO: Add a normal query instead of this hardcoded going over the entire list.
-		List<User> users = getAllUsers();
-		for (User user : users) {
-			if (teudatZehut.equals(user.getTeudatZehut())) {
-				return user; // User with the specified username found
-			}
-		}
-		return null;
 
+		User user = session.createQuery("FROM User WHERE teudatZehut = :teudatZehutValue", User.class)
+				.setParameter("teudatZehutValue", teudatZehut)
+				.uniqueResult();
+		return user;
 	}
 
 	@Override
@@ -341,6 +326,7 @@ public class SimpleServer extends AbstractServer {
 				String[] loginDetails = (String[])message.getObject();
 				String teudatZehut = loginDetails[0];
 				String password = loginDetails[1];
+				System.out.println("teudatZehut : "+teudatZehut);
 				User user = getUserByTeudatZehut(teudatZehut);
 				boolean subscriberFound = false;
 				if (user != null && !idToClient.containsKey(teudatZehut)) {
@@ -350,7 +336,8 @@ public class SimpleServer extends AbstractServer {
 						for(SubscribedClient subscriber: SubscribersList) {
 							if (subscriber.getClient() == client) {
 								// Take the client from the signature and compare
-								idToClient.put(teudatZehut, client); // TODO: check if works.
+								idToClient.put(teudatZehut, client); // TODO: check if both work.
+								clientToId.put(client,teudatZehut);
 								subscriberFound = true;
 							}
 						}
@@ -369,6 +356,7 @@ public class SimpleServer extends AbstractServer {
 						}
 					}
 					else {
+						System.out.println(password + " versus "  + user.getPassword() );
 						message.setMessage("Login Failed: Wrong Password");
 					}
 				}
@@ -382,6 +370,33 @@ public class SimpleServer extends AbstractServer {
 				}
 				System.out.println("message sent: "+message.getMessage());
 				client.sendToClient(message);
+			}
+
+
+
+			else if(request.equals("Log Out")){
+				System.out.println("In Log Out");
+				User user = (User) message.getObject();
+
+				System.out.print("The ID logging out is:");
+				System.out.println(user.getId());
+
+
+				if (user != null) {
+					String teudatZehut = user.getTeudatZehut();
+					// remove from both hash maps
+
+					clientToId.remove(idToClient.get(teudatZehut)); // Remove from clientToId too.
+					idToClient.remove(teudatZehut); // Remove from idToClient the client.
+
+					System.out.println("Successfully logged out");
+					message.setMessage("log out");
+					client.sendToClient(message);
+					
+				}
+				// TODO: also add for if user is null
+
+
 			}
 			else if(request.equals("Forgot Password Request")){
 				String[] forgotDetails = (String[])message.getObject();
@@ -639,6 +654,8 @@ public class SimpleServer extends AbstractServer {
 			if (clientToRemove != null) {
 				SubscribersList.remove(clientToRemove);
 				//remove client from hashmap as well
+				idToClient.remove(clientToId.get(clientToRemove.getClient())); // Remove from idToClient the client.
+				clientToId.remove(clientToRemove.getClient()); // Remove from clientToId too.
 			}
 		}
 	}
