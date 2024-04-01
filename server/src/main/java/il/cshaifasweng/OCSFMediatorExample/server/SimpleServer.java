@@ -346,6 +346,38 @@ public class SimpleServer extends AbstractServer {
 		return user;
 	}
 
+	private static void sendMessageToClient(List<Object> msg_details) {
+		if (msg_details.isEmpty()) {
+			return;
+		}
+		// Expects: {To,From,Text}.
+		User user_to = (User) (msg_details).get(0); // User we need to send a message to
+		User user_from = (User) (msg_details).get(1);
+		String MessageText = (String) (msg_details).get(2);; // message from community we need to send to user
+
+		try {
+			Message new_message = new Message("New Message", msg_details);
+			if (idToClient.containsKey(user_to.getTeudatZehut())) { // Check if client is connected
+				ConnectionToClient client_to_send = idToClient.get(user_to.getTeudatZehut()); // Get the client
+				// Send the message
+				client_to_send.sendToClient(new_message);
+			} else { // Not connected
+//				String[] to_append = new String[2];
+//				to_append[0] = user_from.getUserName();
+//				to_append[1] = MessageText;
+
+				(getUserByTeudatZehut(user_to.getTeudatZehut())).addToMessageList(MessageText); // We add it to waiting messages.
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
@@ -610,7 +642,6 @@ public class SimpleServer extends AbstractServer {
 				else if (task.getTaskState().equals("Denied"))
 				{
 					message.setMessage("Request denied");
-
 					// ***MISSING IMPLEMENTATION***
 					// need to send message to community member that requested the help
 				}
@@ -623,16 +654,19 @@ public class SimpleServer extends AbstractServer {
 
 			}
 
-//			else if (request.equals("Send denial message"))
-//			{
-//				User user = message.getUser(); // User we need to send a message to
-//				String denialText = (String) message.getObject(); // message from community we need to send to user
-//
-//				// implementation needed :
-//				// find ConnectionToClient object of the user (if connected)
-//				// send that client a message
-//
-//			}
+			else if (request.equals("Send denial message"))
+			{
+				// To, From, Text
+				User user_to = (User) (message.getObjectsArr()).get(0); // User we need to send a message to
+				User user_from = (User) (message.getObjectsArr()).get(1);
+				String denialText = (String) (message.getObjectsArr()).get(2);; // message from community we need to send to user
+				sendMessageToClient(message.getObjectsArr());
+				// TODO: check if works
+				// implementation needed :
+				// find ConnectionToClient object of the user (if connected)
+				// send that client a message
+
+			}
 
 
 

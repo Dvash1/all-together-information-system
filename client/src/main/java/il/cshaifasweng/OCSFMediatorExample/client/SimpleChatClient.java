@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -9,7 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-
+import java.util.List;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import javafx.application.Application;
@@ -67,6 +68,25 @@ public class SimpleChatClient extends Application {
         stage.show();
     }
 
+//    public void alert(String message) throws IOException {
+//
+//        EventBus.getDefault().register(this);
+//
+//        event.consume();
+//
+//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+//        alert.setTitle("New message");
+//        alert.setHeaderText("");
+//        alert.setContentText(message);
+//        alert.setGraphic(null);
+//
+//        Optional<ButtonType> result = alert.showAndWait();
+//        if (result.isPresent() && result.get() == ButtonType.OK) {
+//            stage.close();
+//        }
+//
+//    }
+
     @Subscribe
     public void testEvent(getDataEvent event) {
         Platform.runLater(() -> {
@@ -75,9 +95,29 @@ public class SimpleChatClient extends Application {
             alert.setHeaderText("");
             alert.setContentText("Hopefully this is shown to all users");
             alert.showAndWait();
-
         });
     }
+
+    @Subscribe
+    public void NewMessageEvent(NewMessageEvent event) {
+
+        // Expects: {To,From,Text}
+        List<Object> msg_details = event.getMessage().getObjectsArr();
+
+        User user_to = (User) (msg_details).get(0); // User we need to send a message to
+        User user_from = (User) (msg_details).get(1);
+        String message_txt = (String) (msg_details).get(2);; // message from community we need to send to user
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("You have a new message");
+            alert.setHeaderText("From: " + user_from.getUserName());
+            alert.setContentText(message_txt);
+            alert.showAndWait();
+        });
+    }
+
+
+
 
 
     public static void setUser(User user) {

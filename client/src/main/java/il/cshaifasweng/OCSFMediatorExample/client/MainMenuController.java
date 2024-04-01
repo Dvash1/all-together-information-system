@@ -15,9 +15,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.hibernate.Hibernate;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.List;
 
 import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
 
@@ -152,18 +154,30 @@ public class MainMenuController {
 
     public void initialize() {
         EventBus.getDefault().register(this); // **** IF an event bus event is this file, this is needed.
-        User user = SimpleChatClient.getUser(); // Write into the label the username.
+        User user = SimpleChatClient.getUser(); // Get the user
         mainmenu_anchor_manager.setVisible(false);
         managerButton.setVisible(false);
+
+
         if (user != null) {
-            showUsername(user.getUserName());
+            showUsername(user.getUserName()); // Write into the label the username.
             if (user.isManager()) {
                 managerButton.setVisible(true);
             }
+            for( String msgs : user.getMessageList()) { // SEND ALL MESSAGES AVAILABLE.
+                System.out.println("Alerting a message");
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("You have a new message");
+                    alert.setHeaderText("From: ");
+                    alert.setContentText(msgs);
+                    alert.showAndWait();
+                });
+            }
+            user.clearMessageList(); // We went over every message in the list.
         }
         else {
             System.out.println("for some reason, user is null and this is not okay, okay?");
         }
-
     }
 }

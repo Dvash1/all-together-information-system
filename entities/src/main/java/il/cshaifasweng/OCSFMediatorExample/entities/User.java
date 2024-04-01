@@ -2,6 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -13,7 +14,7 @@ public class User implements Serializable {
 
     private String userName;
     @ManyToOne
-    @JoinColumn(name = "community",referencedColumnName = "communityName")
+    @JoinColumn(name = "community", referencedColumnName = "communityName")
     private Community community;
 
     private String teudatZehut;
@@ -24,8 +25,10 @@ public class User implements Serializable {
     private String secretQuestion;
     private String secretQuestionAnswer;
     private String phoneNumber;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> messageList;
 
-    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber, Community community) {
+    public User(String userName, String teudatZehut, String password, String secretQuestion, String secretQuestionAnswer, boolean isManager, String phoneNumber, Community community) {
         this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.password = password;
@@ -35,7 +38,8 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
         this.community = community;
     }
-    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber) {
+
+    public User(String userName, String teudatZehut, String password, String secretQuestion, String secretQuestionAnswer, boolean isManager, String phoneNumber) {
         this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.password = password;
@@ -44,8 +48,8 @@ public class User implements Serializable {
         this.isManager = isManager;
         this.phoneNumber = phoneNumber;
     }
-    public User()
-    {
+
+    public User() {
 
     }
 
@@ -61,7 +65,21 @@ public class User implements Serializable {
         this.userName = userName;
     }
 
+    public List<String> getMessageList() {
+        return messageList;
+    }
 
+    public void setMessageList(List<String> messageList) {
+        this.messageList = messageList;
+    }
+
+    public void addToMessageList(String msg) {
+        this.messageList.add(msg);
+    }
+
+    public void clearMessageList() {
+        this.messageList.clear();
+    }
 
     public String getTeudatZehut() {
         return teudatZehut;
@@ -118,4 +136,6 @@ public class User implements Serializable {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+
 }

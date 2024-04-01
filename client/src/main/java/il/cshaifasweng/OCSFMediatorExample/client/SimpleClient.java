@@ -11,7 +11,6 @@ public class SimpleClient extends AbstractClient {
 	private static int serverPort = 3000;
 	static SimpleClient client = null;
 
-	private String userName = null;
 
 
 	private SimpleClient(String host, int port) {
@@ -45,6 +44,10 @@ public class SimpleClient extends AbstractClient {
 		else if (message.getMessage().equals("Request denied"))
 		{
 			EventBus.getDefault().post(new DeniedTaskEvent(message));
+		}
+		else if (message.getMessage().equals("New Message"))
+		{
+			EventBus.getDefault().post(new NewMessageEvent(message));
 		}
 		else if (message.getMessage().equals("Volunteer to task"))
 		{

@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApproveRequestController {
@@ -95,12 +96,17 @@ public class ApproveRequestController {
 
             newMessage = new Message("Update task",selectedTask,currentUser);
             String text = denyRequestTA.getText();
-//            Message denialMessage = new Message("Send denial message",text,selectedTask.getTaskCreator());
-//            try {
-//                SimpleClient.getClient().sendToServer(denialMessage);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            List<Object> msg_details = new ArrayList<>();
+            msg_details.add(selectedTask.getTaskCreator());
+            msg_details.add(currentUser);
+            msg_details.add(text);
+            // To, From, Text
+            Message denialMessage = new Message("Send denial message",msg_details);
+            try {
+                SimpleClient.getClient().sendToServer(denialMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
 
             denyRequestTA.clear();

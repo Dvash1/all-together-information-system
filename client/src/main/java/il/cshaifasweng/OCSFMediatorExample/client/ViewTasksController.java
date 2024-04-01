@@ -86,9 +86,7 @@ public class ViewTasksController {
     private Button testingBtn;
     @FXML
     void testFunc(ActionEvent event) {
-
-        try
-        {
+        try {
             Message message = new Message("alert everybody");
             SimpleClient.getClient().sendToServer(message);
         }
@@ -133,18 +131,18 @@ public class ViewTasksController {
         });
     }
 //**************** DELETE ******************//
-@FXML
-void switchToViewEmergency(ActionEvent event) {
-    Platform.runLater(() -> {
-        try {
-            EventBus.getDefault().unregister(this);
-            SimpleChatClient.setRoot("ViewEmergencyCalls");
-        } catch (IOException e) {
+    @FXML
+    void switchToViewEmergency(ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("ViewEmergencyCalls");
+            } catch (IOException e) {
 
-            e.printStackTrace();
-        }
-    });
-}
+                e.printStackTrace();
+            }
+        });
+    }
 //**************** DELETE ******************//
 
 
@@ -204,10 +202,7 @@ void switchToViewEmergency(ActionEvent event) {
         catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
-
 
     @Subscribe
     public void completeTaskUpdate(CompleteTaskEvent event)
@@ -271,8 +266,6 @@ void switchToViewEmergency(ActionEvent event) {
 
         Message message = event.getMessage();
         Task updatedTask = (Task) message.getObject();
-
-
 
         for (int i = 0;i< taskList.size();i++)
         {
