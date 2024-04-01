@@ -1,40 +1,40 @@
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ForgotPasswordEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\PasswordChangeEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SendCompletionMessageEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\AwaitingApprovalTasksEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\serverConnectController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\EmergencyController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LogOutEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\GetUserEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LoginController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LoginEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\VolunteerToTaskEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\NewTaskController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\getEmergencyData.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\EmergencyEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SceneManager.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SimpleClient.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\WithdrawEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\CompleteTaskEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableClient.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ApproveRequestController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\MainMenuController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\DenialMessageEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\CreateTaskEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\getCommunityUsersEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LoadAllTasksEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SendNewTaskMessageEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\getDataEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\Main.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SimpleChatClient.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\AbstractClient.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableSWRClient.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\PrimaryController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ApprovedTaskEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ViewTasksController.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LoadOpenTasksEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ViewEmergencyCalls.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\AdaptableClient.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\DeniedTaskEvent.java
-C:\Users\Lior\Desktop\SE_HW\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\NoVolunteerEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ApproveRequestController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\CreateTaskEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\getDataEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\AbstractClient.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\AwaitingApprovalTasksEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SendNewTaskMessageEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\CompleteTaskEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\Main.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\EmergencyEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\getCommunityUsersEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LoginEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\MainMenuController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableClient.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\EmergencyController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\PasswordChangeEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SendCompletionMessageEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\DenialMessageEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SimpleChatClient.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableSWRClient.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ocsf\AdaptableClient.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\getEmergencyData.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\DeniedTaskEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\WithdrawEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\PrimaryController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ApprovedTaskEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LoadAllTasksEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\GetUserEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ViewTasksController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LoginController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ForgotPasswordEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LogOutEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\NoVolunteerEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\VolunteerToTaskEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\LoadOpenTasksEvent.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SimpleClient.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\NewTaskController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\ViewEmergencyCalls.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\serverConnectController.java
+C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\client\src\main\java\il\cshaifasweng\OCSFMediatorExample\client\SceneManager.java
