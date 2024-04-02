@@ -25,8 +25,6 @@ public class User implements Serializable {
     private String secretQuestion;
     private String secretQuestionAnswer;
     private String phoneNumber;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> messageList;
 
     public User(String userName, String teudatZehut, String password, String secretQuestion, String secretQuestionAnswer, boolean isManager, String phoneNumber, Community community) {
         this.userName = userName;
@@ -65,21 +63,21 @@ public class User implements Serializable {
         this.userName = userName;
     }
 
-    public List<String> getMessageList() {
-        return messageList;
-    }
+//    public List<String> getMessageList() {
+//        return messageList;
+//    }
 
-    public void setMessageList(List<String> messageList) {
-        this.messageList = messageList;
-    }
-
-    public void addToMessageList(String msg) {
-        this.messageList.add(msg);
-    }
-
-    public void clearMessageList() {
-        this.messageList.clear();
-    }
+//    public void setMessageList(List<String> messageList) {
+//        this.messageList = messageList;
+//    }
+//
+//    public void addToMessageList(String msg) {
+//        this.messageList.add(msg);
+//    }
+//
+//    public void clearMessageList() {
+//        this.messageList.clear();
+//    }
 
     public String getTeudatZehut() {
         return teudatZehut;

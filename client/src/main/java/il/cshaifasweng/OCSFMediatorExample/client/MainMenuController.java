@@ -122,13 +122,9 @@ public class MainMenuController {
     @FXML
     void logout(ActionEvent event) throws IOException {
         try {
-            // TODO: make a log out event and delete teudatzehut of current user from the hashmap in simpleserver.
             Message newMessage = new Message("Log Out");
             newMessage.setObject(SimpleChatClient.getUser());
             SimpleClient.getClient().sendToServer(newMessage);
-
-
-
         }
         catch (IOException e) {
 
@@ -158,23 +154,19 @@ public class MainMenuController {
         mainmenu_anchor_manager.setVisible(false);
         managerButton.setVisible(false);
 
-
         if (user != null) {
-            showUsername(user.getUserName()); // Write into the label the username.
+            showUsername(SimpleChatClient.getUser().getUserName());
             if (user.isManager()) {
                 managerButton.setVisible(true);
             }
-            for( String msgs : user.getMessageList()) { // SEND ALL MESSAGES AVAILABLE.
-                System.out.println("Alerting a message");
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("You have a new message");
-                    alert.setHeaderText("From: ");
-                    alert.setContentText(msgs);
-                    alert.showAndWait();
-                });
+
+            Message newMessage = new Message("Get user's messages");
+            newMessage.setObject(user.getTeudatZehut());
+            try {
+                SimpleClient.getClient().sendToServer(newMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            user.clearMessageList(); // We went over every message in the list.
         }
         else {
             System.out.println("for some reason, user is null and this is not okay, okay?");

@@ -42,6 +42,7 @@ public class SimpleServer extends AbstractServer {
 		configuration.addAnnotatedClass(User.class);
 		configuration.addAnnotatedClass(Community.class);
 		configuration.addAnnotatedClass(Emergency.class);
+		configuration.addAnnotatedClass(UserMessage.class);
 
 
 		ServiceRegistry serviceRegistry = new
@@ -199,8 +200,28 @@ public class SimpleServer extends AbstractServer {
 				session.save(t15);
 				session.flush();
 
-			}
 
+
+
+			}
+			CriteriaBuilder cb = session.getCriteriaBuilder();
+			CriteriaQuery<UserMessage> query = cb.createQuery(UserMessage.class);
+			Root<UserMessage> root = query.from(UserMessage.class); // Specify the root entity
+			query.select(root); // Specify the select clause
+
+			List<UserMessage> userMessages = session.createQuery(query).getResultList();
+			if (userMessages.isEmpty()) {
+				UserMessage um1 = new UserMessage("Test 1", "111222333", "444555666", "Normal");
+				UserMessage um2 = new UserMessage("Test 2", "111222333", "444555666", "Normal");
+				UserMessage um3 = new UserMessage("Test 3", "111222333", "444555666", "Normal");
+				UserMessage um4 = new UserMessage("Test 4", "111222333", "444555666", "Normal");
+
+				session.save(um1);
+				session.save(um2);
+				session.save(um3);
+				session.save(um4);
+				session.flush();
+			}
 			session.getTransaction().commit();
 		} catch (Exception exception) {
 			if (session != null) {
@@ -230,6 +251,17 @@ public class SimpleServer extends AbstractServer {
 		return tasks;
 	}
 
+	private static List<UserMessage> getAllUsersMessagesByTeudatZehut(String teudatZehut) throws Exception {
+		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaQuery<UserMessage> query = cb.createQuery(UserMessage.class);
+		Root<UserMessage> root = query.from(UserMessage.class);
+		if (!teudatZehut.isEmpty())
+		{
+			query.where(cb.equal(root.get("teudatZehut_to"), teudatZehut));
+		}
+		List<UserMessage> userMessages = session.createQuery(query).getResultList();
+		return userMessages;
+	}
 	private static List<Task> getCommunityTasks(User user,List<LocalDateTime> dateList) throws Exception
 	{
 
@@ -346,38 +378,58 @@ public class SimpleServer extends AbstractServer {
 		return user;
 	}
 
-	private static void sendMessageToClient(List<Object> msg_details) {
-		if (msg_details.isEmpty()) {
+
+
+	private static void sendMessageToClient(UserMessage message) throws Exception {
+		// TODO: REMOVE DEBUG?
+		// --DEBUG
+		System.out.println("sendMessageToClient called");
+		// ---
+		String message_type = message.getMessage_type();
+		String sender_zehut = message.getSender_zehut();
+		String to_zehut = message.getTeudatZehut_to();
+		String message_text = message.getMessage();
+		if (message_type.isEmpty() || sender_zehut.isEmpty() || message_text.isEmpty() || to_zehut.isEmpty()) {
 			return;
+		} // Check if anything is empty first.
+
+		// --DEBUG
+		System.out.println("I passed the empty check");
+		System.out.print("Sender is:");
+		System.out.println(sender_zehut);
+		System.out.print("Reciever is:");
+		System.out.println(to_zehut);
+		// ---
+
+		User message_reciever_user = getUserByTeudatZehut(to_zehut);
+		User message_sender_user = getUserByTeudatZehut(sender_zehut);
+
+		System.out.println(message_sender_user.getTeudatZehut());
+		System.out.println(message_reciever_user.getTeudatZehut());
+
+		if(idToClient.containsKey(to_zehut)) { // User is logged in.
+			// --DEBUG
+			System.out.println("User logged in");
+			// ---
+			ConnectionToClient Message_Reciever_Client = idToClient.get(to_zehut);
+			List<Object> messageDetails = new ArrayList<>();
+			messageDetails.add(message);
+			messageDetails.add(message_sender_user.getUserName());
+			Message_Reciever_Client.sendToClient(new Message("New Message", messageDetails)); // Send message as an object.
+			session.remove(message);
 		}
-		// Expects: {To,From,Text}.
-		User user_to = (User) (msg_details).get(0); // User we need to send a message to
-		User user_from = (User) (msg_details).get(1);
-		String MessageText = (String) (msg_details).get(2);; // message from community we need to send to user
 
-		try {
-			Message new_message = new Message("New Message", msg_details);
-			if (idToClient.containsKey(user_to.getTeudatZehut())) { // Check if client is connected
-				ConnectionToClient client_to_send = idToClient.get(user_to.getTeudatZehut()); // Get the client
-				// Send the message
-				client_to_send.sendToClient(new_message);
-			} else { // Not connected
-//				String[] to_append = new String[2];
-//				to_append[0] = user_from.getUserName();
-//				to_append[1] = MessageText;
+		else { // Not connected. Save to DB.
+			// --DEBUG
+			System.out.println("User not logged in");
+			// ---
+			session.save(message);
+			session.flush();
+			session.getTransaction().commit();
 
-				(getUserByTeudatZehut(user_to.getTeudatZehut())).addToMessageList(MessageText); // We add it to waiting messages.
-			}
 		}
-		catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
-
-    }
-
+	}
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
@@ -656,18 +708,37 @@ public class SimpleServer extends AbstractServer {
 
 			else if (request.equals("Send denial message"))
 			{
-				// To, From, Text
-				User user_to = (User) (message.getObjectsArr()).get(0); // User we need to send a message to
-				User user_from = (User) (message.getObjectsArr()).get(1);
-				String denialText = (String) (message.getObjectsArr()).get(2);; // message from community we need to send to user
-				sendMessageToClient(message.getObjectsArr());
+				// Hopefully, message has a UserMessage object in it.
+				try {
+					sendMessageToClient((UserMessage) message.getObject());
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 				// TODO: check if works
-				// implementation needed :
-				// find ConnectionToClient object of the user (if connected)
-				// send that client a message
 
 			}
 
+			else if (request.equals("Get user's messages")) { // Get by query a list of all the user messages for user
+				String teudatZehut = (String)message.getObject();
+				List<UserMessage> userMessageList = getAllUsersMessagesByTeudatZehut(teudatZehut);
+				System.out.print("Size of messageList is:");
+				System.out.println(userMessageList.size());
+
+				System.out.print("The value of !isEmpty is: ");
+				System.out.println(!userMessageList.isEmpty());
+
+				if(!userMessageList.isEmpty()) {
+//					message.setMessage("New Message"); // Use NewMessageEvent in SimpleChatClient
+					for (UserMessage userMessage : userMessageList) { // Loop over list and send a message to the client.
+//						message.setObject(userMessage);
+						System.out.println("I'm sending a message");
+						sendMessageToClient(userMessage);
+					}
+					session.flush();
+					session.getTransaction().commit();
+				}
+			}
 
 
 			else if (request.equals("add client")){

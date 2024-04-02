@@ -96,12 +96,9 @@ public class ApproveRequestController {
 
             newMessage = new Message("Update task",selectedTask,currentUser);
             String text = denyRequestTA.getText();
-            List<Object> msg_details = new ArrayList<>();
-            msg_details.add(selectedTask.getTaskCreator());
-            msg_details.add(currentUser);
-            msg_details.add(text);
+            UserMessage user_message = new UserMessage(text, currentUser.getTeudatZehut(), selectedTask.getTaskCreator().getTeudatZehut() , "Normal");
             // To, From, Text
-            Message denialMessage = new Message("Send denial message",msg_details);
+            Message denialMessage = new Message("Send denial message",user_message);
             try {
                 SimpleClient.getClient().sendToServer(denialMessage);
             } catch (IOException e) {

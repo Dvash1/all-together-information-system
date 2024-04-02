@@ -2,6 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
+import il.cshaifasweng.OCSFMediatorExample.entities.UserMessage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +21,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -37,9 +37,10 @@ import org.greenrobot.eventbus.Subscribe;
 public class SimpleChatClient extends Application {
 
     private static Scene scene;
+    private static Stage stage;
     private SimpleClient client;
 
-    private static User user = null; // This is the client's user. TODO: need to make this a PRIVATE and not shared across member??
+    private static User user = null;
 
 
     @Override
@@ -48,7 +49,7 @@ public class SimpleChatClient extends Application {
         EventBus.getDefault().register(this);
 //    	client = SimpleClient.getClient();
 //    	client.openConnection();
-        scene = new Scene(loadFXML("ConnectToServer"), 1280, 900);
+        scene = new Scene(loadFXML("ConnectToServer"), 500, 500); // TODO: make this modular
         stage.setScene(scene);
 
         stage.setOnCloseRequest(event -> {
@@ -100,20 +101,31 @@ public class SimpleChatClient extends Application {
 
     @Subscribe
     public void NewMessageEvent(NewMessageEvent event) {
+        System.out.println(event.getMessage().getObjectsArr().size());
+        UserMessage userMessage = (UserMessage) event.getMessage().getObjectsArr().get(0); // Get the usermessage
 
-        // Expects: {To,From,Text}
-        List<Object> msg_details = event.getMessage().getObjectsArr();
+        String from = (String) event.getMessage().getObjectsArr().get(1);
+        System.out.println(from);
+        switch(userMessage.getMessage_type()) { // Switch uses equals()
+            case "Normal": // Create an alert
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("You have a new message");
+                    alert.setHeaderText("From: " + from + " Sent on:" + userMessage.getWas_sent_on());
+                    alert.setContentText(userMessage.getMessage());
+                    alert.showAndWait();
+                });
+                break;
 
-        User user_to = (User) (msg_details).get(0); // User we need to send a message to
-        User user_from = (User) (msg_details).get(1);
-        String message_txt = (String) (msg_details).get(2);; // message from community we need to send to user
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("You have a new message");
-            alert.setHeaderText("From: " + user_from.getUserName());
-            alert.setContentText(message_txt);
-            alert.showAndWait();
-        });
+            case "Not Complete":
+                // Pop up with ok/no
+                break;
+
+
+
+        }
+
+
     }
 
 
@@ -131,8 +143,9 @@ public class SimpleChatClient extends Application {
 
 
 
-    static void setRoot(String fxml) throws IOException {
+    static void setRoot(String fxml) throws IOException { // TODO: make this modular.
         scene.setRoot(loadFXML(fxml));
+
     }
 
     public static Parent loadFXML(String fxml) throws IOException {
