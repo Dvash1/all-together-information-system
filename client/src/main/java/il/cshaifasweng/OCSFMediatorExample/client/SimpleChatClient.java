@@ -69,6 +69,7 @@ public class SimpleChatClient extends Application {
         stage.show();
     }
 
+    // delete/replace with sending message to users
     @Subscribe
     public void testEvent(getDataEvent event) {
         Platform.runLater(() -> {

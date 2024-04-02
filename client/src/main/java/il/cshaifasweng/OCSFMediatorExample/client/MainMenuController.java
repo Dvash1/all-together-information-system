@@ -50,6 +50,8 @@ public class MainMenuController {
 
     @FXML
     private Button emergencyButton;
+    @FXML
+    private Button requestButton;
 
     private User user;
 
@@ -66,6 +68,18 @@ public class MainMenuController {
         });
     }
 
+    @FXML
+    void switchToApproveRequests (ActionEvent event) {
+        Platform.runLater(() -> {
+            try {
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("ApproveRequest");
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        });
+    }
     @FXML
     void emergency_button_press(ActionEvent event) throws IOException {
         SimpleChatClient.sendEmergencyRequest(user);
