@@ -325,7 +325,7 @@ public class ViewTasksController {
 
         });
 
-        currentUser = SimpleChatClient.getUser();
+
         // enable/disable volunteering&task completion buttons
         tasksTableView.setOnMouseClicked(e -> {
             Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
