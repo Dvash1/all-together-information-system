@@ -9,18 +9,22 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.NewTaskController">
    <children>
-      <RadioButton fx:id="B1" layoutX="32.0" layoutY="78.0" mnemonicParsing="false" text="I need a ride" />
-      <RadioButton fx:id="B2" layoutX="32.0" layoutY="104.0" mnemonicParsing="false" text="i need help with babysitting" />
-      <RadioButton fx:id="B3" layoutX="32.0" layoutY="133.0" mnemonicParsing="false" text="i need someone to deliver my groceries" />
-      <RadioButton fx:id="otherBtn" layoutX="32.0" layoutY="205.0" mnemonicParsing="false" text="other" />
+      <RadioButton fx:id="B1" layoutX="32.0" layoutY="78.0" mnemonicParsing="false" text="Transportation" />
+      <RadioButton fx:id="B2" layoutX="32.0" layoutY="104.0" mnemonicParsing="false" text="Babysitting" />
+      <RadioButton fx:id="B3" layoutX="32.0" layoutY="130.0" mnemonicParsing="false" text="Grocery Delivery" />
+      <RadioButton fx:id="otherBtn" layoutX="32.0" layoutY="286.0" mnemonicParsing="false" text="Other" />
+      <RadioButton fx:id="B5" layoutX="32.0" layoutY="182.0" mnemonicParsing="false" text="Taking The Dog For a Walk" />
+      <RadioButton fx:id="B6" layoutX="32.0" layoutY="208.0" mnemonicParsing="false" text="Medicine Delivery" />
+      <RadioButton fx:id="B7" layoutX="32.0" layoutY="234.0" mnemonicParsing="false" text="Tutoring" />
+      <RadioButton fx:id="B8" layoutX="32.0" layoutY="260.0" mnemonicParsing="false" text="Tech Support" />
       <Text layoutX="241.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Select required task">
          <font>
             <Font name="Corbel Italic" size="15.0" />
          </font>
       </Text>
-      <RadioButton fx:id="B4" layoutX="32.0" layoutY="160.0" mnemonicParsing="false" text="my mown needs to be lawned" />
-      <Button fx:id="submitBtn" layoutX="252.0" layoutY="273.0" mnemonicParsing="false" onAction="#createNewTask" text="Submit request" />
-      <TextField fx:id="otherTF" layoutX="104.0" layoutY="201.0" prefHeight="25.0" prefWidth="447.0" />
+      <RadioButton fx:id="B4" layoutX="32.0" layoutY="156.0" mnemonicParsing="false" text="Grass Mowing" />
+      <Button fx:id="submitBtn" layoutX="249.0" layoutY="354.0" mnemonicParsing="false" onAction="#createNewTask" text="Submit request" />
+      <TextField fx:id="otherTF" layoutX="101.0" layoutY="282.0" prefHeight="25.0" prefWidth="447.0" />
       <Button fx:id="backBtn" layoutX="29.0" layoutY="25.0" mnemonicParsing="false" onAction="#showPreviousScene" prefHeight="25.0" prefWidth="56.0" text="Back" />
    </children>
 </AnchorPane>

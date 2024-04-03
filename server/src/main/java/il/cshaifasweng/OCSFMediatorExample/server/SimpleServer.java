@@ -25,6 +25,8 @@ import javax.persistence.Query;
 import org.hibernate.Criteria;
 
 import javax.persistence.criteria.*;
+import java.util.concurrent.*;
+
 
 
 
@@ -32,6 +34,8 @@ public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
 	private static HashMap<String,ConnectionToClient> idToClient = new HashMap<>();
 	private static HashMap<ConnectionToClient,String> clientToId = new HashMap<>();
+//	private static ArrayList<ConnectionToClient> blockedClients = new ArrayList<>();
+
 	private static Session session;
 
 	private static SessionFactory getSessionFactory() throws
@@ -438,7 +442,6 @@ public class SimpleServer extends AbstractServer {
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 
-			// TODO: give the user 5-6 times to try and connect and screw him for 30 seconds if he makes mistakes
 			// When a user needs to connect
 			if(request.equals("Login Request")){
 				String[] loginDetails = (String[])message.getObject();
@@ -446,10 +449,10 @@ public class SimpleServer extends AbstractServer {
 				String password = loginDetails[1];
 				System.out.println("teudatZehut : "+teudatZehut);
 				User user = getUserByTeudatZehut(teudatZehut);
+				System.out.println("numOfTries:"+user.getnumberOfLoginTries());
 				boolean subscriberFound = false;
-				if (user != null && !idToClient.containsKey(teudatZehut)) {
+				if (user != null && !idToClient.containsKey(teudatZehut) && !user.isLocked()) {
 					if(password.equals(user.getPassword())) {
-
 						// Bind client to id.
 						for(SubscribedClient subscriber: SubscribersList) {
 							if (subscriber.getClient() == client) {
@@ -461,6 +464,8 @@ public class SimpleServer extends AbstractServer {
 						}
 						if (subscriberFound) { // We log in only after making sure the client is subscribed
 							message.setMessage("Login Succeed");
+							user.resetNumberOfLoginTries();
+							session.flush();
 							message.setUser(user);
 						}
 						else { // Client wasn't subscribed. Shouldn't happen, debug this if happened.
@@ -474,13 +479,61 @@ public class SimpleServer extends AbstractServer {
 						}
 					}
 					else {
-						System.out.println(password + " versus "  + user.getPassword() );
-						message.setMessage("Login Failed: Wrong Password");
+						System.out.println(password + " versus "  + user.getPassword());
+						user.incrementNumberOfLoginTries();
+
+						session.flush();
+						if (user.isLocked()) {
+							message.setMessage("Login Failed: Locked");
+						}
+						else if(user.getnumberOfLoginTries() >= 6) {
+							if(!user.isLocked()) {
+								user.setLocked(true);
+								session.flush();
+							}
+							message.setMessage("Login Failed: Locked");
+
+							// Create a personal scheduler for the user if not already created
+							System.out.println("Schedular Created");
+
+							// Schedule the task to unlock the user after 30 seconds
+							ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+							scheduler.schedule(() -> {
+								// Log thread information
+								System.out.println("Scheduled task is running on thread: " + Thread.currentThread().getName());
+								try {
+									Session session2 = sessionFactory.openSession();
+									session2.beginTransaction();
+									user.resetNumberOfLoginTries();
+									user.setLocked(false);
+									session2.update(user);
+									session2.flush();
+									session2.getTransaction().commit();
+									session2.close();
+									System.out.println("30 seconds passed, user is unlocked");
+									scheduler.shutdown();
+								} catch (Exception e) {
+									// Log and handle the exception
+									System.err.println("Exception occurred in scheduled task:");
+									e.printStackTrace();
+								}
+							}, 30, TimeUnit.SECONDS);
+							System.out.println("After scheduler scheduled");
+
+							// Additional logging to check if the main thread is still active
+							System.out.println("Main thread is active: " + Thread.currentThread().getName() + " " + Thread.currentThread().getState());
+						}
+						else {
+							message.setMessage("Login Failed: Wrong Password");
+						}
 					}
 				}
 				else {
 					if(user == null) {
 						message.setMessage("Login Failed: No Such User Exists");
+					}
+					else if (user.isLocked()) {
+						message.setMessage("Login Failed: Locked");
 					}
 					else {
 						message.setMessage("Login Failed: Someone is already connected to the given ID");
@@ -490,7 +543,19 @@ public class SimpleServer extends AbstractServer {
 				client.sendToClient(message);
 			}
 
-
+			// TO DELETE
+//			else if(request.equals("Block Client")) {
+//				ScheduledExecutorService scheduler;
+//				scheduler = Executors.newSingleThreadScheduledExecutor();
+//				scheduler.schedule(() -> {
+//					message.setMessage("Free Client");
+//					try {
+//						client.sendToClient(message);
+//					} catch (IOException e) {
+//						throw new RuntimeException(e);
+//					}
+//				}, 30, TimeUnit.SECONDS);
+//			}
 
 			else if(request.equals("Log Out")){
 				System.out.println("In Log Out");
