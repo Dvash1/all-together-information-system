@@ -8,7 +8,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import java.util.List;
@@ -20,7 +20,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -37,6 +36,7 @@ import org.greenrobot.eventbus.Subscribe;
 public class SimpleChatClient extends Application {
 
     private static Scene scene;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     private static Stage stage;
     private SimpleClient client;
 
@@ -69,24 +69,6 @@ public class SimpleChatClient extends Application {
         stage.show();
     }
 
-//    public void alert(String message) throws IOException {
-//
-//        EventBus.getDefault().register(this);
-//
-//        event.consume();
-//
-//        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-//        alert.setTitle("New message");
-//        alert.setHeaderText("");
-//        alert.setContentText(message);
-//        alert.setGraphic(null);
-//
-//        Optional<ButtonType> result = alert.showAndWait();
-//        if (result.isPresent() && result.get() == ButtonType.OK) {
-//            stage.close();
-//        }
-//
-//    }
 
     @Subscribe
     public void testEvent(getDataEvent event) {
@@ -103,15 +85,16 @@ public class SimpleChatClient extends Application {
     public void NewMessageEvent(NewMessageEvent event) {
         System.out.println(event.getMessage().getObjectsArr().size());
         UserMessage userMessage = (UserMessage) event.getMessage().getObjectsArr().get(0); // Get the usermessage
-
+        String formatted_date = (userMessage.getWas_sent_on()).format(formatter);
         String from = (String) event.getMessage().getObjectsArr().get(1);
         System.out.println(from);
+
         switch(userMessage.getMessage_type()) { // Switch uses equals()
             case "Normal": // Create an alert
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("You have a new message");
-                    alert.setHeaderText("From: " + from + " Sent on:" + userMessage.getWas_sent_on());
+                    alert.setHeaderText("From: " + from + "  Sent on: " + formatted_date);
                     alert.setContentText(userMessage.getMessage());
                     alert.showAndWait();
                 });
@@ -119,13 +102,53 @@ public class SimpleChatClient extends Application {
 
             case "Not Complete":
                 // Pop up with ok/no
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Pending task completion");
+                    alert.setHeaderText("Sent on: " + formatted_date);
+                    alert.setContentText(userMessage.getMessage());
+                    alert.setGraphic(null);
+
+
+                    ButtonType buttonTypeYes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+                    ButtonType buttonTypeNo = new ButtonType("No", ButtonBar.ButtonData.NO);
+
+                    alert.getButtonTypes().clear();
+                    alert.getButtonTypes().addAll(buttonTypeYes,buttonTypeNo);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get().equals(buttonTypeYes)) {
+                        // Pop a textinputdialog.
+                        TextInputDialog tiDialog = new TextInputDialog();
+                        tiDialog.setTitle("Send a completion message to your manager");
+                        tiDialog.setHeaderText("Please enter a message to send to your community manager: ");
+                        tiDialog.setContentText("Message: ");
+
+                        Optional<String> dialog_result = tiDialog.showAndWait();
+
+                        if (dialog_result.isPresent()) {
+                            String to_manager_text = "Task done by: \"" + user.getUserName() + "\"\nHas been marked complete with the message: \"" + dialog_result.get() + "\"";
+                            UserMessage to_manager_message = new UserMessage(to_manager_text , user.getTeudatZehut(), user.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
+                            Message to_send = new Message("Send message", to_manager_message);
+
+                            try {
+                                SimpleClient.getClient().sendToServer(to_send);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    } else  {
+                        Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                        alert2.setTitle("You have a new message");
+                        alert2.setHeaderText("");
+                        alert2.setContentText("Once you have completed the task, please update your community manager.\nIf you're experiencing trouble completing the task, you may withdraw through the task list.");
+                        alert2.showAndWait();
+                    }
+                });
                 break;
 
-
-
         }
-
-
     }
 
 

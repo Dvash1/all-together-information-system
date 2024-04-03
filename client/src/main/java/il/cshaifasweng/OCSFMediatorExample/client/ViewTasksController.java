@@ -187,9 +187,10 @@ public class ViewTasksController {
             Message message = new Message("Update task",selectedTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
 
-
-//            Message messageToManager = new Message("Send to Manager",text,currentUser);
-//            SimpleClient.getClient().sendToServer(messageToManager);
+            // Send message to manager
+            UserMessage managerMessage = new UserMessage(text, currentUser.getTeudatZehut(), currentUser.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
+            Message messageToManager = new Message("Send message",managerMessage);
+            SimpleClient.getClient().sendToServer(messageToManager);
 
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -251,7 +252,7 @@ public class ViewTasksController {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Success");
                 alert.setHeaderText(null);
-                alert.setContentText("You have successfully withdraw from volunteering");
+                alert.setContentText("You have successfully withdrawn from volunteering");
                 alert.showAndWait();
             });
         }
@@ -297,6 +298,14 @@ public class ViewTasksController {
         try {
             Message message = new Message("Update task",selectedTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
+
+            // Scheduler implemented in simpleserver
+            String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
+            String message_text = "24 hours have passed on the task:\n\"" + selectedTask.getRequiredTask() + "\"\nBy: " + selectedTask.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
+            UserMessage not_completed_usermessage = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
+            Message not_completed_message = new Message(selectedTask.getId(),"Task not completed on time");
+            not_completed_message.setObject(not_completed_usermessage);
+            SimpleClient.getClient().sendToServer(not_completed_message);
 
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -349,10 +358,6 @@ public class ViewTasksController {
         taskList = FXCollections.observableArrayList((List<Task>) message.getObject());
         tasksTableView.setItems(taskList);
     }
-
-
-
-
 
 
     public void initialize()

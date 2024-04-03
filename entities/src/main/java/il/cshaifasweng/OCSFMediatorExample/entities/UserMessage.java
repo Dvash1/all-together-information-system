@@ -12,6 +12,7 @@ public class UserMessage implements Serializable {
     String teudatZehut_sender;
     String teudatZehut_to;
     LocalDateTime was_sent_on = LocalDateTime.now();
+    LocalDateTime to_send_on;
     String message_type;
 
     @Id
@@ -20,9 +21,7 @@ public class UserMessage implements Serializable {
 
 
 
-    /*  Main constructor  */
-
-
+    /*  Non Scheduled Main constructor  */
     public UserMessage(String message, String sender_zehut, String to_zehut, String message_type) {
         this.message = message;
         this.teudatZehut_sender = sender_zehut;
@@ -31,8 +30,25 @@ public class UserMessage implements Serializable {
         this.was_sent_on = LocalDateTime.now();
     }
 
+    /* Scheduled constructor, need to have send-on */
+    public UserMessage(String message, String sender_zehut, String to_zehut, String message_type, LocalDateTime to_send_on) {
+        this.message = message;
+        this.teudatZehut_sender = sender_zehut;
+        this.teudatZehut_to = to_zehut;
+        this.message_type = message_type;
+        this.was_sent_on = LocalDateTime.now();
+        this.to_send_on = to_send_on;
+    }
     public UserMessage() {
 
+    }
+
+    public LocalDateTime getTo_send_on() {
+        return to_send_on;
+    }
+
+    public void setTo_send_on(LocalDateTime to_send_on) {
+        this.to_send_on = to_send_on;
     }
 
     public String getTeudatZehut_to() {
