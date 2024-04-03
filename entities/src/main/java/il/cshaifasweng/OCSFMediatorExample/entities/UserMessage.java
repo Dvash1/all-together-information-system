@@ -1,12 +1,16 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "User_Messages")
 public class UserMessage implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "message_id")
+    private int id;
     String message;
 
     String teudatZehut_sender;
@@ -15,9 +19,7 @@ public class UserMessage implements Serializable {
     LocalDateTime to_send_on;
     String message_type;
 
-    @Id
-    @GeneratedValue
-    private Long id;
+
 
 
 
@@ -90,7 +92,7 @@ public class UserMessage implements Serializable {
     public void setMessage_type(String message_type) {
         this.message_type = message_type;
     }
-    public Long getId() {
+    public int getId() {
         return id;
     }
 }

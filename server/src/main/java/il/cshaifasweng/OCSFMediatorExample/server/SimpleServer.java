@@ -450,15 +450,17 @@ public class SimpleServer extends AbstractServer {
 				messageDetails.add(message_sender_user.getUserName());
 				Message_Reciever_Client.sendToClient(new Message("New Message", messageDetails)); // Send message as an object.
 				newSession.remove(message);
+				newSession.flush();
 			} else { // Not connected. Save to DB.
 				// --DEBUG
-				System.out.println("User not logged in");
+
 				// ---
 				newSession.save(message);
 				newSession.flush();
-				newSession.getTransaction().commit();
 
 			}
+
+//			newSession.getTransaction().commit();
 		}
 	}
 	@Override
@@ -600,6 +602,7 @@ public class SimpleServer extends AbstractServer {
 						UserMessage usermessage_to_send = (UserMessage) message.getObject();
                         try {
                             sendMessageToClient(usermessage_to_send, new_session);
+							System.out.println("called sendMessageToClient");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -610,6 +613,8 @@ public class SimpleServer extends AbstractServer {
 					scheduler.shutdown();
 				}, 2, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
 			}
+
+
 			else if(request.equals("Emergency Request")){
 				String teudatzehut = (String)message.getObject();
 				System.out.println("teudatzehut: " + teudatzehut);
@@ -782,8 +787,7 @@ public class SimpleServer extends AbstractServer {
 								// If it is, we send a message to everyone to tell them nobody volunteered yet.
 								System.out.println("state is Request");
 								String text_for_message = "The task: \"" + task_to_check.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
-								UserMessage usermessage_to_send = new UserMessage(text_for_message,message.getUser().getTeudatZehut(),"Community","Community");
-                                List<User> community_list = new ArrayList<>();
+								List<User> community_list = new ArrayList<>();
 								// GET LIST
                                 try {
                                     community_list = getCommunityUsers(message.getUser(), new_session);
@@ -794,15 +798,18 @@ public class SimpleServer extends AbstractServer {
                                 System.out.println("Starting loop");
 								try {
 									for (User user_to_send : community_list) { // Loop through entire community and send them the message.
-										usermessage_to_send.setTeudatZehut_to(user_to_send.getTeudatZehut());
+										UserMessage usermessage_to_send = new UserMessage(text_for_message,message.getUser().getTeudatZehut(),user_to_send.getTeudatZehut(),"Community");
+										System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
 										sendMessageToClient(usermessage_to_send, new_session);
 									}
-									new_session.beginTransaction().commit();
+
 								}
 								catch (Exception e) {
 										e.printStackTrace();
 								}
 								finally {
+
+									new_session.getTransaction().commit();
 									new_session.close();
 								}
 							}

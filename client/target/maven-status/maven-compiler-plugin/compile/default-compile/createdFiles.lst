@@ -12,6 +12,7 @@ il\cshaifasweng\OCSFMediatorExample\client\ViewEmergencyCalls$1.class
 il\cshaifasweng\OCSFMediatorExample\client\ApproveRequestController.class
 il\cshaifasweng\OCSFMediatorExample\client\getDataEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\SendCompletionMessageEvent.class
+il\cshaifasweng\OCSFMediatorExample\client\NewMessageEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableClient.class
 il\cshaifasweng\OCSFMediatorExample\client\ViewTasksController.class
 il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController.class
