@@ -423,35 +423,43 @@ public class SimpleServer extends AbstractServer {
 		System.out.print("Reciever is:");
 		System.out.println(to_zehut);
 		// ---
+		boolean toCommunity = to_zehut.equals("Community");
 
-		User message_reciever_user = getUserByTeudatZehut(to_zehut, newSession);
 		User message_sender_user = getUserByTeudatZehut(sender_zehut, newSession);
 
-		System.out.println(message_sender_user.getTeudatZehut());
-		System.out.println(message_reciever_user.getTeudatZehut());
 
-		if(idToClient.containsKey(to_zehut)) { // User is logged in.
-			// --DEBUG
-			System.out.println("User logged in");
-			// ---
-			ConnectionToClient Message_Reciever_Client = idToClient.get(to_zehut);
-			List<Object> messageDetails = new ArrayList<>();
-			messageDetails.add(message);
-			messageDetails.add(message_sender_user.getUserName());
-			Message_Reciever_Client.sendToClient(new Message("New Message", messageDetails)); // Send message as an object.
-			newSession.remove(message);
-		}
+		if (toCommunity) {
+			List<User> community_list = message_sender_user.getCommunity().getCommunityUsers();
 
-		else { // Not connected. Save to DB.
-			// --DEBUG
-			System.out.println("User not logged in");
-			// ---
-			newSession.save(message);
-			newSession.flush();
-			newSession.getTransaction().commit();
+			for	(User user_to_send: community_list) {
+
+			}
+
 
 		}
 
+
+		else {
+			if (idToClient.containsKey(to_zehut)) { // User is logged in.
+				// --DEBUG
+				System.out.println("User logged in");
+				// ---
+				ConnectionToClient Message_Reciever_Client = idToClient.get(to_zehut);
+				List<Object> messageDetails = new ArrayList<>();
+				messageDetails.add(message);
+				messageDetails.add(message_sender_user.getUserName());
+				Message_Reciever_Client.sendToClient(new Message("New Message", messageDetails)); // Send message as an object.
+				newSession.remove(message);
+			} else { // Not connected. Save to DB.
+				// --DEBUG
+				System.out.println("User not logged in");
+				// ---
+				newSession.save(message);
+				newSession.flush();
+				newSession.getTransaction().commit();
+
+			}
+		}
 	}
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -648,8 +656,6 @@ public class SimpleServer extends AbstractServer {
 				User u1 = message.getUser();
 				List<Task> tasks = getOpenTasks(u1, session);
 				// fetches all OPEN (AND APPROVED) TASKS in database from the same community
-				getTaskByTaskID(1, session);
-				System.out.println("Gotten task by ID.");
 				message.setObject(tasks);
 				client.sendToClient(message);
 			}
@@ -748,8 +754,6 @@ public class SimpleServer extends AbstractServer {
 				else if (task.getTaskState().equals("Denied"))
 				{
 					message.setMessage("Request denied");
-					// ***MISSING IMPLEMENTATION***
-					// need to send message to community member that requested the help
 				}
 				else
 				{
@@ -757,6 +761,58 @@ public class SimpleServer extends AbstractServer {
 				}
 				sendToAllClients(message);
 //				client.sendToClient(message);
+				System.out.println("IN SWITCH");
+				switch (task.getTaskState()) {
+					case "Request":
+						// Give 24 hours for someone to volunteer.
+						ScheduledExecutorService scheduler;
+						scheduler = Executors.newSingleThreadScheduledExecutor();
+						System.out.println("Created Thread in SWITCH");
+						int taskID_original =  ((Task) (message.getObject())).getId();
+						scheduler.schedule(() -> {
+							System.out.println("Switch Scheduled event started");
+							// This will be executed after 1 day
+							Session new_session = sessionFactory.openSession();
+							new_session.beginTransaction();
+							Task task_to_check = getTaskByTaskID(taskID_original, new_session);
+							System.out.print("(Switch)Got the task. Id is: ");
+							System.out.println(task_to_check.getId());
+							System.out.println(task_to_check.getTaskState());
+							if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
+								// If it is, we send a message to everyone to tell them nobody volunteered yet.
+								System.out.println("state is Request");
+								String text_for_message = "The task: \"" + task_to_check.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
+								UserMessage usermessage_to_send = new UserMessage(text_for_message,message.getUser().getTeudatZehut(),"Community","Community");
+                                List<User> community_list = new ArrayList<>();
+								// GET LIST
+                                try {
+                                    community_list = getCommunityUsers(message.getUser(), new_session);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+								// -----
+                                System.out.println("Starting loop");
+								try {
+									for (User user_to_send : community_list) { // Loop through entire community and send them the message.
+										usermessage_to_send.setTeudatZehut_to(user_to_send.getTeudatZehut());
+										sendMessageToClient(usermessage_to_send, new_session);
+									}
+									new_session.beginTransaction().commit();
+								}
+								catch (Exception e) {
+										e.printStackTrace();
+								}
+								finally {
+									new_session.close();
+								}
+							}
+
+							System.out.println("Task not volunteered to on time");
+							scheduler.shutdown();
+						}, 5, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
+						break;
+
+				}
 
 			}
 

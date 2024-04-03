@@ -188,7 +188,8 @@ public class ViewTasksController {
             SimpleClient.getClient().sendToServer(message);
 
             // Send message to manager
-            UserMessage managerMessage = new UserMessage(text, currentUser.getTeudatZehut(), currentUser.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
+            String to_manager_text = "Task done by: \"" + currentUser.getUserName() + "\"\nHas been marked complete with the message:\n\"" + text + "\"";
+            UserMessage managerMessage = new UserMessage(to_manager_text, currentUser.getTeudatZehut(), currentUser.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
             Message messageToManager = new Message("Send message",managerMessage);
             SimpleClient.getClient().sendToServer(messageToManager);
 
@@ -196,7 +197,7 @@ public class ViewTasksController {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Task completed");
                 alert.setHeaderText(null);
-                alert.setContentText("You have successfully completed the task.\nA message has been sent to your community manager.(NOT REALLY NEED TO IMPLEMENT)");
+                alert.setContentText("You have successfully completed the task.\nA message has been sent to your community manager.");
                 alert.showAndWait();
             });
         }

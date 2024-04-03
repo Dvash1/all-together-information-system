@@ -90,11 +90,17 @@ public class SimpleChatClient extends Application {
         System.out.println(from);
 
         switch(userMessage.getMessage_type()) { // Switch uses equals()
+            case "Community":
             case "Normal": // Create an alert
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("You have a new message");
-                    alert.setHeaderText("From: " + from + "  Sent on: " + formatted_date);
+                    if (userMessage.getMessage_type().equals("Community")) {
+                        alert.setHeaderText("From: System, Sent on: " + formatted_date);
+                    }
+                    else {
+                        alert.setHeaderText("From: " + from + ", Sent on: " + formatted_date);
+                    }
                     alert.setContentText(userMessage.getMessage());
                     alert.showAndWait();
                 });
@@ -127,7 +133,7 @@ public class SimpleChatClient extends Application {
                         Optional<String> dialog_result = tiDialog.showAndWait();
 
                         if (dialog_result.isPresent()) {
-                            String to_manager_text = "Task done by: \"" + user.getUserName() + "\"\nHas been marked complete with the message: \"" + dialog_result.get() + "\"";
+                            String to_manager_text = "Task done by: \"" + user.getUserName() + "\"\nHas been marked complete with the message:\n\"" + dialog_result.get() + "\"";
                             UserMessage to_manager_message = new UserMessage(to_manager_text , user.getTeudatZehut(), user.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
                             Message to_send = new Message("Send message", to_manager_message);
 
@@ -147,6 +153,7 @@ public class SimpleChatClient extends Application {
                     }
                 });
                 break;
+
 
         }
     }
