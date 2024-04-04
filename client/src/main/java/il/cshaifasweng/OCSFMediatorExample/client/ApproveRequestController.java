@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApproveRequestController {
@@ -57,7 +58,7 @@ public class ApproveRequestController {
     {
         try {
             EventBus.getDefault().unregister(this);
-            SimpleChatClient.setRoot("ViewTasks");
+            SimpleChatClient.setRoot("mainmenu");
         }
         catch (IOException e) {
 
@@ -95,12 +96,14 @@ public class ApproveRequestController {
 
             newMessage = new Message("Update task",selectedTask,currentUser);
             String text = denyRequestTA.getText();
-//            Message denialMessage = new Message("Send denial message",text,selectedTask.getTaskCreator());
-//            try {
-//                SimpleClient.getClient().sendToServer(denialMessage);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            UserMessage user_message = new UserMessage(text, currentUser.getTeudatZehut(), selectedTask.getTaskCreator().getTeudatZehut() , "Normal");
+            // To, From, Text
+            Message denialMessage = new Message("Send message",user_message);
+            try {
+                SimpleClient.getClient().sendToServer(denialMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
 
             denyRequestTA.clear();

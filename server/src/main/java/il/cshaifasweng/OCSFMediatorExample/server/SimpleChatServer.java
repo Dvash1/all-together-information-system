@@ -3,7 +3,6 @@ package il.cshaifasweng.OCSFMediatorExample.server;
 import java.io.IOException;
 import static il.cshaifasweng.OCSFMediatorExample.server.SimpleServer.createDataBase;
 
-
 public class SimpleChatServer
 {
 	

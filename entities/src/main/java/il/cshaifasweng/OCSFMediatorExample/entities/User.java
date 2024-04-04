@@ -2,6 +2,10 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -24,6 +28,8 @@ public class User implements Serializable {
     private String secretQuestion;
     private String secretQuestionAnswer;
     private String phoneNumber;
+    private int numberOfLoginTries;
+    private boolean isLocked;
 
     public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber, Community community) {
         this.userName = userName;
@@ -34,6 +40,9 @@ public class User implements Serializable {
         this.isManager = isManager;
         this.phoneNumber = phoneNumber;
         this.community = community;
+        this.numberOfLoginTries = 0;
+        this.isLocked = false;
+
     }
     public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber) {
         this.userName = userName;
@@ -43,9 +52,11 @@ public class User implements Serializable {
         this.secretQuestionAnswer = secretQuestionAnswer;
         this.isManager = isManager;
         this.phoneNumber = phoneNumber;
+        this.numberOfLoginTries = 0;
+        this.isLocked = false;
     }
-    public User()
-    {
+
+    public User() {
 
     }
 
@@ -118,4 +129,23 @@ public class User implements Serializable {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public int getnumberOfLoginTries() {
+        return numberOfLoginTries;
+    }
+    public void incrementNumberOfLoginTries() {
+        this.numberOfLoginTries++;
+    }
+    public void resetNumberOfLoginTries() {
+        this.numberOfLoginTries = 0;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
 }

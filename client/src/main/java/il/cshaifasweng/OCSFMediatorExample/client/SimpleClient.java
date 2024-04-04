@@ -11,7 +11,6 @@ public class SimpleClient extends AbstractClient {
 	private static int serverPort = 3000;
 	static SimpleClient client = null;
 
-	private String userName = null;
 
 
 	private SimpleClient(String host, int port) {
@@ -29,6 +28,7 @@ public class SimpleClient extends AbstractClient {
 		// TODO: make this a switch instead? :))
 		Message message = (Message) msg;
 		String request = message.getMessage();
+		System.out.println("handleMessageFromServer: "+request);
 		if (message.getMessage().equals("alert everybody"))
 		{
 			EventBus.getDefault().post(new getDataEvent(message));
@@ -44,6 +44,10 @@ public class SimpleClient extends AbstractClient {
 		else if (message.getMessage().equals("Request denied"))
 		{
 			EventBus.getDefault().post(new DeniedTaskEvent(message));
+		}
+		else if (message.getMessage().equals("New Message"))
+		{
+			EventBus.getDefault().post(new NewMessageEvent(message));
 		}
 		else if (message.getMessage().equals("Volunteer to task"))
 		{
@@ -69,11 +73,18 @@ public class SimpleClient extends AbstractClient {
 		{
 			EventBus.getDefault().post(new getEmergencyData(message));
 		}
+		else if (message.getMessage().equals("update histogram"))
+		{
+			EventBus.getDefault().post(new updateHistogramEvent(message));
+		}
 		else if (message.getMessage().equals("get awaiting approval requests"))
 		{
 			EventBus.getDefault().post(new AwaitingApprovalTasksEvent(message));
 		}
-
+		else if (message.getMessage().equals("log out"))
+		{
+			EventBus.getDefault().post(new LogOutEvent(message));
+		}
 		else if (message.getMessage().equals("get users"))
 		{
 			EventBus.getDefault().post(new getCommunityUsersEvent(message));

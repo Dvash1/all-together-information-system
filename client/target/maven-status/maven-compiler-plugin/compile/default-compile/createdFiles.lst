@@ -1,6 +1,7 @@
 il\cshaifasweng\OCSFMediatorExample\client\ocsf\AbstractClient.class
 il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController$3.class
 il\cshaifasweng\OCSFMediatorExample\client\ApproveRequestController$1.class
+il\cshaifasweng\OCSFMediatorExample\client\LogOutEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\PrimaryController$1.class
 il\cshaifasweng\OCSFMediatorExample\client\getEmergencyData.class
 il\cshaifasweng\OCSFMediatorExample\client\Main.class
@@ -11,6 +12,7 @@ il\cshaifasweng\OCSFMediatorExample\client\ViewEmergencyCalls$1.class
 il\cshaifasweng\OCSFMediatorExample\client\ApproveRequestController.class
 il\cshaifasweng\OCSFMediatorExample\client\getDataEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\SendCompletionMessageEvent.class
+il\cshaifasweng\OCSFMediatorExample\client\NewMessageEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableClient.class
 il\cshaifasweng\OCSFMediatorExample\client\ViewTasksController.class
 il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController.class
@@ -38,6 +40,7 @@ il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableSWRClient.class
 il\cshaifasweng\OCSFMediatorExample\client\MainMenuController.class
 il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController$2.class
 il\cshaifasweng\OCSFMediatorExample\client\SimpleClient.class
+il\cshaifasweng\OCSFMediatorExample\client\updateHistogramEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\DenialMessageEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\LoginEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\EmergencyController.class

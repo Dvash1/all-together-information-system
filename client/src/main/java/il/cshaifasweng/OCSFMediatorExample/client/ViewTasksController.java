@@ -53,57 +53,15 @@ public class ViewTasksController {
 
     @FXML
     private Button withdrawBtn;
+
+    @FXML
+    private Button backBtn;
+
     private ObservableList<Task> taskList ;
 
     @FXML
     private TextArea messageToManagerTA;
 
-
-
-
-    @FXML
-    private Button approveBtn;
-    @FXML
-    void switchToApproveRequest(ActionEvent event) {
-
-        Platform.runLater(() -> {
-            try {
-                EventBus.getDefault().unregister(this);
-                SimpleChatClient.setRoot("ApproveRequest");
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-        });
-    }
-
-
-
-    @FXML
-    private Button tempBtn;
-
-    @FXML
-    private Button testingBtn;
-    @FXML
-    void testFunc(ActionEvent event) {
-
-        try
-        {
-            Message message = new Message("alert everybody");
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-    @FXML
-    private Button infoBtn;
-
-    @FXML
-    private Button backBtn;
 
 
     @FXML
@@ -118,37 +76,6 @@ public class ViewTasksController {
             e.printStackTrace();
         }
     }
-
-    @FXML
-    void switchToCommunityInformation(ActionEvent event) {
-
-        Platform.runLater(() -> {
-            try {
-                EventBus.getDefault().unregister(this);
-                SimpleChatClient.setRoot("CommunityInformation");
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-        });
-    }
-//**************** DELETE ******************//
-@FXML
-void switchToViewEmergency(ActionEvent event) {
-    Platform.runLater(() -> {
-        try {
-            EventBus.getDefault().unregister(this);
-            SimpleChatClient.setRoot("ViewEmergencyCalls");
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
-    });
-}
-//**************** DELETE ******************//
-
-
-
 
     @Subscribe
     public void displayNewTask(ApprovedTaskEvent event) {
@@ -189,25 +116,24 @@ void switchToViewEmergency(ActionEvent event) {
             Message message = new Message("Update task",selectedTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
 
-
-//            Message messageToManager = new Message("Send to Manager",text,currentUser);
-//            SimpleClient.getClient().sendToServer(messageToManager);
+            // Send message to manager
+            String to_manager_text = "Task done by: \"" + currentUser.getUserName() + "\"\nHas been marked complete with the message:\n\"" + text + "\"";
+            UserMessage managerMessage = new UserMessage(to_manager_text, currentUser.getTeudatZehut(), currentUser.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
+            Message messageToManager = new Message("Send message",managerMessage);
+            SimpleClient.getClient().sendToServer(messageToManager);
 
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Task completed");
                 alert.setHeaderText(null);
-                alert.setContentText("You have successfully completed the task.\nA message has been sent to your community manager.(NOT REALLY NEED TO IMPLEMENT)");
+                alert.setContentText("You have successfully completed the task.\nA message has been sent to your community manager.");
                 alert.showAndWait();
             });
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
-
 
     @Subscribe
     public void completeTaskUpdate(CompleteTaskEvent event)
@@ -256,7 +182,7 @@ void switchToViewEmergency(ActionEvent event) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Success");
                 alert.setHeaderText(null);
-                alert.setContentText("You have successfully withdraw from volunteering");
+                alert.setContentText("You have successfully withdrawn from volunteering");
                 alert.showAndWait();
             });
         }
@@ -271,8 +197,6 @@ void switchToViewEmergency(ActionEvent event) {
 
         Message message = event.getMessage();
         Task updatedTask = (Task) message.getObject();
-
-
 
         for (int i = 0;i< taskList.size();i++)
         {
@@ -297,13 +221,21 @@ void switchToViewEmergency(ActionEvent event) {
     @FXML
     void volunteerToTask(ActionEvent event) {
 
-
+        currentUser = SimpleChatClient.getUser();
         Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
         selectedTask.setTaskState("In Progress");
         selectedTask.setTaskVolunteer(currentUser);
         try {
             Message message = new Message("Update task",selectedTask,currentUser);
             SimpleClient.getClient().sendToServer(message);
+
+            // Scheduler implemented in simpleserver
+            String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
+            String message_text = "24 hours have passed on the task:\n\"" + selectedTask.getRequiredTask() + "\"\nBy: " + selectedTask.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
+            UserMessage not_completed_usermessage = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
+            Message not_completed_message = new Message(selectedTask.getId(),"Task not completed on time");
+            not_completed_message.setObject(not_completed_usermessage);
+            SimpleClient.getClient().sendToServer(not_completed_message);
 
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -350,68 +282,12 @@ void switchToViewEmergency(ActionEvent event) {
 
 
     @Subscribe
-    public void loadTasks(LoadOpenTasksEvent event)
-    {
+    public void loadTasks(LoadOpenTasksEvent event) {
         System.out.println("loadTasks called");
         Message message = event.getMessage();
         taskList = FXCollections.observableArrayList((List<Task>) message.getObject());
         tasksTableView.setItems(taskList);
-        // ****IMPORTANT****
-        //in the future when one client creates a new task, the steps to update the GUI of all clients should be:
-        //- message will send a message to ALL subscribed clients with the new Task
-        //- we create a new Event class that will do the following line :
-        // check that the currentUser and the newly created task come from the same community
-        // check that the current displayed scene is the view tasks one ***
-        // call : taskList.add(new task to be added)
-        // this should update all the clients interfaces automatically ( assuming they are browsing tasks)
-        // *** we might not have to check the current scene, maybe adding the task to taskList will be enough.
     }
-
-    // "Log in"
-    @Subscribe
-    public void setLoggedInUser(GetUserEvent event)
-    {
-        System.out.println("setLoggedInUser called");
-        Message message = event.getMessage();
-        currentUser = (User) message.getObject();
-
-        // enable/disable volunteering&task completion buttons
-        tasksTableView.setOnMouseClicked(e -> {
-            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
-            // check if user can volunteer to the task
-            // can also override the equals function in Task instead of comparing ID's
-            if(selectedTask != null)
-            {
-                if (selectedTask.getTaskState().equals("Request") && selectedTask.getTaskCreator().getId() != currentUser.getId()) {
-
-                    volunteerBtn.setDisable(false);
-                } else {
-                    volunteerBtn.setDisable(true);
-                }
-                //getTaskVolunteer() might return null, so we must check for that as well
-                if (selectedTask.getTaskVolunteer() != null && selectedTask.getTaskState().equals("In Progress") && selectedTask.getTaskVolunteer().getId() == currentUser.getId()) {
-                    completeBtn.setDisable(false);
-                    withdrawBtn.setDisable(false);
-
-                } else {
-                    completeBtn.setDisable(true);
-                    withdrawBtn.setDisable(true);
-                }
-            }
-        });
-        // ******* remove the function when Log in will be implemented **********
-        try {
-            Message newMessage = new Message("get open tasks",currentUser);
-            SimpleClient.getClient().sendToServer(newMessage);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
 
 
     public void initialize()
@@ -450,49 +326,38 @@ void switchToViewEmergency(ActionEvent event) {
 
         });
 
-//        currentUser = SimpleChatClient.getUser();
-//        // enable/disable volunteering&task completion buttons
-//        tasksTableView.setOnMouseClicked(e -> {
-//            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
-//            // check if user can volunteer to the task
-//            // can also override the equals function in User instead of comparing ID's
-//            if (selectedTask.getTaskState().equals("Request") && selectedTask.getTaskCreator().getId() != currentUser.getId()) {
-//
-//                volunteerBtn.setDisable(false);
-//            } else {
-//                volunteerBtn.setDisable(true);
-//            }
-        //getTaskVolunteer() might return null so we must check for that as well
-    //        if (selectedTask.getTaskVolunteer() != null && selectedTask.getTaskState().equals("In Progress") && selectedTask.getTaskVolunteer().getId() != currentUser.getId())
-    //        {
-    //            completeBtn.setDisable(false);
-    //        }
-    //        else {
-    //            completeBtn.setDisable(true);
-    //        }
-//        });
 
+        // enable/disable volunteering&task completion buttons
+        tasksTableView.setOnMouseClicked(e -> {
+            Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
+            // check if user can volunteer to the task
+            // can also override the equals function in Task instead of comparing ID's
+            if(selectedTask != null)
+            {
+                if (selectedTask.getTaskState().equals("Request") && selectedTask.getTaskCreator().getId() != currentUser.getId()) {
 
+                    volunteerBtn.setDisable(false);
+                } else {
+                    volunteerBtn.setDisable(true);
+                }
+                //getTaskVolunteer() might return null, so we must check for that as well
+                if (selectedTask.getTaskVolunteer() != null && selectedTask.getTaskState().equals("In Progress") && selectedTask.getTaskVolunteer().getId() == currentUser.getId()) {
+                    completeBtn.setDisable(false);
+                    withdrawBtn.setDisable(false);
 
-
-//        try {
-//            Message message = new Message("get user");
-//            SimpleClient.getClient().sendToServer(message);
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        // uncomment when Log in is implemented
-        //
+                } else {
+                    completeBtn.setDisable(true);
+                    withdrawBtn.setDisable(true);
+                }
+            }
+        });
         try {
-            Message message = new Message("get open tasks",currentUser);
-            SimpleClient.getClient().sendToServer(message);
+            Message newMessage = new Message("get open tasks",currentUser);
+            SimpleClient.getClient().sendToServer(newMessage);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 }

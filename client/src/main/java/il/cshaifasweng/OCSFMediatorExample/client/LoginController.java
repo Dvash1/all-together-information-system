@@ -78,7 +78,6 @@ public class LoginController {
     private Scene scene;
     private Parent root;
 
-    private static int number_of_login_attempts = 0;
 
     @FXML
     void emergency_button_press(ActionEvent event) throws IOException {
@@ -93,7 +92,7 @@ public class LoginController {
 
     @FXML
     void switch_form(ActionEvent event) {
-        if(event.getSource() == forgot_password_button) {
+        if(event.getSource() == forgot_password_button || event.getSource() == backButton_new_pass) {
             login_form.setVisible(false);
             forgot_form.setVisible(true);
             new_password_form.setVisible(false);
@@ -106,20 +105,15 @@ public class LoginController {
     }
     @FXML
     void login_button_push(ActionEvent event) throws IOException {
-        if(number_of_login_attempts >= 6) {
-
-        }
         String username = login_field.getText();
         String password = password_field.getText();
-        String[] loginDetails = new String[]{username,password};
-        Message message = new Message( "Login Request",loginDetails,null);
+        String[] loginDetails = new String[]{username, password};
+        Message message = new Message("Login Request", loginDetails, null);
         SimpleClient.getClient().sendToServer(message);
         System.out.println("message sent with parameters: " + loginDetails[0] + "," + loginDetails[1]);
-
     }
     @Subscribe
     public void login(LoginEvent event) throws IOException {
-        // **TODO: please check why sometimes when you try to log in with teudatzehut and password that are in the db it doesnt match?
         System.out.println("IN login");
         Message message = event.getMessage();
         String message_text = message.getMessage();
@@ -140,10 +134,19 @@ public class LoginController {
         }
 
 
-        else {
-            System.out.println("Log in failed");
+        else if(message_text.equals("Login Failed: Wrong Password")){
+            System.out.println("Log in failed, wrong password");
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
+                alert.setTitle("Login Failed");
+                alert.setHeaderText("Login Failed");
+                alert.show();
+            });
+        }
+        else if(message_text.equals("Login Failed: Locked")) {
+            System.out.println("Log in failed - locked");
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Locked for too many wrong tries, try again in 30 seconds");
                 alert.setTitle("Login Failed");
                 alert.setHeaderText("Login Failed");
                 alert.show();
@@ -169,14 +172,15 @@ public class LoginController {
             alert.setHeaderText(null);
             alert.show();
         }
+        else {
+            String username = teudatzehut_field_forgot.getText();
+            String selectedQuestion = (String) question_bar_forgot.getSelectionModel().getSelectedItem();
+            String answer = answer_field_forgot.getText();
 
-        String username = teudatzehut_field_forgot.getText();
-        String selectedQuestion = (String) question_bar_forgot.getSelectionModel().getSelectedItem();
-        String answer = answer_field_forgot.getText();
-
-        String[] forgotDetails = new String[]{username,selectedQuestion,answer};
-        Message message = new Message( "Forgot Password Request",forgotDetails,null);
-        SimpleClient.getClient().sendToServer(message);
+            String[] forgotDetails = new String[]{username, selectedQuestion, answer};
+            Message message = new Message("Forgot Password Request", forgotDetails, null);
+            SimpleClient.getClient().sendToServer(message);
+        }
     }
 
     @Subscribe
@@ -191,11 +195,10 @@ public class LoginController {
         }
         else {
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such ID, or the password is wrong");
                 alert.setTitle("Login Failed");
                 alert.setHeaderText("Login Failed");
                 alert.show();
-                number_of_login_attempts += 1;
             });
         }
     }
@@ -225,6 +228,7 @@ public class LoginController {
     @Subscribe
     public void passwordChanged(PasswordChangeEvent event) {
         String message = event.getMessage().getMessage();
+        System.out.println("passwordChanged: " + message);
         if(message.equals("Password Change Succeed")) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Your password has successfully been changed!");

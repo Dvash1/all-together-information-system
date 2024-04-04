@@ -26,6 +26,17 @@ public class NewTaskController {
 
     @FXML
     private RadioButton B4;
+    @FXML
+    private RadioButton B5;
+
+    @FXML
+    private RadioButton B6;
+
+    @FXML
+    private RadioButton B7;
+
+    @FXML
+    private RadioButton B8;
 
     @FXML
     private RadioButton otherBtn;
@@ -143,6 +154,10 @@ public class NewTaskController {
         B2.setToggleGroup(toggleGroup);
         B3.setToggleGroup(toggleGroup);
         B4.setToggleGroup(toggleGroup);
+        B5.setToggleGroup(toggleGroup);
+        B6.setToggleGroup(toggleGroup);
+        B7.setToggleGroup(toggleGroup);
+        B8.setToggleGroup(toggleGroup);
         otherBtn.setToggleGroup(toggleGroup);
     }
 }

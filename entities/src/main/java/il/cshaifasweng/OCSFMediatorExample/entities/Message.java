@@ -2,12 +2,16 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Message implements Serializable {
     int taskID;
     String message;
     Object object; // will cast to specific object type when needed.
+    List<Object> objectsArr;
+
     User user; // message sending user
+
 
 
     /*  Main constructor  */
@@ -40,11 +44,23 @@ public class Message implements Serializable {
         this.object = null;
     }
 
+    public Message(String message, Object object) {
+        this.message = message;
+        this.object = object;
+    }
+
+    public Message(String message, List<Object> objectsArr) {
+        this.message = message;
+        this.objectsArr = objectsArr;
+    }
+
+
 
 
     public int getTaskID() {
         return taskID;
     }
+
 
 
     public String getMessage() {
@@ -55,6 +71,19 @@ public class Message implements Serializable {
         this.taskID = taskID;
     }
 
+    public void appendToObjectsArr(Object object) {
+        this.objectsArr.add(object);
+    }
+    public void removeLastFromObjectsArr() {
+        this.objectsArr.removeLast();
+    }
+    public void setObjectsArr(List<Object> objectArray) {
+        this.objectsArr = objectArray;
+    }
+
+    public List<Object> getObjectsArr() {
+        return objectsArr;
+    }
 
     public void setMessage(String message) {
         this.message = message;

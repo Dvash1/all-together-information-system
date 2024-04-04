@@ -4,9 +4,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 // because emergency class is not implemented yet, this code is missing an implementation of "live updating" (update the histogram whenever someone presses the emergency button)
 // a simple solution could be to add the emergency object to the observable list, if the requirements are met.
 // TODO: after an emergency button has been processed, send a msg to relevant clients to update them.
-
-import il.cshaifasweng.OCSFMediatorExample.entities.Message;
-import il.cshaifasweng.OCSFMediatorExample.entities.Task;
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -59,10 +57,10 @@ public class ViewEmergencyCalls implements Initializable {
     private Button backBtn;
 
     @FXML
-    private DatePicker endDate;
+    private DatePicker endDatePicker;
 
     @FXML
-    private DatePicker startDate;
+    private DatePicker startDatePicker;
 
     @FXML
     private BarChart<String, Number> hist;
@@ -73,16 +71,23 @@ public class ViewEmergencyCalls implements Initializable {
     @FXML
     private NumberAxis yAxis;
 
+    private int yAxisMaxValue;
+
+    private RadioButton lastTG1Btn;
+
+    private RadioButton lastTG2Btn;
+
     // Going back to menu button
     @FXML
     private Button menuButton;
+
 
     @FXML
     void switchToMenu(ActionEvent event) {
         Platform.runLater(() -> {
             try {
-                //change back to ViewTasks
-                SimpleChatClient.setRoot("ViewTasks"); // ***** Switch this to correct root when menu is implemented
+                EventBus.getDefault().unregister(this);
+                SimpleChatClient.setRoot("mainmenu"); // ***** Switch this to correct root when menu is implemented
             } catch (IOException e) {
 
                 e.printStackTrace();
@@ -96,7 +101,7 @@ public class ViewEmergencyCalls implements Initializable {
     {
         try {
             EventBus.getDefault().unregister(this);
-            SimpleChatClient.setRoot("ViewTasks");
+            SimpleChatClient.setRoot("mainmenu");
         }
         catch (IOException e) {
 
@@ -106,14 +111,14 @@ public class ViewEmergencyCalls implements Initializable {
 
     @FXML
     void disablePicker(ActionEvent event) {
-        startDate.setDisable(true);
-        endDate.setDisable(true);
+        startDatePicker.setDisable(true);
+        endDatePicker.setDisable(true);
     }
 
     @FXML
     void enablePicker(ActionEvent event) {
-        startDate.setDisable(false);
-        endDate.setDisable(false);
+        startDatePicker.setDisable(false);
+        endDatePicker.setDisable(false);
     }
 
 
@@ -130,8 +135,8 @@ public class ViewEmergencyCalls implements Initializable {
 //        first we'll check that if the user pressed specific dates, that they are valid.
         if(specificDatesRB.isSelected())
         {
-            LocalDate startDateSelected = startDate.getValue();
-            LocalDate endDateSelected = endDate.getValue();
+            LocalDate startDateSelected = startDatePicker.getValue();
+            LocalDate endDateSelected = endDatePicker.getValue();
 
             if(startDateSelected == null || endDateSelected == null)
             {
@@ -163,28 +168,35 @@ public class ViewEmergencyCalls implements Initializable {
         RadioButton first = (RadioButton) TG1.getSelectedToggle();
         RadioButton second = (RadioButton) TG2.getSelectedToggle();
 
+        // update last selected buttons
+        lastTG1Btn = first;
+        lastTG2Btn = second;
 
 
         if (first == allCommunitiesRB && second == allDatesRB)
         {
             message = new Message("emergency everything",currentUser);
+            hist.setTitle("Emergency requests report for all communities and all dates ");
         }
         else if (first == myCommunityRB && second == allDatesRB)
         {
             message = new Message("emergency my community all dates",currentUser);
+            hist.setTitle("Emergency requests report for community \"" +currentUser.getCommunity().getCommunityName() + "\" and all dates ");
         }
         // second == specific dates from here
         else {
-            LocalDateTime startDate = LocalDateTime.of(this.startDate.getValue(), LocalTime.MIN);
-            LocalDateTime endDate = LocalDateTime.of(this.endDate.getValue(), LocalTime.MAX);
+            LocalDateTime startDate = LocalDateTime.of(startDatePicker.getValue(), LocalTime.MIN);
+            LocalDateTime endDate = LocalDateTime.of(endDatePicker.getValue(), LocalTime.MAX);
             List<LocalDateTime> dateList = new ArrayList<>();
             dateList.add(startDate);
             dateList.add(endDate);
 
             if (first == allCommunitiesRB) {
                 message = new Message("emergency all community specific dates", dateList, currentUser);
+                hist.setTitle("Emergency requests report for all communities from " + startDatePicker.getValue().format(dateFormatter) + " to " + endDatePicker.getValue().format(dateFormatter));
             } else {
                 message = new Message("emergency my community specific dates", dateList, currentUser);
+                hist.setTitle("Emergency requests report for community \"" +currentUser.getCommunity().getCommunityName() + "\" from " + startDatePicker.getValue().format(dateFormatter) + " to " + endDatePicker.getValue().format(dateFormatter));
             }
         }
 
@@ -203,11 +215,11 @@ public class ViewEmergencyCalls implements Initializable {
     {
 
         Message message = event.getMessage();
-        List<Task> taskList = (List<Task>) message.getObject();
+        List<Emergency> emergenciesList = (List<Emergency>) message.getObject();
         Map<String, Integer> datesToAmount = new TreeMap<>();
         // Populate datesToAmount
-        for (Task task : taskList) {
-            LocalDate date = task.getCreationTime().toLocalDate();
+        for (Emergency emergency : emergenciesList) {
+            LocalDate date = emergency.getCallTime().toLocalDate();
             String dateString = date.toString();
             datesToAmount.put(dateString, datesToAmount.getOrDefault(dateString, 0) + 1);
         }
@@ -228,13 +240,78 @@ public class ViewEmergencyCalls implements Initializable {
 
         Platform.runLater(() -> {
 
-            int maxAmount = datesToAmount.values().stream().mapToInt(Integer::intValue).max().orElse(0);
-            ((NumberAxis) hist.getYAxis()).setUpperBound(maxAmount + 1);
+            int maxAmount = datesToAmount.values().stream().mapToInt(Integer::intValue).max().orElse(0) + 1;
+            yAxisMaxValue = maxAmount;
+            ((NumberAxis) hist.getYAxis()).setUpperBound(maxAmount);
             hist.getData().setAll(series);
             hist.setVisible(true);
         });
     }
 
+
+    @Subscribe
+    public void updateHistogram(updateHistogramEvent event)
+    {
+
+        Message message = event.getMessage();
+        User user = message.getUser();
+        Emergency newEmergency = (Emergency) message.getObject();
+        LocalDateTime callDate = newEmergency.getCallTime();
+        String formattedDate = LocalDate.parse(callDate.toLocalDate().toString()).format(dateFormatter);
+
+        if(hist.isVisible())
+        {
+            XYChart.Series<String, Number> series = hist.getData().get(0); // current displayed series
+
+            LocalDateTime startDate = startDatePicker.getValue() != null ?
+                    LocalDateTime.of(startDatePicker.getValue(), LocalTime.MIN) : null;
+            LocalDateTime endDate = startDatePicker.getValue() != null ?
+                    LocalDateTime.of(endDatePicker.getValue(), LocalTime.MAX) : null;
+
+            boolean fromSameCommunity = SimpleChatClient.getUser().getCommunity().getCommunityName().equals(user.getCommunity().getCommunityName());
+
+            // check all cases where we would update the histogram
+            if ((lastTG1Btn == allCommunitiesRB && lastTG2Btn == allDatesRB) ||
+                    (lastTG2Btn == allDatesRB && lastTG1Btn == myCommunityRB && fromSameCommunity) ||
+                    (lastTG2Btn == specificDatesRB && endDate!=null && startDate != null && (startDate.isBefore(callDate) && endDate.isAfter(callDate)) && (lastTG1Btn == allCommunitiesRB || (lastTG1Btn == myCommunityRB && fromSameCommunity))))
+            {
+                // iterate through the series, find the date and increment the Y-axis value by 1
+                // if date doesn't exist, manually add it
+                boolean dateExists = false;
+                for (XYChart.Data<String, Number> data : series.getData())
+                {
+                    if (data.getXValue().equals(formattedDate))
+                    {
+                        dateExists = true;
+
+                        Platform.runLater(() -> {
+                            int amount = data.getYValue().intValue();
+                            amount++;
+                            data.setYValue(amount);
+                            if (yAxisMaxValue == amount )
+                            {
+                                ((NumberAxis) hist.getYAxis()).setUpperBound(amount + 1);
+                                yAxisMaxValue = amount+1;
+                            }
+
+                        });
+                        break;
+                    }
+                }
+
+                if(dateExists == false)
+                {
+                    Platform.runLater(() -> {
+
+                        XYChart.Data<String, Number> newDate = new XYChart.Data<>(formattedDate, 1);
+                        series.getData().add(newDate);
+
+                    });
+                }
+            }
+        }
+
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -246,7 +323,9 @@ public class ViewEmergencyCalls implements Initializable {
         ((NumberAxis) hist.getYAxis()).setMinorTickCount(0);
         hist.getYAxis().setAutoRanging(false);
 
-
+        // initialize buttons
+        lastTG1Btn = null;
+        lastTG2Btn = null;
 
         // create ToggleGroup for buttons
         TG1 = new ToggleGroup();
@@ -285,7 +364,7 @@ public class ViewEmergencyCalls implements Initializable {
                         });
 
                         //set datePicker to show today's date
-//                        return LocalDate.now();
+    //                        return LocalDate.now();
                         return null;
                     }
                 } else {
@@ -293,8 +372,8 @@ public class ViewEmergencyCalls implements Initializable {
                 }
             }
         };
-    startDate.setConverter(stringConverter);
-    endDate.setConverter(stringConverter);
+    startDatePicker.setConverter(stringConverter);
+    endDatePicker.setConverter(stringConverter);
 
     }
 

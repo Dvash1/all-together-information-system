@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import org.hibernate.HibernateException;
@@ -25,12 +28,15 @@ import javax.persistence.Query;
 import org.hibernate.Criteria;
 
 import javax.persistence.criteria.*;
+import java.util.concurrent.*;
+
 
 
 
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
 	private static HashMap<String,ConnectionToClient> idToClient = new HashMap<>();
+	private static HashMap<ConnectionToClient,String> clientToId = new HashMap<>();
 	private static Session session;
 
 	private static SessionFactory getSessionFactory() throws
@@ -41,6 +47,7 @@ public class SimpleServer extends AbstractServer {
 		configuration.addAnnotatedClass(User.class);
 		configuration.addAnnotatedClass(Community.class);
 		configuration.addAnnotatedClass(Emergency.class);
+		configuration.addAnnotatedClass(UserMessage.class);
 
 
 		ServiceRegistry serviceRegistry = new
@@ -65,7 +72,7 @@ public class SimpleServer extends AbstractServer {
 			session.beginTransaction();
 
 			//check if database is empty first
-			if (getAllTasks(null).isEmpty()) {
+			if (getAllTasks(null, session).isEmpty()) {
 				// first community
 				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true,"0523842728");
 				Community c1 = new Community("Kfir",u1);
@@ -87,6 +94,18 @@ public class SimpleServer extends AbstractServer {
 				t4.setCompletionTime(LocalDateTime.now().minusDays(5));
 				Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
 
+				Emergency e1 = new Emergency(u1, LocalDateTime.now().minusDays(2));
+				Emergency e2 = new Emergency(u2, LocalDateTime.now().minusDays(4));
+				Emergency e3 = new Emergency(u3, LocalDateTime.now().minusDays(1));
+				Emergency e4 = new Emergency(u4, LocalDateTime.now().minusDays(3));
+				Emergency e5 = new Emergency(u5, LocalDateTime.now().minusDays(5));
+				Emergency e6 = new Emergency(u6, LocalDateTime.now().minusDays(2));
+				Emergency e7 = new Emergency(u7, LocalDateTime.now().minusDays(4));
+				Emergency e8 = new Emergency(u8, LocalDateTime.now().minusDays(1));
+				Emergency e9 = new Emergency(u9, LocalDateTime.now().minusDays(3));
+				Emergency e10 = new Emergency(u10, LocalDateTime.now().minusDays(5));
+
+
 				session.save(u1);
 				session.save(c1);
 				session.save(u2);
@@ -102,7 +121,6 @@ public class SimpleServer extends AbstractServer {
 				session.save(u10);
 				session.flush();
 
-
 				session.save(t1);
 				session.save(t2);
 				session.save(t3);
@@ -110,30 +128,51 @@ public class SimpleServer extends AbstractServer {
 				session.save(t5);
 				session.flush();
 
+				session.save(e1);
+				session.save(e2);
+				session.save(e3);
+				session.save(e4);
+				session.save(e5);
+				session.flush();
 
+				session.save(e6);
+				session.save(e7);
+				session.save(e8);
+				session.save(e9);
+				session.save(e10);
+				session.flush();
 
-				// second community
-
-				User u11 = new User("Emma Thompson", "746158392", "pass456", "What is your favorite hobby?", "Reading", true,"0598765432");
-				Community c2 = new Community("Lemons",u11);
+// second community
+				User u11 = new User("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", true, "0598765432");
+				Community c2 = new Community("Lemons", u11);
 				u11.setCommunity(c2);
-				User u12 = new User("James White", "538294617", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
-				User u13 = new User("Ava Green", "921475386", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
-				User u14 = new User("Ethan Harris", "364892175", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
-				User u15 = new User("Mia Lee", "485739216", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
-				User u16 = new User("Jacob Hall", "627183945", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
-				User u17 = new User("Isabella Young", "819276435", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
-				User u18 = new User("Noah King", "294617583", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
-				User u19 = new User("Sophie Baker", "173849265", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
-				User u20 = new User("William Cook", "582716394", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
-
+				User u12 = new User("James White", "444555666", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
+				User u13 = new User("Ava Green", "777888999", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
+				User u14 = new User("Ethan Harris", "222333444", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
+				User u15 = new User("Mia Lee", "555666777", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
+				User u16 = new User("Jacob Hall", "888999000", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
+				User u17 = new User("Isabella Young", "333444555", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
+				User u18 = new User("Noah King", "666777888", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
+				User u19 = new User("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
+				User u20 = new User("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
 
 				Task t6 = new Task("mow the lawn", LocalDateTime.now().minusHours(3), "Request", u11);
 				Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "Request", u12);
-				Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13,u17);
+				Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13, u17);
 				t8.setCompletionTime(LocalDateTime.now().minusDays(2));
 				Task t9 = new Task("clean the garage", LocalDateTime.now().minusDays(3), "Request", u14);
 				Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Request", u15);
+
+				Emergency e11 = new Emergency(u11, LocalDateTime.now().minusDays(3));
+				Emergency e12 = new Emergency(u12, LocalDateTime.now().minusDays(1));
+				Emergency e13 = new Emergency(u13, LocalDateTime.now().minusDays(2));
+				Emergency e14 = new Emergency(u14, LocalDateTime.now().minusDays(4));
+				Emergency e15 = new Emergency(u15, LocalDateTime.now().minusDays(5));
+				Emergency e16 = new Emergency(u16, LocalDateTime.now().minusDays(2));
+				Emergency e17 = new Emergency(u17, LocalDateTime.now().minusDays(3));
+				Emergency e18 = new Emergency(u18, LocalDateTime.now().minusDays(1));
+				Emergency e19 = new Emergency(u19, LocalDateTime.now().minusDays(4));
+				Emergency e20 = new Emergency(u20, LocalDateTime.now().minusDays(5));
 
 				session.save(u11);
 				session.save(c2);
@@ -150,7 +189,6 @@ public class SimpleServer extends AbstractServer {
 				session.save(u20);
 				session.flush();
 
-
 				session.save(t6);
 				session.save(t7);
 				session.save(t8);
@@ -158,6 +196,20 @@ public class SimpleServer extends AbstractServer {
 				session.save(t10);
 				session.flush();
 
+
+				session.save(e11);
+				session.save(e12);
+				session.save(e13);
+				session.save(e14);
+				session.save(e15);
+				session.flush();
+
+				session.save(e16);
+				session.save(e17);
+				session.save(e18);
+				session.save(e19);
+				session.save(e20);
+				session.flush();
 
 				// third community
 
@@ -174,7 +226,6 @@ public class SimpleServer extends AbstractServer {
 				User u29 = new User("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", false, "0567890120", c3);
 				User u30 = new User("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather", false, "0532109874", c3);
 
-
 				Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "Request", u21);
 				Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);
 				Task t13 = new Task("trim the hedges", LocalDateTime.now().minusWeeks(3), "Complete", u23, u27);
@@ -182,6 +233,16 @@ public class SimpleServer extends AbstractServer {
 				Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "Request", u24);
 				Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Request", u25);
 
+				Emergency e21 = new Emergency(u21, LocalDateTime.now().minusDays(2));
+				Emergency e22 = new Emergency(u22, LocalDateTime.now().minusDays(4));
+				Emergency e23 = new Emergency(u23, LocalDateTime.now().minusDays(1));
+				Emergency e24 = new Emergency(u24, LocalDateTime.now().minusDays(3));
+				Emergency e25 = new Emergency(u25, LocalDateTime.now().minusDays(5));
+				Emergency e26 = new Emergency(u26, LocalDateTime.now().minusDays(2));
+				Emergency e27 = new Emergency(u27, LocalDateTime.now().minusDays(4));
+				Emergency e28 = new Emergency(u28, LocalDateTime.now().minusDays(1));
+				Emergency e29 = new Emergency(u29, LocalDateTime.now().minusDays(3));
+				Emergency e30 = new Emergency(u30, LocalDateTime.now().minusDays(5));
 
 				session.save(u21);
 				session.save(c3);
@@ -198,15 +259,48 @@ public class SimpleServer extends AbstractServer {
 				session.save(u30);
 				session.flush();
 
-
 				session.save(t11);
 				session.save(t12);
 				session.save(t13);
 				session.save(t14);
 				session.save(t15);
 				session.flush();
-			}
 
+
+				session.save(e21);
+				session.save(e22);
+				session.save(e23);
+				session.save(e24);
+				session.save(e25);
+				session.flush();
+
+				session.save(e26);
+				session.save(e27);
+				session.save(e28);
+				session.save(e29);
+				session.save(e30);
+				session.flush();
+
+
+
+			}
+			CriteriaBuilder cb = session.getCriteriaBuilder();
+			CriteriaQuery<UserMessage> query = cb.createQuery(UserMessage.class);
+			Root<UserMessage> root = query.from(UserMessage.class); // Specify the root entity
+			query.select(root); // Specify the select clause
+
+			List<UserMessage> userMessages = session.createQuery(query).getResultList();
+			if (userMessages.isEmpty()) {
+				for (int i = 1; i <= 10; i++) {
+					UserMessage um = new UserMessage("Test " + i, "111222333", "444555666", "Normal");
+					session.save(um);
+				}
+				for (int i = 1; i <= 10; i++) {
+					UserMessage um = new UserMessage("Community Test " + i, "111222333", "444555666", "Community");
+					session.save(um);
+				}
+				session.flush();
+			}
 			session.getTransaction().commit();
 		} catch (Exception exception) {
 			if (session != null) {
@@ -220,8 +314,8 @@ public class SimpleServer extends AbstractServer {
 		}
 	}
 
-	private static List<Task> getAllTasks(List<LocalDateTime> dateList) throws Exception {
-		CriteriaBuilder cb = session.getCriteriaBuilder();
+	private static List<Task> getAllTasks(List<LocalDateTime> dateList, Session newSession) throws Exception {
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
 		Join<Task, User> creatorJoin = root.join("taskCreator");
@@ -232,14 +326,45 @@ public class SimpleServer extends AbstractServer {
 			query.where(cb.between(root.get("creationTime"), dateList.get(0), dateList.get(1)));
 
 		}
-		List<Task> tasks = session.createQuery(query).getResultList();
+		List<Task> tasks = newSession.createQuery(query).getResultList();
 		return tasks;
 	}
 
-	private static List<Task> getCommunityTasks(User user,List<LocalDateTime> dateList) throws Exception
+	private static Task getTaskByTaskID(int taskId, Session newSession) {
+		System.out.println("Getting task by ID");
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
+		CriteriaQuery<Task> query = cb.createQuery(Task.class);
+		Root<Task> root = query.from(Task.class);
+		Join<Task, User> creatorJoin = root.join("taskCreator");
+		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
+
+		query.select(root);
+		query.where(cb.equal(root.get("id"), taskId));
+		Task found_task = null;
+		System.out.println("Starting query");
+		try {
+			found_task = newSession.createQuery(query).getSingleResult();
+		} catch (Exception e) {
+			e.printStackTrace();// Handle case where no task is found
+		}
+		return found_task;
+	}
+
+	private static List<UserMessage> getAllUsersMessagesByTeudatZehut(String teudatZehut, Session newSession) throws Exception {
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
+		CriteriaQuery<UserMessage> query = cb.createQuery(UserMessage.class);
+		Root<UserMessage> root = query.from(UserMessage.class);
+		if (!teudatZehut.isEmpty())
+		{
+			query.where(cb.equal(root.get("teudatZehut_to"), teudatZehut));
+		}
+		List<UserMessage> userMessages = newSession.createQuery(query).getResultList();
+		return userMessages;
+	}
+	private static List<Task> getCommunityTasks(User user,List<LocalDateTime> dateList, Session newSession) throws Exception
 	{
 
-		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
 		Join<Task, User> creatorJoin = root.join("taskCreator");
@@ -252,14 +377,14 @@ public class SimpleServer extends AbstractServer {
 			query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
 					cb.between(root.get("creationTime"), dateList.get(0), dateList.get(1)));
 		}
-		List<Task> tasks = session.createQuery(query).getResultList();
+		List<Task> tasks = newSession.createQuery(query).getResultList();
 		return tasks;
 	}
 
-	private static List<User> getCommunityUsers(User user) throws Exception
+	private static List<User> getCommunityUsers(User user, Session newSession) throws Exception
 	{
 
-		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<User> query = cb.createQuery(User.class);
 		Root<User> root = query.from(User.class);
 		Join<User, Community> communityJoin = root.join("community");
@@ -269,14 +394,14 @@ public class SimpleServer extends AbstractServer {
 
 
 
-		List<User> users = session.createQuery(query).getResultList();
+		List<User> users = newSession.createQuery(query).getResultList();
 		return users;
 	}
 
-	private static List<Task> getWaitingTasks(User user) throws Exception
+	private static List<Task> getWaitingTasks(User user, Session newSession) throws Exception
 	{
 
-		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
 		Join<Task, User> creatorJoin = root.join("taskCreator");
@@ -286,15 +411,15 @@ public class SimpleServer extends AbstractServer {
 				cb.equal(root.get("taskState"),"Awaiting approval"));
 
 
-		List<Task> tasks = session.createQuery(query).getResultList();
+		List<Task> tasks = newSession.createQuery(query).getResultList();
 		return tasks;
 	}
 
 	// used in ViewTasksController, in order to display all open tasks
-	private static List<Task> getOpenTasks(User user) throws Exception
+	private static List<Task> getOpenTasks(User user, Session newSession) throws Exception
 	{
 
-		CriteriaBuilder cb = session.getCriteriaBuilder();
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
 		Join<Task, User> creatorJoin = root.join("taskCreator");
@@ -304,7 +429,7 @@ public class SimpleServer extends AbstractServer {
 				cb.or(cb.equal(root.get("taskState"), "Request"),
 						cb.equal(root.get("taskState"), "In Progress")));
 
-		List<Task> tasks = session.createQuery(query).getResultList();
+		List<Task> tasks = newSession.createQuery(query).getResultList();
 		return tasks;
 	}
 
@@ -313,23 +438,108 @@ public class SimpleServer extends AbstractServer {
 		List<User> users = session.createQuery("FROM User ORDER BY userName", User.class).getResultList();
 		return users;
 	}
-	private static User getUserByTeudatZehut(String teudatZehut) throws Exception {
-		// TODO: Add a normal query instead of this hardcoded going over the entire list.
-		List<User> users = getAllUsers();
-		for (User user : users) {
-			if (teudatZehut.equals(user.getTeudatZehut())) {
-				return user; // User with the specified username found
-			}
-		}
-		return null;
 
+	private static List<Emergency> getAllEmergencyCases(List<LocalDateTime> dateList, Session newSession) throws Exception {
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
+		CriteriaQuery<Emergency> query = cb.createQuery(Emergency.class);
+		Root<Emergency> root = query.from(Emergency.class);
+		Join<Emergency, User> creatorJoin = root.join("user");
+		query.select(root);
+		if (dateList != null)
+		{
+			query.where(cb.between(root.get("callTime"), dateList.get(0), dateList.get(1)));
+
+		}
+		List<Emergency> emergencies = newSession.createQuery(query).getResultList();
+		return emergencies;
+	}
+
+	private static List<Emergency> getCommunityEmergencies(User user,List<LocalDateTime> dateList, Session newSession) throws Exception
+	{
+		CriteriaBuilder cb = newSession.getCriteriaBuilder();
+		CriteriaQuery<Emergency> query = cb.createQuery(Emergency.class);
+		Root<Emergency> root = query.from(Emergency.class);
+		Join<Emergency, User> creatorJoin = root.join("user");
+		query.select(root);
+		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()));
+
+		if(dateList != null)
+		{
+			query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
+					cb.between(root.get("callTime"), dateList.get(0), dateList.get(1)));
+		}
+		List<Emergency> emergencys = newSession.createQuery(query).getResultList();
+		return emergencys;
+	}
+
+	private static User getUserByTeudatZehut(String teudatZehut, Session newSession) throws Exception {
+
+		User user = newSession.createQuery("FROM User WHERE teudatZehut = :teudatZehutValue", User.class)
+				.setParameter("teudatZehutValue", teudatZehut)
+				.uniqueResult();
+		return user;
+	}
+
+	private static User getUserByPhoneNumber(String phoneNumber, Session newSession) throws Exception {
+
+		User user = newSession.createQuery("FROM User WHERE phoneNumber = :phoneNumberValue", User.class)
+				.setParameter("phoneNumberValue", phoneNumber)
+				.uniqueResult();
+		return user;
+	}
+
+	private static void sendMessageToClient(UserMessage message, Session newSession) throws Exception {
+		// TODO: REMOVE DEBUG?
+		// TODO: optimally, we would want the people sending to be a list. Maybe implement?
+		// --DEBUG
+		System.out.println("sendMessageToClient called");
+		// ---
+		String message_type = message.getMessage_type();
+		String sender_zehut = message.getSender_zehut();
+		String to_zehut = message.getTeudatZehut_to();
+		String message_text = message.getMessage();
+		if (message_type.isEmpty() || sender_zehut.isEmpty() || message_text.isEmpty() || to_zehut.isEmpty()) {
+			return;
+		} // Check if anything is empty first.
+
+		// --DEBUG
+		System.out.println("I passed the empty check");
+		System.out.print("Sender is:");
+		System.out.println(sender_zehut);
+		System.out.print("Reciever is:");
+		System.out.println(to_zehut);
+		// ---
+
+		User message_sender_user = getUserByTeudatZehut(sender_zehut, newSession);
+
+		if (idToClient.containsKey(to_zehut)) { // User is logged in.
+			// --DEBUG
+			System.out.println("User logged in");
+			// ---
+			ConnectionToClient Message_Reciever_Client = idToClient.get(to_zehut);
+			List<Object> messageDetails = new ArrayList<>();
+			messageDetails.add(message);
+			messageDetails.add(message_sender_user.getUserName());
+			Message_Reciever_Client.sendToClient(new Message("New Message", messageDetails)); // Send message as an object.
+			newSession.remove(message);
+			newSession.flush();
+		} else { // Not connected. Save to DB.
+			// --DEBUG
+
+			// ---
+			newSession.save(message);
+			newSession.flush();
+
+		}
+
+//			newSession.getTransaction().commit();
 	}
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
 		String request = message.getMessage();
-		System.out.println("request is: "+ request);
+		System.out.println("handleMessageFromClient - request is: " + request);
 		try {
 			SessionFactory sessionFactory = getSessionFactory();
 			session = sessionFactory.openSession();
@@ -341,21 +551,26 @@ public class SimpleServer extends AbstractServer {
 				String[] loginDetails = (String[])message.getObject();
 				String teudatZehut = loginDetails[0];
 				String password = loginDetails[1];
-				User user = getUserByTeudatZehut(teudatZehut);
+				System.out.println("teudatZehut : "+teudatZehut);
+				User user = getUserByTeudatZehut(teudatZehut, session);
+				System.out.println("numOfTries:"+user.getnumberOfLoginTries());
 				boolean subscriberFound = false;
-				if (user != null && !idToClient.containsKey(teudatZehut)) {
+				if (user != null && !idToClient.containsKey(teudatZehut) && !user.isLocked()) {
 					if(password.equals(user.getPassword())) {
 
 						// Bind client to id.
 						for(SubscribedClient subscriber: SubscribersList) {
 							if (subscriber.getClient() == client) {
 								// Take the client from the signature and compare
-								idToClient.put(teudatZehut, client); // TODO: check if works.
+								idToClient.put(teudatZehut, client); // TODO: check if both work.
+								clientToId.put(client,teudatZehut);
 								subscriberFound = true;
 							}
 						}
 						if (subscriberFound) { // We log in only after making sure the client is subscribed
 							message.setMessage("Login Succeed");
+							user.resetNumberOfLoginTries();
+							session.flush();
 							message.setUser(user);
 						}
 						else { // Client wasn't subscribed. Shouldn't happen, debug this if happened.
@@ -369,12 +584,61 @@ public class SimpleServer extends AbstractServer {
 						}
 					}
 					else {
-						message.setMessage("Login Failed: Wrong Password");
+						System.out.println(password + " versus "  + user.getPassword());
+						user.incrementNumberOfLoginTries();
+
+						session.flush();
+						if (user.isLocked()) {
+							message.setMessage("Login Failed: Locked");
+						}
+						else if(user.getnumberOfLoginTries() >= 6) {
+							if(!user.isLocked()) {
+								user.setLocked(true);
+								session.flush();
+							}
+							message.setMessage("Login Failed: Locked");
+
+							// Create a personal scheduler for the user if not already created
+							System.out.println("Schedular Created");
+
+							// Schedule the task to unlock the user after 30 seconds
+							ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+							scheduler.schedule(() -> {
+								// Log thread information
+								System.out.println("Scheduled task is running on thread: " + Thread.currentThread().getName());
+								try {
+									Session session2 = sessionFactory.openSession();
+									session2.beginTransaction();
+									user.resetNumberOfLoginTries();
+									user.setLocked(false);
+									session2.update(user);
+									session2.flush();
+									session2.getTransaction().commit();
+									session2.close();
+									System.out.println("30 seconds passed, user is unlocked");
+									scheduler.shutdown();
+								} catch (Exception e) {
+									// Log and handle the exception
+									System.err.println("Exception occurred in scheduled task:");
+									e.printStackTrace();
+								}
+							}, 30, TimeUnit.SECONDS);
+							System.out.println("After scheduler scheduled");
+
+							// Additional logging to check if the main thread is still active
+							System.out.println("Main thread is active: " + Thread.currentThread().getName() + " " + Thread.currentThread().getState());
+						}
+						else {
+							message.setMessage("Login Failed: Wrong Password");
+						}
 					}
 				}
 				else {
 					if(user == null) {
 						message.setMessage("Login Failed: No Such User Exists");
+					}
+					else if (user.isLocked()) {
+						message.setMessage("Login Failed: Locked");
 					}
 					else {
 						message.setMessage("Login Failed: Someone is already connected to the given ID");
@@ -383,12 +647,39 @@ public class SimpleServer extends AbstractServer {
 				System.out.println("message sent: "+message.getMessage());
 				client.sendToClient(message);
 			}
+
+
+
+			else if(request.equals("Log Out")){
+				System.out.println("In Log Out");
+				User user = (User) message.getObject();
+
+				System.out.print("The ID logging out is:");
+				System.out.println(user.getId());
+
+
+				if (user != null) {
+					String teudatZehut = user.getTeudatZehut();
+					// remove from both hash maps
+
+					clientToId.remove(idToClient.get(teudatZehut)); // Remove from clientToId too.
+					idToClient.remove(teudatZehut); // Remove from idToClient the client.
+
+					System.out.println("Successfully logged out");
+					message.setMessage("log out");
+					client.sendToClient(message);
+
+				}
+				// TODO: also add for if user is null
+
+
+			}
 			else if(request.equals("Forgot Password Request")){
 				String[] forgotDetails = (String[])message.getObject();
 				String teudatZehut = forgotDetails[0];
 				String selectedQuestion = forgotDetails[1];
 				String answer = forgotDetails[2];
-				User user = getUserByTeudatZehut(teudatZehut);
+				User user = getUserByTeudatZehut(teudatZehut, session);
 
 				if (user != null && user.getSecretQuestion().equals(selectedQuestion) && user.getSecretQuestionAnswer().equals(answer)) {
 					message.setMessage("Forgot Password: Match");
@@ -403,7 +694,7 @@ public class SimpleServer extends AbstractServer {
 				String[] details = (String[]) message.getObject();
 				String teudatZehut = details[0];
 				String newPassword = details[1];
-				User user = getUserByTeudatZehut(teudatZehut);
+				User user = getUserByTeudatZehut(teudatZehut, session);
 				if (user != null) {
 					user.setPassword(newPassword);
 					session.flush();
@@ -413,22 +704,87 @@ public class SimpleServer extends AbstractServer {
 				} else {
 					message.setMessage("Password Change Failed");
 				}
+				client.sendToClient(message);
 			}
+			else if(request.equals("Task not completed on time")) {
+				// Task id is in message.
+				int taskID = message.getTaskID();
+				ScheduledExecutorService scheduler;
+				scheduler = Executors.newSingleThreadScheduledExecutor();
+				System.out.println("Created Thread");
+				scheduler.schedule(() -> {
+					System.out.println("Scheduled event started");
+					// This will be executed after 1 day
+					Session new_session = sessionFactory.openSession();
+					new_session.beginTransaction();
+					Task task_to_check = getTaskByTaskID(taskID, new_session);
+					System.out.print("Got the task. Id is: ");
+					System.out.println(taskID);
+					System.out.println(task_to_check.getTaskState());
+					if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
+						// If it is, we send a message to ask why it's still in progress.
+						UserMessage usermessage_to_send = (UserMessage) message.getObject();
+						usermessage_to_send.setTask_id(taskID);
+                        try {
+                            sendMessageToClient(usermessage_to_send, new_session);
+							System.out.println("called sendMessageToClient");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+					System.out.println("Task not completed on time");
+					new_session.close();
+					scheduler.shutdown();
+				}, 2, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
+			}
+
+
 			else if(request.equals("Emergency Request")){
-				String teudatzehut = (String)message.getObject();
-				System.out.println("teudatzehut: " + teudatzehut);
-				User user = getUserByTeudatZehut(teudatzehut);
-				if(user != null) {
-					Emergency emergency = new Emergency(user, LocalDateTime.now());
-					session.save(emergency);
+				User user ;
+				Emergency newEmergency = null;
+				// button was pressed when logged in
+				if(message.getUser() != null )
+				{
+
+					newEmergency = (Emergency) message.getObject();
+					user = newEmergency.getUser(); // or message.getUser()
+					session.save(newEmergency);
+					session.flush();
 					session.getTransaction().commit();
-					message.setMessage("Emergency Call Succeed");
+					message.setMessage("Emergency Call Succeeded");
 				}
-				else {
-					message.setMessage("Emergency Call Failed");
+				// button pressed from Log in menu
+				else
+				{
+					String phoneNumber = (String)message.getObject();
+					user = getUserByPhoneNumber(phoneNumber, session);
+
+					//found user in database with matching phone number
+					if(user != null)
+					{
+						newEmergency = new Emergency(user,LocalDateTime.now());
+						session.save(newEmergency);
+						session.flush();
+						session.getTransaction().commit();
+						message.setMessage("Emergency Call Succeeded");
+					}
+					else
+					// no user with matching phone number, send error message to user
+					{
+						message.setMessage("Emergency Call Failed");
+					}
 				}
 				System.out.println("message sent: " + message.getMessage());
 				client.sendToClient(message);
+				if(message.getMessage().equals("Emergency Call Succeeded"))
+				{
+					// For now im sending the message to all clients
+					// But we might want to send it specifically to the community manager
+					//
+					Message update = new Message("update histogram",newEmergency,user);
+					sendToAllClients(update);
+				}
 			}
 
 			//create task, for now send the message to all the clients
@@ -449,7 +805,7 @@ public class SimpleServer extends AbstractServer {
 // used for CommunityInformationController (and ViewEmergencyCalls for now)
 			else if(request.equals("get tasks")) {
 				User u1 = message.getUser();
-				List<Task> tasks = getCommunityTasks(u1,null);
+				List<Task> tasks = getCommunityTasks(u1,null, session);
 				// fetches all Tasks in database from the same community
 
 				message.setObject(tasks);
@@ -458,9 +814,8 @@ public class SimpleServer extends AbstractServer {
 // used for ViewTasksController
 			else if(request.equals("get open tasks")) {
 				User u1 = message.getUser();
-				List<Task> tasks = getOpenTasks(u1);
+				List<Task> tasks = getOpenTasks(u1, session);
 				// fetches all OPEN (AND APPROVED) TASKS in database from the same community
-
 				message.setObject(tasks);
 				client.sendToClient(message);
 			}
@@ -468,7 +823,7 @@ public class SimpleServer extends AbstractServer {
 
 			else if(request.equals("get users")) {
 				User u1 = message.getUser();
-				List<User> Users = getCommunityUsers(u1);
+				List<User> Users = getCommunityUsers(u1, session);
 				message.setObject(Users);
 				client.sendToClient(message);
 			}
@@ -477,7 +832,7 @@ public class SimpleServer extends AbstractServer {
 			else if (request.equals("get awaiting approval requests"))
 			{
 				User currentUser = message.getUser();
-				List<Task> tasks = getWaitingTasks(currentUser);
+				List<Task> tasks = getWaitingTasks(currentUser, session);
 				message.setObject(tasks);
 				client.sendToClient(message);
 
@@ -489,34 +844,34 @@ public class SimpleServer extends AbstractServer {
 			else if(request.equals("emergency everything"))
 			{
 				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Task> tasks = getAllTasks(null);
+				List<Emergency> emergencies = getAllEmergencyCases(null, session);
 				message.setMessage("emergency histogram");
-				message.setObject(tasks);
+				message.setObject(emergencies);
 				client.sendToClient(message);
 			}
 			else if(request.equals("emergency my community all dates"))
 			{
 				User u1 = (User) message.getUser();
-				List<Task> tasks = getCommunityTasks(u1,null);
+				List<Emergency> emergencies = getCommunityEmergencies(u1,null, session);
 				message.setMessage("emergency histogram");
-				message.setObject(tasks);
+				message.setObject(emergencies);
 				client.sendToClient(message);
 			}
 			else if(request.equals("emergency all community specific dates"))
 			{
 				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Task> tasks = getAllTasks(dates);
+				List<Emergency> emergencies = getAllEmergencyCases(dates, session);
 				message.setMessage("emergency histogram");
-				message.setObject(tasks);
+				message.setObject(emergencies);
 				client.sendToClient(message);
 			}
 			else if(request.equals("emergency my community specific dates"))
 			{
 				User u1 = (User) message.getUser();
 				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Task> tasks = getCommunityTasks(u1,dates);
+				List<Emergency> emergencies = getCommunityEmergencies(u1,dates, session);
 				message.setMessage("emergency histogram");
-				message.setObject(tasks);
+				message.setObject(emergencies);
 				client.sendToClient(message);
 			}
 
@@ -541,9 +896,17 @@ public class SimpleServer extends AbstractServer {
 			}
 
 
-			else if (request.equals("Update task")) {
-
-				Task task = (Task) message.getObject();
+			else if (request.equals("Update task") || request.equals("Complete the task")) {
+				Task task;
+				if (request.equals(("Update task"))) {
+					task = (Task) message.getObject();
+				}
+				else {
+					task = getTaskByTaskID(message.getTaskID(), session);
+					message.setObject(task);
+					task.setTaskState("Complete");
+					task.setCompletionTime(LocalDateTime.now());
+				}
 				session.update(task);
 				session.flush();
 				session.getTransaction().commit();
@@ -559,9 +922,6 @@ public class SimpleServer extends AbstractServer {
 				else if (task.getTaskState().equals("Denied"))
 				{
 					message.setMessage("Request denied");
-
-					// ***MISSING IMPLEMENTATION***
-					// need to send message to community member that requested the help
 				}
 				else
 				{
@@ -569,20 +929,96 @@ public class SimpleServer extends AbstractServer {
 				}
 				sendToAllClients(message);
 //				client.sendToClient(message);
+				System.out.println("IN SWITCH");
+				switch (task.getTaskState()) {
+					case "Request":
+						// Give 24 hours for someone to volunteer.
+						ScheduledExecutorService scheduler;
+						scheduler = Executors.newSingleThreadScheduledExecutor();
+						System.out.println("Created Thread in SWITCH");
+						int taskID_original =  ((Task) (message.getObject())).getId();
+						scheduler.schedule(() -> {
+							System.out.println("Switch Scheduled event started");
+							// This will be executed after 1 day
+							Session new_session = sessionFactory.openSession();
+							new_session.beginTransaction();
+							Task task_to_check = getTaskByTaskID(taskID_original, new_session);
+							System.out.print("(Switch)Got the task. Id is: ");
+							System.out.println(task_to_check.getId());
+							System.out.println(task_to_check.getTaskState());
+							if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
+								// If it is, we send a message to everyone to tell them nobody volunteered yet.
+								System.out.println("state is Request");
+								String text_for_message = "The task: \"" + task_to_check.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
+								List<User> community_list = new ArrayList<>();
+								// GET LIST
+                                try {
+                                    community_list = getCommunityUsers(message.getUser(), new_session);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+								// -----
+                                System.out.println("Starting loop");
+								try {
+									for (User user_to_send : community_list) { // Loop through entire community and send them the message.
+										UserMessage usermessage_to_send = new UserMessage(text_for_message,message.getUser().getTeudatZehut(),user_to_send.getTeudatZehut(),"Community");
+										System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
+										sendMessageToClient(usermessage_to_send, new_session);
+									}
+
+								}
+								catch (Exception e) {
+										e.printStackTrace();
+								}
+								finally {
+
+									new_session.getTransaction().commit();
+									new_session.close();
+								}
+							}
+
+							System.out.println("Task not volunteered to on time");
+							scheduler.shutdown();
+						}, 5, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
+						break;
+
+				}
 
 			}
 
-//			else if (request.equals("Send denial message"))
-//			{
-//				User user = message.getUser(); // User we need to send a message to
-//				String denialText = (String) message.getObject(); // message from community we need to send to user
-//
-//				// implementation needed :
-//				// find ConnectionToClient object of the user (if connected)
-//				// send that client a message
-//
-//			}
+			else if (request.equals("Send message"))
+			{
+				// Hopefully, message has a UserMessage object in it.
+				try {
+					sendMessageToClient((UserMessage) message.getObject(), session);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 
+			}
+
+
+			else if (request.equals("Get user's messages")) { // Get by query a list of all the user messages for user
+				String teudatZehut = (String)message.getObject();
+				List<UserMessage> userMessageList = getAllUsersMessagesByTeudatZehut(teudatZehut, session);
+				System.out.print("Size of messageList is:");
+				System.out.println(userMessageList.size());
+
+				System.out.print("The value of !isEmpty is: ");
+				System.out.println(!userMessageList.isEmpty());
+
+				if(!userMessageList.isEmpty()) {
+//					message.setMessage("New Message"); // Use NewMessageEvent in SimpleChatClient
+					for (UserMessage userMessage : userMessageList) { // Loop over list and send a message to the client.
+//						message.setObject(userMessage);
+						System.out.println("I'm sending a message");
+						sendMessageToClient(userMessage, session);
+					}
+					session.flush();
+					session.getTransaction().commit();
+				}
+			}
 
 
 			else if (request.equals("add client")){
@@ -639,6 +1075,8 @@ public class SimpleServer extends AbstractServer {
 			if (clientToRemove != null) {
 				SubscribersList.remove(clientToRemove);
 				//remove client from hashmap as well
+				idToClient.remove(clientToId.get(clientToRemove.getClient())); // Remove from idToClient the client.
+				clientToId.remove(clientToRemove.getClient()); // Remove from clientToId too.
 			}
 		}
 	}

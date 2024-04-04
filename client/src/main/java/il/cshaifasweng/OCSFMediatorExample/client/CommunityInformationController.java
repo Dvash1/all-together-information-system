@@ -79,7 +79,7 @@ public class CommunityInformationController {
     {
         try {
             EventBus.getDefault().unregister(this);
-            SimpleChatClient.setRoot("ViewTasks");
+            SimpleChatClient.setRoot("mainmenu");
         }
         catch (IOException e) {
 
