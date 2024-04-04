@@ -45,14 +45,16 @@ public class SimpleChatClient extends Application {
 
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage primaryStage) throws IOException {
 
         EventBus.getDefault().register(this);
-//    	client = SimpleClient.getClient();
-//    	client.openConnection();
-        scene = new Scene(loadFXML("ConnectToServer"), 1280, 900);
-        stage.setScene(scene);
-
+//        Parent fxml_loaded = loadFXML("ConnectToServer");
+//        scene = new Scene(loadFXML("ConnectToServer"), 1280, 900);
+//        stage.setScene(scene);
+//        SimpleChatClient.stage = stage;
+        stage = primaryStage;
+        setRoot("ConnectToServer"); // Load initial FXML
+        stage.show();
         stage.setOnCloseRequest(event -> {
             event.consume();
 
@@ -213,7 +215,16 @@ public class SimpleChatClient extends Application {
 
 
     static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+        Parent root = loadFXML(fxml);
+//        scene.setRoot(loadFXML(fxml));
+        scene = new Scene(root);
+        // Set the width and height of the scene to match the loaded FXML
+        double width = root.prefWidth(-1);
+        double height = root.prefHeight(width);
+        scene.setRoot(root);
+        stage.setScene(scene);
+        stage.setWidth(width);
+        stage.setHeight(height);
 
     }
 

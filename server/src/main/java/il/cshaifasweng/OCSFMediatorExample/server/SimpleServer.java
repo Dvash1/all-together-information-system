@@ -563,7 +563,7 @@ public class SimpleServer extends AbstractServer {
 						for(SubscribedClient subscriber: SubscribersList) {
 							if (subscriber.getClient() == client) {
 								// Take the client from the signature and compare
-								idToClient.put(teudatZehut, client); // TODO: check if both work.
+								idToClient.put(teudatZehut, client);
 								clientToId.put(client,teudatZehut);
 								subscriberFound = true;
 							}
