@@ -195,7 +195,7 @@ public class LoginController {
         }
         else {
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such ID, or the password is wrong");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such ID, or the answer is wrong");
                 alert.setTitle("Login Failed");
                 alert.setHeaderText("Login Failed");
                 alert.show();

@@ -556,7 +556,8 @@ public class SimpleServer extends AbstractServer {
 				System.out.println("numOfTries:"+user.getnumberOfLoginTries());
 				boolean subscriberFound = false;
 				if (user != null && !idToClient.containsKey(teudatZehut) && !user.isLocked()) {
-					if(password.equals(user.getPassword())) {
+					password = user.get_SHA_512_SecurePassword(password,user.getSalt());
+					if(password.equals(user.getPasswordHash())) {
 
 						// Bind client to id.
 						for(SubscribedClient subscriber: SubscribersList) {
@@ -584,7 +585,7 @@ public class SimpleServer extends AbstractServer {
 						}
 					}
 					else {
-						System.out.println(password + " versus "  + user.getPassword());
+						System.out.println(password + " versus "  + user.getPasswordHash());
 						user.incrementNumberOfLoginTries();
 
 						session.flush();
@@ -696,14 +697,18 @@ public class SimpleServer extends AbstractServer {
 				String newPassword = details[1];
 				User user = getUserByTeudatZehut(teudatZehut, session);
 				if (user != null) {
+					System.out.println("user!=null");
 					user.setPassword(newPassword);
 					session.flush();
-					if (user.getPassword().equals(newPassword)) {
+					String hashedPassword = user.get_SHA_512_SecurePassword(newPassword,user.getSalt());
+					if (user.getPasswordHash().equals(hashedPassword)) {
+						System.out.println("user.getPasswordHash().equals(newPassword)");
 						message.setMessage("Password Change Succeed");
 					}
 				} else {
 					message.setMessage("Password Change Failed");
 				}
+				System.out.println("Forgot Password Request: Message Sent:"+ message.getMessage());
 				client.sendToClient(message);
 			}
 			else if(request.equals("Task not completed on time")) {
