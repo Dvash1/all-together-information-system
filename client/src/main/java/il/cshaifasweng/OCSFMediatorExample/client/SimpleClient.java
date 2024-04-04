@@ -73,6 +73,10 @@ public class SimpleClient extends AbstractClient {
 		{
 			EventBus.getDefault().post(new getEmergencyData(message));
 		}
+		else if (message.getMessage().equals("update histogram"))
+		{
+			EventBus.getDefault().post(new updateHistogramEvent(message));
+		}
 		else if (message.getMessage().equals("get awaiting approval requests"))
 		{
 			EventBus.getDefault().post(new AwaitingApprovalTasksEvent(message));

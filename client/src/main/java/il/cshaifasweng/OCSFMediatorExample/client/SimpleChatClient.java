@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Emergency;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import il.cshaifasweng.OCSFMediatorExample.entities.UserMessage;
@@ -13,6 +14,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import java.util.List;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -20,6 +22,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -49,7 +53,7 @@ public class SimpleChatClient extends Application {
         EventBus.getDefault().register(this);
 //    	client = SimpleClient.getClient();
 //    	client.openConnection();
-        scene = new Scene(loadFXML("ConnectToServer"), 500, 500); // TODO: make this modular
+        scene = new Scene(loadFXML("ConnectToServer"), 1280, 900);
         stage.setScene(scene);
 
         stage.setOnCloseRequest(event -> {
@@ -68,7 +72,6 @@ public class SimpleChatClient extends Application {
         });
         stage.show();
     }
-
 
     @Subscribe
     public void testEvent(getDataEvent event) {
@@ -158,10 +161,31 @@ public class SimpleChatClient extends Application {
         }
     }
 
+    public static void sendEmergencyRequest(User requestingUser)
+    {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("");
+        alert.setContentText("Are you sure you want to proceed?");
+        alert.setGraphic(null);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Emergency emergencyRequest = new Emergency(requestingUser,LocalDateTime.now());
+            Message emergencyMessage = new Message("Emergency Request",emergencyRequest,requestingUser);
+            try {
+                SimpleClient client = SimpleClient.getClient();
+                client.sendToServer(emergencyMessage);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
 
 
 
+    }
     public static void setUser(User user) {
         SimpleChatClient.user = user;
     }
@@ -173,7 +197,7 @@ public class SimpleChatClient extends Application {
 
 
 
-    static void setRoot(String fxml) throws IOException { // TODO: make this modular.
+    static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
 
     }
@@ -190,8 +214,6 @@ public class SimpleChatClient extends Application {
         // TODO Auto-generated method stub
         EventBus.getDefault().unregister(this);
         super.stop();
-//        Platform.exit();
-//        System.exit(0);
     }
 
 	public static void main(String[] args) {

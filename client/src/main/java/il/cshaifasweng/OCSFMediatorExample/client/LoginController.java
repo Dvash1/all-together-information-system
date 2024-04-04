@@ -78,7 +78,6 @@ public class LoginController {
     private Scene scene;
     private Parent root;
 
-    private static int number_of_login_attempts = 0;
 
     @FXML
     void emergency_button_press(ActionEvent event) throws IOException {
@@ -106,20 +105,15 @@ public class LoginController {
     }
     @FXML
     void login_button_push(ActionEvent event) throws IOException {
-        if(number_of_login_attempts >= 6) {
-
-        }
         String username = login_field.getText();
         String password = password_field.getText();
-        String[] loginDetails = new String[]{username,password};
-        Message message = new Message( "Login Request",loginDetails,null);
+        String[] loginDetails = new String[]{username, password};
+        Message message = new Message("Login Request", loginDetails, null);
         SimpleClient.getClient().sendToServer(message);
         System.out.println("message sent with parameters: " + loginDetails[0] + "," + loginDetails[1]);
-
     }
     @Subscribe
     public void login(LoginEvent event) throws IOException {
-        // **TODO: please check why sometimes when you try to log in with teudatzehut and password that are in the db it doesnt match?
         System.out.println("IN login");
         Message message = event.getMessage();
         String message_text = message.getMessage();
@@ -140,10 +134,19 @@ public class LoginController {
         }
 
 
-        else {
-            System.out.println("Log in failed");
+        else if(message_text.equals("Login Failed: Wrong Password")){
+            System.out.println("Log in failed, wrong password");
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
+                alert.setTitle("Login Failed");
+                alert.setHeaderText("Login Failed");
+                alert.show();
+            });
+        }
+        else if(message_text.equals("Login Failed: Locked")) {
+            System.out.println("Log in failed - locked");
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Locked for too many wrong tries, try again in 30 seconds");
                 alert.setTitle("Login Failed");
                 alert.setHeaderText("Login Failed");
                 alert.show();
@@ -196,7 +199,6 @@ public class LoginController {
                 alert.setTitle("Login Failed");
                 alert.setHeaderText("Login Failed");
                 alert.show();
-                number_of_login_attempts += 1;
             });
         }
     }

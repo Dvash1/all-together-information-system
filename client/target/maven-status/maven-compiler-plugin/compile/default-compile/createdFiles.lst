@@ -40,6 +40,7 @@ il\cshaifasweng\OCSFMediatorExample\client\ocsf\ObservableSWRClient.class
 il\cshaifasweng\OCSFMediatorExample\client\MainMenuController.class
 il\cshaifasweng\OCSFMediatorExample\client\CommunityInformationController$2.class
 il\cshaifasweng\OCSFMediatorExample\client\SimpleClient.class
+il\cshaifasweng\OCSFMediatorExample\client\updateHistogramEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\DenialMessageEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\LoginEvent.class
 il\cshaifasweng\OCSFMediatorExample\client\EmergencyController.class

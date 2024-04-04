@@ -2,6 +2,9 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 
 @Entity
@@ -14,7 +17,7 @@ public class User implements Serializable {
 
     private String userName;
     @ManyToOne
-    @JoinColumn(name = "community", referencedColumnName = "communityName")
+    @JoinColumn(name = "community",referencedColumnName = "communityName")
     private Community community;
 
     private String teudatZehut;
@@ -25,8 +28,10 @@ public class User implements Serializable {
     private String secretQuestion;
     private String secretQuestionAnswer;
     private String phoneNumber;
+    private int numberOfLoginTries;
+    private boolean isLocked;
 
-    public User(String userName, String teudatZehut, String password, String secretQuestion, String secretQuestionAnswer, boolean isManager, String phoneNumber, Community community) {
+    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber, Community community) {
         this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.password = password;
@@ -35,9 +40,11 @@ public class User implements Serializable {
         this.isManager = isManager;
         this.phoneNumber = phoneNumber;
         this.community = community;
-    }
+        this.numberOfLoginTries = 0;
+        this.isLocked = false;
 
-    public User(String userName, String teudatZehut, String password, String secretQuestion, String secretQuestionAnswer, boolean isManager, String phoneNumber) {
+    }
+    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber) {
         this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.password = password;
@@ -45,6 +52,8 @@ public class User implements Serializable {
         this.secretQuestionAnswer = secretQuestionAnswer;
         this.isManager = isManager;
         this.phoneNumber = phoneNumber;
+        this.numberOfLoginTries = 0;
+        this.isLocked = false;
     }
 
     public User() {
@@ -63,21 +72,7 @@ public class User implements Serializable {
         this.userName = userName;
     }
 
-//    public List<String> getMessageList() {
-//        return messageList;
-//    }
 
-//    public void setMessageList(List<String> messageList) {
-//        this.messageList = messageList;
-//    }
-//
-//    public void addToMessageList(String msg) {
-//        this.messageList.add(msg);
-//    }
-//
-//    public void clearMessageList() {
-//        this.messageList.clear();
-//    }
 
     public String getTeudatZehut() {
         return teudatZehut;
@@ -135,5 +130,22 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
+    public int getnumberOfLoginTries() {
+        return numberOfLoginTries;
+    }
+    public void incrementNumberOfLoginTries() {
+        this.numberOfLoginTries++;
+    }
+    public void resetNumberOfLoginTries() {
+        this.numberOfLoginTries = 0;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
 
 }
