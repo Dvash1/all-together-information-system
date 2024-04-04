@@ -53,55 +53,15 @@ public class ViewTasksController {
 
     @FXML
     private Button withdrawBtn;
+
+    @FXML
+    private Button backBtn;
+
     private ObservableList<Task> taskList ;
 
     @FXML
     private TextArea messageToManagerTA;
 
-
-
-
-    @FXML
-    private Button approveBtn;
-    @FXML
-    void switchToApproveRequest(ActionEvent event) {
-
-        Platform.runLater(() -> {
-            try {
-                EventBus.getDefault().unregister(this);
-                SimpleChatClient.setRoot("ApproveRequest");
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-        });
-    }
-
-
-
-    @FXML
-    private Button tempBtn;
-
-    @FXML
-    private Button testingBtn;
-    @FXML
-    void testFunc(ActionEvent event) {
-        try {
-            Message message = new Message("alert everybody");
-            SimpleClient.getClient().sendToServer(message);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-    @FXML
-    private Button infoBtn;
-
-    @FXML
-    private Button backBtn;
 
 
     @FXML
@@ -116,37 +76,6 @@ public class ViewTasksController {
             e.printStackTrace();
         }
     }
-
-    @FXML
-    void switchToCommunityInformation(ActionEvent event) {
-
-        Platform.runLater(() -> {
-            try {
-                EventBus.getDefault().unregister(this);
-                SimpleChatClient.setRoot("CommunityInformation");
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-        });
-    }
-//**************** DELETE ******************//
-    @FXML
-    void switchToViewEmergency(ActionEvent event) {
-        Platform.runLater(() -> {
-            try {
-                EventBus.getDefault().unregister(this);
-                SimpleChatClient.setRoot("ViewEmergencyCalls");
-            } catch (IOException e) {
-
-                e.printStackTrace();
-            }
-        });
-    }
-//**************** DELETE ******************//
-
-
-
 
     @Subscribe
     public void displayNewTask(ApprovedTaskEvent event) {
@@ -397,7 +326,7 @@ public class ViewTasksController {
 
         });
 
-        currentUser = SimpleChatClient.getUser();
+
         // enable/disable volunteering&task completion buttons
         tasksTableView.setOnMouseClicked(e -> {
             Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();

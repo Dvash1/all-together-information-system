@@ -72,9 +72,15 @@ public class ViewEmergencyCalls implements Initializable {
     private NumberAxis yAxis;
 
     private int yAxisMaxValue;
+
+    private RadioButton lastTG1Btn;
+
+    private RadioButton lastTG2Btn;
+
     // Going back to menu button
     @FXML
     private Button menuButton;
+
 
     @FXML
     void switchToMenu(ActionEvent event) {
@@ -162,28 +168,35 @@ public class ViewEmergencyCalls implements Initializable {
         RadioButton first = (RadioButton) TG1.getSelectedToggle();
         RadioButton second = (RadioButton) TG2.getSelectedToggle();
 
+        // update last selected buttons
+        lastTG1Btn = first;
+        lastTG2Btn = second;
 
 
         if (first == allCommunitiesRB && second == allDatesRB)
         {
             message = new Message("emergency everything",currentUser);
+            hist.setTitle("Emergency requests report for all communities and all dates ");
         }
         else if (first == myCommunityRB && second == allDatesRB)
         {
             message = new Message("emergency my community all dates",currentUser);
+            hist.setTitle("Emergency requests report for community \"" +currentUser.getCommunity().getCommunityName() + "\" and all dates ");
         }
         // second == specific dates from here
         else {
-            LocalDateTime startDate = LocalDateTime.of(this.startDatePicker.getValue(), LocalTime.MIN);
-            LocalDateTime endDate = LocalDateTime.of(this.endDatePicker.getValue(), LocalTime.MAX);
+            LocalDateTime startDate = LocalDateTime.of(startDatePicker.getValue(), LocalTime.MIN);
+            LocalDateTime endDate = LocalDateTime.of(endDatePicker.getValue(), LocalTime.MAX);
             List<LocalDateTime> dateList = new ArrayList<>();
             dateList.add(startDate);
             dateList.add(endDate);
 
             if (first == allCommunitiesRB) {
                 message = new Message("emergency all community specific dates", dateList, currentUser);
+                hist.setTitle("Emergency requests report for all communities from " + startDatePicker.getValue().format(dateFormatter) + " to " + endDatePicker.getValue().format(dateFormatter));
             } else {
                 message = new Message("emergency my community specific dates", dateList, currentUser);
+                hist.setTitle("Emergency requests report for community \"" +currentUser.getCommunity().getCommunityName() + "\" from " + startDatePicker.getValue().format(dateFormatter) + " to " + endDatePicker.getValue().format(dateFormatter));
             }
         }
 
@@ -239,16 +252,15 @@ public class ViewEmergencyCalls implements Initializable {
     @Subscribe
     public void updateHistogram(updateHistogramEvent event)
     {
+
         Message message = event.getMessage();
         User user = message.getUser();
         Emergency newEmergency = (Emergency) message.getObject();
         LocalDateTime callDate = newEmergency.getCallTime();
         String formattedDate = LocalDate.parse(callDate.toLocalDate().toString()).format(dateFormatter);
+
         if(hist.isVisible())
         {
-            RadioButton first = (RadioButton) TG1.getSelectedToggle();
-            RadioButton second = (RadioButton) TG2.getSelectedToggle();
-
             XYChart.Series<String, Number> series = hist.getData().get(0); // current displayed series
 
             LocalDateTime startDate = startDatePicker.getValue() != null ?
@@ -259,9 +271,9 @@ public class ViewEmergencyCalls implements Initializable {
             boolean fromSameCommunity = SimpleChatClient.getUser().getCommunity().getCommunityName().equals(user.getCommunity().getCommunityName());
 
             // check all cases where we would update the histogram
-            if ((first == allCommunitiesRB && second == allDatesRB) ||
-                    (second == allDatesRB && first == myCommunityRB && fromSameCommunity) ||
-                    (second == specificDatesRB && endDate!=null && startDate != null && (startDate.isBefore(callDate) && endDate.isAfter(callDate)) && (first == allCommunitiesRB || (first == myCommunityRB && fromSameCommunity))))
+            if ((lastTG1Btn == allCommunitiesRB && lastTG2Btn == allDatesRB) ||
+                    (lastTG2Btn == allDatesRB && lastTG1Btn == myCommunityRB && fromSameCommunity) ||
+                    (lastTG2Btn == specificDatesRB && endDate!=null && startDate != null && (startDate.isBefore(callDate) && endDate.isAfter(callDate)) && (lastTG1Btn == allCommunitiesRB || (lastTG1Btn == myCommunityRB && fromSameCommunity))))
             {
                 // iterate through the series, find the date and increment the Y-axis value by 1
                 // if date doesn't exist, manually add it
@@ -290,16 +302,15 @@ public class ViewEmergencyCalls implements Initializable {
                 if(dateExists == false)
                 {
                     Platform.runLater(() -> {
-                        
+
                         XYChart.Data<String, Number> newDate = new XYChart.Data<>(formattedDate, 1);
                         series.getData().add(newDate);
 
                     });
                 }
             }
-
-
         }
+
     }
 
     @Override
@@ -312,7 +323,9 @@ public class ViewEmergencyCalls implements Initializable {
         ((NumberAxis) hist.getYAxis()).setMinorTickCount(0);
         hist.getYAxis().setAutoRanging(false);
 
-
+        // initialize buttons
+        lastTG1Btn = null;
+        lastTG2Btn = null;
 
         // create ToggleGroup for buttons
         TG1 = new ToggleGroup();
@@ -351,7 +364,7 @@ public class ViewEmergencyCalls implements Initializable {
                         });
 
                         //set datePicker to show today's date
-//                        return LocalDate.now();
+    //                        return LocalDate.now();
                         return null;
                     }
                 } else {
