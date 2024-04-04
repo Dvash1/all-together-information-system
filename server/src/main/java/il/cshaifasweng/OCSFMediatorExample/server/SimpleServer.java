@@ -74,10 +74,10 @@ public class SimpleServer extends AbstractServer {
 			//check if database is empty first
 			if (getAllTasks(null, session).isEmpty()) {
 				// first community
-				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true, "0523842728");
-				Community c1 = new Community("Kfir", u1);
+				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true,"0523842728");
+				Community c1 = new Community("Kfir",u1);
 				u1.setCommunity(c1);
-				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false, "0538453293", c1);
+				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false,"0538453293" ,c1);
 				User u3 = new User("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", false, "0523456789", c1);
 				User u4 = new User("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", false, "0501234565", c1);
 				User u5 = new User("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary", false, "0579876543", c1);
@@ -87,10 +87,10 @@ public class SimpleServer extends AbstractServer {
 				User u9 = new User("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", false, "0567890123", c1);
 				User u10 = new User("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog", false, "0532109876", c1);
 
-				Task t1 = new Task("walk the dogs", LocalDateTime.now(), "Request", u2);
+				Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
 				Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "Request", u3);
 				Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "Request", u4);
-				Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1), "Complete", u5, u7);
+				Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1), "Complete", u5,u7);
 				t4.setCompletionTime(LocalDateTime.now().minusDays(5));
 				Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
 
@@ -211,9 +211,10 @@ public class SimpleServer extends AbstractServer {
 				session.save(e20);
 				session.flush();
 
-// third community
-				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true, "0598765432");
-				Community c3 = new Community("Ono", u21);
+				// third community
+
+				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true,"0598765432");
+				Community c3 = new Community("Ono",u21);
 				u21.setCommunity(c3);
 				User u22 = new User("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", false, "0554321091", c3);
 				User u23 = new User("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", false, "0523456780", c3);
@@ -290,18 +291,16 @@ public class SimpleServer extends AbstractServer {
 
 			List<UserMessage> userMessages = session.createQuery(query).getResultList();
 			if (userMessages.isEmpty()) {
-				UserMessage um1 = new UserMessage("Test 1", "111222333", "444555666", "Normal");
-				UserMessage um2 = new UserMessage("Test 2", "111222333", "444555666", "Normal");
-				UserMessage um3 = new UserMessage("Test 3", "111222333", "444555666", "Normal");
-				UserMessage um4 = new UserMessage("Test 4", "111222333", "444555666", "Normal");
-
-				session.save(um1);
-				session.save(um2);
-				session.save(um3);
-				session.save(um4);
+				for (int i = 1; i <= 10; i++) {
+					UserMessage um = new UserMessage("Test " + i, "111222333", "444555666", "Normal");
+					session.save(um);
+				}
+				for (int i = 1; i <= 10; i++) {
+					UserMessage um = new UserMessage("Community Test " + i, "111222333", "444555666", "Community");
+					session.save(um);
+				}
 				session.flush();
 			}
-
 			session.getTransaction().commit();
 		} catch (Exception exception) {
 			if (session != null) {
@@ -434,7 +433,11 @@ public class SimpleServer extends AbstractServer {
 		return tasks;
 	}
 
-
+	// Idea: we can implement a hashmap for efficient way to search users, but I'm not sure how it works
+	private static List<User> getAllUsers() throws Exception {
+		List<User> users = session.createQuery("FROM User ORDER BY userName", User.class).getResultList();
+		return users;
+	}
 
 	private static List<Emergency> getAllEmergencyCases(List<LocalDateTime> dateList, Session newSession) throws Exception {
 		CriteriaBuilder cb = newSession.getCriteriaBuilder();
@@ -485,8 +488,6 @@ public class SimpleServer extends AbstractServer {
 		return user;
 	}
 
-
-
 	private static void sendMessageToClient(UserMessage message, Session newSession) throws Exception {
 		// TODO: REMOVE DEBUG?
 		// TODO: optimally, we would want the people sending to be a list. Maybe implement?
@@ -508,51 +509,37 @@ public class SimpleServer extends AbstractServer {
 		System.out.print("Reciever is:");
 		System.out.println(to_zehut);
 		// ---
-		boolean toCommunity = to_zehut.equals("Community");
 
 		User message_sender_user = getUserByTeudatZehut(sender_zehut, newSession);
 
+		if (idToClient.containsKey(to_zehut)) { // User is logged in.
+			// --DEBUG
+			System.out.println("User logged in");
+			// ---
+			ConnectionToClient Message_Reciever_Client = idToClient.get(to_zehut);
+			List<Object> messageDetails = new ArrayList<>();
+			messageDetails.add(message);
+			messageDetails.add(message_sender_user.getUserName());
+			Message_Reciever_Client.sendToClient(new Message("New Message", messageDetails)); // Send message as an object.
+			newSession.remove(message);
+			newSession.flush();
+		} else { // Not connected. Save to DB.
+			// --DEBUG
 
-		if (toCommunity) {
-			List<User> community_list = message_sender_user.getCommunity().getCommunityUsers();
-
-			for	(User user_to_send: community_list) {
-
-			}
-
+			// ---
+			newSession.save(message);
+			newSession.flush();
 
 		}
-
-
-		else {
-			if (idToClient.containsKey(to_zehut)) { // User is logged in.
-				// --DEBUG
-				System.out.println("User logged in");
-				// ---
-				ConnectionToClient Message_Reciever_Client = idToClient.get(to_zehut);
-				List<Object> messageDetails = new ArrayList<>();
-				messageDetails.add(message);
-				messageDetails.add(message_sender_user.getUserName());
-				Message_Reciever_Client.sendToClient(new Message("New Message", messageDetails)); // Send message as an object.
-				newSession.remove(message);
-				newSession.flush();
-			} else { // Not connected. Save to DB.
-				// --DEBUG
-
-				// ---
-				newSession.save(message);
-				newSession.flush();
-
-			}
 
 //			newSession.getTransaction().commit();
-		}
 	}
+
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		Message message = (Message) msg;
 		String request = message.getMessage();
-		System.out.println("request is: "+ request);
+		System.out.println("handleMessageFromClient - request is: " + request);
 		try {
 			SessionFactory sessionFactory = getSessionFactory();
 			session = sessionFactory.openSession();
@@ -566,7 +553,6 @@ public class SimpleServer extends AbstractServer {
 				String password = loginDetails[1];
 				System.out.println("teudatZehut : "+teudatZehut);
 				User user = getUserByTeudatZehut(teudatZehut, session);
-				User user = getUserByTeudatZehut(teudatZehut);
 				System.out.println("numOfTries:"+user.getnumberOfLoginTries());
 				boolean subscriberFound = false;
 				if (user != null && !idToClient.containsKey(teudatZehut) && !user.isLocked()) {
@@ -682,7 +668,7 @@ public class SimpleServer extends AbstractServer {
 					System.out.println("Successfully logged out");
 					message.setMessage("log out");
 					client.sendToClient(message);
-					
+
 				}
 				// TODO: also add for if user is null
 
@@ -718,6 +704,7 @@ public class SimpleServer extends AbstractServer {
 				} else {
 					message.setMessage("Password Change Failed");
 				}
+				client.sendToClient(message);
 			}
 			else if(request.equals("Task not completed on time")) {
 				// Task id is in message.
@@ -770,7 +757,7 @@ public class SimpleServer extends AbstractServer {
 				else
 				{
 					String phoneNumber = (String)message.getObject();
-					user = getUserByPhoneNumber(phoneNumber);
+					user = getUserByPhoneNumber(phoneNumber, session);
 
 					//found user in database with matching phone number
 					if(user != null)
@@ -787,7 +774,6 @@ public class SimpleServer extends AbstractServer {
 						message.setMessage("Emergency Call Failed");
 					}
 				}
-
 				System.out.println("message sent: " + message.getMessage());
 				client.sendToClient(message);
 				if(message.getMessage().equals("Emergency Call Succeeded"))
@@ -799,9 +785,6 @@ public class SimpleServer extends AbstractServer {
 					sendToAllClients(update);
 				}
 			}
-
-
-
 
 			//create task, for now send the message to all the clients
 			// however its more logical to send the message only to the community manager that needs to approve

@@ -24,7 +24,6 @@ import java.util.List;
 import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
 
 
-// TODO: we dont actually need to unregister from event bus when switching because there is no even here. But if there was, ADD it.
 public class MainMenuController {
     @FXML
     private Button communityButton;
@@ -150,7 +149,7 @@ public class MainMenuController {
     }
 
     public void initialize() {
-        EventBus.getDefault().register(this); // **** IF an event bus event is this file, this is needed.
+        EventBus.getDefault().register(this);
         User user = SimpleChatClient.getUser(); // Get the user
         mainmenu_anchor_manager.setVisible(false);
         managerButton.setVisible(false);
