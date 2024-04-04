@@ -221,7 +221,7 @@ public class ViewTasksController {
     @FXML
     void volunteerToTask(ActionEvent event) {
 
-
+        currentUser = SimpleChatClient.getUser();
         Task selectedTask = tasksTableView.getSelectionModel().getSelectedItem();
         selectedTask.setTaskState("In Progress");
         selectedTask.setTaskVolunteer(currentUser);

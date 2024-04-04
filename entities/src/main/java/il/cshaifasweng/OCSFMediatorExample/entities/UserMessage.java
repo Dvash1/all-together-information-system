@@ -19,7 +19,7 @@ public class UserMessage implements Serializable {
     LocalDateTime to_send_on;
     String message_type;
 
-
+    int task_id = 0;
 
 
 
@@ -43,6 +43,14 @@ public class UserMessage implements Serializable {
     }
     public UserMessage() {
 
+    }
+
+    public int getTask_id() {
+        return task_id;
+    }
+
+    public void setTask_id(int task_id) {
+        this.task_id = task_id;
     }
 
     public LocalDateTime getTo_send_on() {

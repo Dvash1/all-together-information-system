@@ -1,9 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.Emergency;
-import il.cshaifasweng.OCSFMediatorExample.entities.Message;
-import il.cshaifasweng.OCSFMediatorExample.entities.User;
-import il.cshaifasweng.OCSFMediatorExample.entities.UserMessage;
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -146,6 +143,23 @@ public class SimpleChatClient extends Application {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
+                            // Update the task to complete.
+                            Message message = new Message("Complete the task",user);
+                            message.setTaskID(userMessage.getTask_id());
+                            try {
+                                SimpleClient.getClient().sendToServer(message);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+
+                            // Pop a successfully sent alert.
+                            Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+                            alert3.setTitle("You have a new message");
+                            alert3.setHeaderText("");
+                            alert3.setContentText("Message has been sent successfully.");
+                            alert3.showAndWait();
+
 
                         }
                     } else  {

@@ -722,8 +722,9 @@ public class SimpleServer extends AbstractServer {
 					System.out.println(taskID);
 					System.out.println(task_to_check.getTaskState());
 					if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
-						// If it is, we send a message to ask why its still in progress.
+						// If it is, we send a message to ask why it's still in progress.
 						UserMessage usermessage_to_send = (UserMessage) message.getObject();
+						usermessage_to_send.setTask_id(taskID);
                         try {
                             sendMessageToClient(usermessage_to_send, new_session);
 							System.out.println("called sendMessageToClient");
@@ -895,9 +896,17 @@ public class SimpleServer extends AbstractServer {
 			}
 
 
-			else if (request.equals("Update task")) {
-
-				Task task = (Task) message.getObject();
+			else if (request.equals("Update task") || request.equals("Complete the task")) {
+				Task task;
+				if (request.equals(("Update task"))) {
+					task = (Task) message.getObject();
+				}
+				else {
+					task = getTaskByTaskID(message.getTaskID(), session);
+					message.setObject(task);
+					task.setTaskState("Complete");
+					task.setCompletionTime(LocalDateTime.now());
+				}
 				session.update(task);
 				session.flush();
 				session.getTransaction().commit();
