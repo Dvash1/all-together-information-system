@@ -293,7 +293,7 @@ public class ViewTasksController {
     public void initialize()
     {
         EventBus.getDefault().register(this);
-
+        currentUser = SimpleChatClient.getUser();
         messageToManagerTA.setText("");
 
         // set values for columns

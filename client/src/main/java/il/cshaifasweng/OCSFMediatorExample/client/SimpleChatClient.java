@@ -31,6 +31,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import javax.swing.plaf.synth.Region;
+
 /**
  * JavaFX App
  */
@@ -214,7 +216,7 @@ public class SimpleChatClient extends Application {
 
 
 
-    static void setRoot(String fxml) throws IOException {
+    static void setRoot(String fxml) throws IOException { // TODO: make work :)
         Parent root = loadFXML(fxml);
 //        scene.setRoot(loadFXML(fxml));
         scene = new Scene(root);

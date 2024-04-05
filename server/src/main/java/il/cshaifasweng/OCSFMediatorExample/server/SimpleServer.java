@@ -741,7 +741,7 @@ public class SimpleServer extends AbstractServer {
 					System.out.println("Task not completed on time");
 					new_session.close();
 					scheduler.shutdown();
-				}, 2, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
+				}, 20, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
 			}
 
 
@@ -984,7 +984,7 @@ public class SimpleServer extends AbstractServer {
 
 							System.out.println("Task not volunteered to on time");
 							scheduler.shutdown();
-						}, 5, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
+						}, 20, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
 						break;
 
 				}
