@@ -45,6 +45,8 @@ public class SimpleServer extends AbstractServer {
 
 		configuration.addAnnotatedClass(Task.class);
 		configuration.addAnnotatedClass(User.class);
+		configuration.addAnnotatedClass(CommunityManagerUser.class);
+		configuration.addAnnotatedClass(CommunityMemberUser.class);
 		configuration.addAnnotatedClass(Community.class);
 		configuration.addAnnotatedClass(Emergency.class);
 		configuration.addAnnotatedClass(UserMessage.class);
@@ -74,18 +76,19 @@ public class SimpleServer extends AbstractServer {
 			//check if database is empty first
 			if (getAllTasks(null, session).isEmpty()) {
 				// first community
-				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true,"0523842728");
+				CommunityManagerUser u1 = new CommunityManagerUser("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue","0523842728");
 				Community c1 = new Community("Kfir",u1);
 				u1.setCommunity(c1);
-				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false,"0538453293" ,c1);
-				User u3 = new User("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", false, "0523456789", c1);
-				User u4 = new User("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", false, "0501234565", c1);
-				User u5 = new User("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary", false, "0579876543", c1);
-				User u6 = new User("Emily Davis", "364892175", "password", "What is your favorite movie?", "The Shawshank Redemption", false, "0512345678", c1);
-				User u7 = new User("Daniel Wilson", "485739216", "123456", "What is your favorite food?", "Pizza", false, "0587654321", c1);
-				User u8 = new User("Olivia Martinez", "627183945", "pass123", "Who is your favorite author?", "J.K. Rowling", false, "0543210987", c1);
-				User u9 = new User("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", false, "0567890123", c1);
-				User u10 = new User("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog", false, "0532109876", c1);
+				u1.setCommunityManaging(c1);
+				CommunityMemberUser u2 = new CommunityMemberUser("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover","0538453293" ,c1);
+				CommunityMemberUser u3 = new CommunityMemberUser("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", "0523456789", c1);
+				CommunityMemberUser u4 = new CommunityMemberUser("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", "0501234565", c1);
+				CommunityMemberUser u5 = new CommunityMemberUser("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary",  "0579876543", c1);
+				CommunityMemberUser u6 = new CommunityMemberUser("Emily Davis", "364892175", "password", "What is your favorite movie?", "The Shawshank Redemption",  "0512345678", c1);
+				CommunityMemberUser u7 = new CommunityMemberUser("Daniel Wilson", "485739216", "123456", "What is your favorite food?", "Pizza",  "0587654321", c1);
+				CommunityMemberUser u8 = new CommunityMemberUser("Olivia Martinez", "627183945", "pass123", "Who is your favorite author?", "J.K. Rowling",  "0543210987", c1);
+				CommunityMemberUser u9 = new CommunityMemberUser("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", "0567890123", c1);
+				CommunityMemberUser u10 = new CommunityMemberUser("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog",  "0532109876", c1);
 
 				Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
 				Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "Request", u3);
@@ -143,18 +146,19 @@ public class SimpleServer extends AbstractServer {
 				session.flush();
 
 // second community
-				User u11 = new User("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", true, "0598765432");
+				CommunityManagerUser u11 = new CommunityManagerUser("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", "0598765432");
 				Community c2 = new Community("Lemons", u11);
 				u11.setCommunity(c2);
-				User u12 = new User("James White", "444555666", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
-				User u13 = new User("Ava Green", "777888999", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
-				User u14 = new User("Ethan Harris", "222333444", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
-				User u15 = new User("Mia Lee", "555666777", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
-				User u16 = new User("Jacob Hall", "888999000", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
-				User u17 = new User("Isabella Young", "333444555", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
-				User u18 = new User("Noah King", "666777888", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
-				User u19 = new User("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
-				User u20 = new User("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
+				u11.setCommunityManaging(c2);
+				CommunityMemberUser u12 = new CommunityMemberUser("James White", "444555666", "abc456", "What is your favorite sport?", "Football",  "0554321098", c2);
+				CommunityMemberUser u13 = new CommunityMemberUser("Ava Green", "777888999", "password789", "What is your favorite season?", "Spring", "0523456788", c2);
+				CommunityMemberUser u14 = new CommunityMemberUser("Ethan Harris", "222333444", "qwerty123", "What is your favorite TV show?", "Friends", "0501234567", c2);
+				CommunityMemberUser u15 = new CommunityMemberUser("Mia Lee", "555666777", "pass789", "What is your favorite holiday?", "Christmas", "0579876544", c2);
+				CommunityMemberUser u16 = new CommunityMemberUser("Jacob Hall", "888999000", "abc789", "What is your favorite music genre?", "Pop",  "0512345679", c2);
+				CommunityMemberUser u17 = new CommunityMemberUser("Isabella Young", "333444555", "passwordabc", "What is your favorite subject?", "History",  "0587654329", c2);
+				CommunityMemberUser u18 = new CommunityMemberUser("Noah King", "666777888", "qwertyabc", "What is your favorite color?", "Green", "0543210986", c2);
+				CommunityMemberUser u19 = new CommunityMemberUser("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", "0567890124", c2);
+				CommunityMemberUser u20 = new CommunityMemberUser("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", "0532109856", c2);
 
 				Task t6 = new Task("mow the lawn", LocalDateTime.now().minusHours(3), "Request", u11);
 				Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "Request", u12);
@@ -213,18 +217,20 @@ public class SimpleServer extends AbstractServer {
 
 				// third community
 
-				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true,"0598765432");
+				CommunityManagerUser u21 = new CommunityManagerUser("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream","0598765432");
+
 				Community c3 = new Community("Ono",u21);
 				u21.setCommunity(c3);
-				User u22 = new User("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", false, "0554321091", c3);
-				User u23 = new User("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", false, "0523456780", c3);
-				User u24 = new User("Zoe Evans", "485726391", "abc123!@#", "What is your favorite board game?", "Monopoly", false, "0501234563", c3);
-				User u25 = new User("Harper Edwards", "582619347", "password123!@#", "What is your favorite animal?", "Cat", false, "0579876545", c3);
-				User u26 = new User("Benjamin Collins", "726391845", "qwerty!@#$", "What is your favorite TV series?", "Breaking Bad", false, "0512345675", c3);
-				User u27 = new User("Aria Stewart", "917364825", "pass!@#$%", "What is your favorite outdoor activity?", "Hiking", false, "0587654323", c3);
-				User u28 = new User("Lucas Watson", "364819257", "abc!@#$%^", "What is your favorite indoor activity?", "Reading", false, "0543210989", c3);
-				User u29 = new User("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", false, "0567890120", c3);
-				User u30 = new User("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather", false, "0532109874", c3);
+				u21.setCommunityManaging(c3);
+				CommunityMemberUser u22 = new CommunityMemberUser("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", "0554321091", c3);
+				CommunityMemberUser u23 = new CommunityMemberUser("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", "0523456780", c3);
+				CommunityMemberUser u24 = new CommunityMemberUser("Zoe Evans", "485726391", "abc123!@#", "What is your favorite board game?", "Monopoly",  "0501234563", c3);
+				CommunityMemberUser u25 = new CommunityMemberUser("Harper Edwards", "582619347", "password123!@#", "What is your favorite animal?", "Cat", "0579876545", c3);
+				CommunityMemberUser u26 = new CommunityMemberUser("Benjamin Collins", "726391845", "qwerty!@#$", "What is your favorite TV series?", "Breaking Bad",  "0512345675", c3);
+				CommunityMemberUser u27 = new CommunityMemberUser("Aria Stewart", "917364825", "pass!@#$%", "What is your favorite outdoor activity?", "Hiking",  "0587654323", c3);
+				CommunityMemberUser u28 = new CommunityMemberUser("Lucas Watson", "364819257", "abc!@#$%^", "What is your favorite indoor activity?", "Reading",  "0543210989", c3);
+				CommunityMemberUser u29 = new CommunityMemberUser("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", "0567890120", c3);
+				CommunityMemberUser u30 = new CommunityMemberUser("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather",  "0532109874", c3);
 
 				Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "Request", u21);
 				Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);

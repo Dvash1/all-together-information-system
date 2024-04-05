@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.List;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "users")
 public class User implements Serializable {
     @Id
@@ -20,43 +22,41 @@ public class User implements Serializable {
     @Column(name = "user_id")
     private int id;
 
+
     private String userName;
     @ManyToOne
-    @JoinColumn(name = "community",referencedColumnName = "communityName")
+    @JoinColumn(name = "community_part_of",referencedColumnName = "communityName")
     private Community community;
 
     private String teudatZehut;
 
     private String passwordHash;
 
-    private boolean isManager;
     private String secretQuestion;
     private String secretQuestionAnswer;
     private String phoneNumber;
     private int numberOfLoginTries;
     private boolean isLocked;
     private String salt;
-    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber, Community community) {
+    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,String phoneNumber, Community community) {
         this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.salt = generateSalt();
         this.passwordHash = get_SHA_512_SecurePassword(password,this.salt);
         this.secretQuestion = secretQuestion;
         this.secretQuestionAnswer = secretQuestionAnswer;
-        this.isManager = isManager;
         this.phoneNumber = phoneNumber;
         this.community = community;
         this.numberOfLoginTries = 0;
         this.isLocked = false;
     }
-    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,boolean isManager,String phoneNumber) {
+    public User(String userName, String teudatZehut, String password,String secretQuestion, String secretQuestionAnswer,String phoneNumber) {
         this.userName = userName;
         this.teudatZehut = teudatZehut;
         this.salt = generateSalt();
         this.passwordHash = get_SHA_512_SecurePassword(password,this.salt);
         this.secretQuestion = secretQuestion;
         this.secretQuestionAnswer = secretQuestionAnswer;
-        this.isManager = isManager;
         this.phoneNumber = phoneNumber;
         this.numberOfLoginTries = 0;
         this.isLocked = false;
@@ -122,13 +122,7 @@ public class User implements Serializable {
         return generatedPassword;
     }
 
-    public boolean isManager() {
-        return isManager;
-    }
 
-    public void setManager(boolean manager) {
-        isManager = manager;
-    }
 
     public Community getCommunity() {
         return community;

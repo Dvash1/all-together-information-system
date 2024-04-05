@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.CommunityManagerUser;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Platform;
@@ -120,7 +121,7 @@ public class MainMenuController {
     @FXML
     void manager_options_pressed(ActionEvent event) {
         User user = SimpleChatClient.getUser();
-        if (user != null && user.isManager()) {
+        if (user != null && (user instanceof CommunityManagerUser)) {
             if (mainmenu_anchor_manager.isVisible()) {
                 mainmenu_anchor_manager.setVisible(false);
             }
@@ -166,7 +167,7 @@ public class MainMenuController {
 
         if (user != null) {
             showUsername(SimpleChatClient.getUser().getUserName());
-            if (user.isManager()) {
+            if (user instanceof CommunityManagerUser) {
                 managerButton.setVisible(true);
             }
 
