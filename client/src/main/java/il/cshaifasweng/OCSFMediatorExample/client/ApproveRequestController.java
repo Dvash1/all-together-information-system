@@ -47,11 +47,18 @@ public class ApproveRequestController {
 
     @FXML
     private Button submitBtn;
-
+    @FXML
     private Button backBtn;
     @FXML
     private TableView<Task> tasksTableView;
 
+    @FXML
+    private Button emergencyButton;
+
+    @FXML
+    void emergency_button_press(ActionEvent event) throws IOException {
+        SimpleChatClient.sendEmergencyRequest(SimpleChatClient.getUser());
+    }
 
     @FXML
     void showPreviousScene(ActionEvent event)

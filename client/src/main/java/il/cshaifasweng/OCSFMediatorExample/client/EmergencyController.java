@@ -55,7 +55,7 @@ public class EmergencyController {
         }
         else {
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "No user found with the given the phone number");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "No user found with the given phone number");
                 alert.setTitle("Emergency Call Failed");
                 alert.setHeaderText(null);
                 alert.show();

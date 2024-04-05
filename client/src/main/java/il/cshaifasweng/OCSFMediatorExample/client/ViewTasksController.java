@@ -57,12 +57,20 @@ public class ViewTasksController {
     @FXML
     private Button backBtn;
 
+    @FXML
+    private Button emergencyButton;
+
     private ObservableList<Task> taskList ;
 
     @FXML
     private TextArea messageToManagerTA;
 
 
+
+    @FXML
+    void emergency_button_press(ActionEvent event) throws IOException {
+        SimpleChatClient.sendEmergencyRequest(SimpleChatClient.getUser());
+    }
 
     @FXML
     void showPreviousScene(ActionEvent event)
@@ -153,6 +161,7 @@ public class ViewTasksController {
 
                 if(tasksTableView.getSelectionModel().getSelectedItem() == task)
                 {
+                    withdrawBtn.setDisable(true);
                     completeBtn.setDisable(true);
                     tasksTableView.getSelectionModel().clearSelection();
                 }

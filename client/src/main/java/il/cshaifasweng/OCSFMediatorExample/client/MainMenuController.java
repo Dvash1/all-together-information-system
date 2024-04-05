@@ -83,13 +83,7 @@ public class MainMenuController {
     @FXML
     void emergency_button_press(ActionEvent event) throws IOException {
         SimpleChatClient.sendEmergencyRequest(SimpleChatClient.getUser());
-//        Parent root = FXMLLoader.load(getClass().getResource("emergency.fxml"));
-//        Scene scene = new Scene(root);
-//        Stage primaryStage = new Stage();
-//        primaryStage.setTitle("Emergency Window");
-//        primaryStage.setScene(scene);
-//        primaryStage.initModality(Modality.APPLICATION_MODAL);
-//        primaryStage.show();
+
     }
 
     @FXML

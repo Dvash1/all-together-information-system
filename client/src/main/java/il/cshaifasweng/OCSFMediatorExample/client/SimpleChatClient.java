@@ -199,6 +199,13 @@ public class SimpleChatClient extends Application {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            Platform.runLater(() -> {
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "Your emergency call has been forwarded");
+                alert2.setTitle("Emergency Call Success");
+                alert2.setHeaderText(null);
+                alert2.showAndWait();
+            });
         }
 
 

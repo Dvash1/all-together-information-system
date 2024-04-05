@@ -52,6 +52,13 @@ public class NewTaskController {
     private Button menuButton;
 
     @FXML
+    private Button emergencyButton;
+
+    @FXML
+    void emergency_button_press(ActionEvent event) throws IOException {
+        SimpleChatClient.sendEmergencyRequest(SimpleChatClient.getUser());
+    }
+    @FXML
     void switchToMenu(ActionEvent event) {
         Platform.runLater(() -> {
             try {
