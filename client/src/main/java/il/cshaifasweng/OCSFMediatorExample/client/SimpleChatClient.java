@@ -135,6 +135,7 @@ public class SimpleChatClient extends Application {
                         tiDialog.setHeaderText("Please enter a message to send to your community manager: ");
                         tiDialog.setContentText("Message: ");
 
+
                         Optional<String> dialog_result = tiDialog.showAndWait();
 
                         if (dialog_result.isPresent()) {
@@ -165,6 +166,13 @@ public class SimpleChatClient extends Application {
                             alert3.showAndWait();
 
 
+                        }
+                        else {
+                            Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                            alert2.setTitle("You have a new message");
+                            alert2.setHeaderText("");
+                            alert2.setContentText("Once you have completed the task, please update your community manager.\nIf you're experiencing trouble completing the task, you may withdraw through the task list.");
+                            alert2.showAndWait();
                         }
                     } else  {
                         Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
@@ -218,11 +226,17 @@ public class SimpleChatClient extends Application {
 
     static void setRoot(String fxml) throws IOException { // TODO: make work :)
         Parent root = loadFXML(fxml);
-//        scene.setRoot(loadFXML(fxml));
         scene = new Scene(root);
         // Set the width and height of the scene to match the loaded FXML
         double width = root.prefWidth(-1);
         double height = root.prefHeight(width);
+
+        System.out.print("width:");
+        System.out.println(width);
+        System.out.print("Height:");
+        System.out.println(height);
+        // Get the width and height of the scene from the FXML
+
         scene.setRoot(root);
         stage.setScene(scene);
         stage.setWidth(width);
