@@ -648,7 +648,6 @@ public class SimpleServer extends AbstractServer {
 				String password = loginDetails[1];
 				System.out.println("teudatZehut : "+teudatZehut);
 				User user = getUserByTeudatZehut(teudatZehut, session);
-				System.out.println("numOfTries:"+user.getnumberOfLoginTries());
 				boolean subscriberFound = false;
 				if (user != null && !idToClient.containsKey(teudatZehut) && !user.isLocked()) {
 					password = user.get_SHA_512_SecurePassword(password,user.getSalt());
