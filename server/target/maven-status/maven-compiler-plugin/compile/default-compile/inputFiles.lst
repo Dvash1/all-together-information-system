@@ -1,10 +1,10 @@
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\SubscribedClient.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\OriginatorMessage.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\AdaptableServer.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\ConnectionToClient.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\AbstractConnectionFactory.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\AbstractServer.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\SimpleServer.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\ObservableOriginatorServer.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\ObservableServer.java
-C:\Users\danie\Documents\Coding\Software Engineering projects\SWEproject\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\SimpleChatServer.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\AdaptableServer.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\OriginatorMessage.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\SimpleServer.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\SubscribedClient.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\ObservableOriginatorServer.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\AbstractConnectionFactory.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\SimpleChatServer.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\AbstractServer.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\ConnectionToClient.java
+C:\Users\Lior\Desktop\SE_HW\all-together-information-system\server\src\main\java\il\cshaifasweng\OCSFMediatorExample\server\ocsf\ObservableServer.java

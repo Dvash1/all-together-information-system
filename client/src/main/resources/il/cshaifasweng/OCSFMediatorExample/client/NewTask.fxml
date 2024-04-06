@@ -26,5 +26,6 @@
       <Button fx:id="submitBtn" layoutX="249.0" layoutY="354.0" mnemonicParsing="false" onAction="#createNewTask" text="Submit request" />
       <TextField fx:id="otherTF" layoutX="101.0" layoutY="282.0" prefHeight="25.0" prefWidth="447.0" />
       <Button fx:id="backBtn" layoutX="29.0" layoutY="25.0" mnemonicParsing="false" onAction="#showPreviousScene" prefHeight="25.0" prefWidth="56.0" text="Back" />
+      <Button fx:id="emergencyButton" layoutX="346.0" layoutY="87.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="103.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
    </children>
 </AnchorPane>

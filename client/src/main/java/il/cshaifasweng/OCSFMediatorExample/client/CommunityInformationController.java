@@ -75,6 +75,14 @@ public class CommunityInformationController {
     private Button exportBtnSecond;
 
     @FXML
+    private Button emergencyButton;
+
+    @FXML
+    void emergency_button_press(ActionEvent event) throws IOException {
+        SimpleChatClient.sendEmergencyRequest(SimpleChatClient.getUser());
+    }
+
+    @FXML
     void showPreviousScene(ActionEvent event)
     {
         try {

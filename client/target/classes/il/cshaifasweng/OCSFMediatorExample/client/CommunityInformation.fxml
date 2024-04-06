@@ -46,5 +46,6 @@
       <Button fx:id="exportBtnSecond" layoutX="253.0" layoutY="839.0" mnemonicParsing="false" onAction="#exportSecond" text="Export" />
       <Button fx:id="exportBtnFirst" layoutX="878.0" layoutY="839.0" mnemonicParsing="false" onAction="#exportFirst" text="Export" />
       <Button fx:id="backBtn" layoutX="27.0" layoutY="25.0" mnemonicParsing="false" onAction="#showPreviousScene" prefHeight="25.0" prefWidth="56.0" text="Back" />
+      <Button fx:id="emergencyButton" layoutX="116.0" layoutY="25.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="103.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
    </children>
 </AnchorPane>
