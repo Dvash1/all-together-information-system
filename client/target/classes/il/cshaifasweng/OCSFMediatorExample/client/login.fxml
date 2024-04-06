@@ -26,7 +26,7 @@
             </AnchorPane>
             <AnchorPane fx:id="forgot_form" visible="false">
                <children>
-                  <Button fx:id="backButton_forgot" layoutX="14.0" layoutY="408.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
+                  <Button fx:id="backButton_forgot" layoutX="14.0" layoutY="383.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
                   <Pane layoutX="62.0" layoutY="40.0" prefHeight="278.0" prefWidth="321.0" style="-fx-background-color: lightblue;">
                      <children>
                         <TextField fx:id="teudatzehut_field_forgot" layoutX="47.0" layoutY="36.0" prefHeight="25.0" prefWidth="228.0" promptText="Teudat Zehut" />
@@ -39,7 +39,7 @@
             </AnchorPane>
             <AnchorPane fx:id="new_password_form" prefHeight="450.0" prefWidth="445.0" visible="false">
                <children>
-                  <Button fx:id="backButton_new_pass" layoutX="14.0" layoutY="408.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
+                  <Button fx:id="backButton_new_pass" layoutX="14.0" layoutY="382.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
                   <Pane layoutX="56.0" layoutY="33.0" prefHeight="285.0" prefWidth="328.0" style="-fx-background-color: lightblue;">
                      <children>
                         <TextField fx:id="new_password_field" layoutX="47.0" layoutY="54.0" prefHeight="25.0" prefWidth="228.0" promptText="Password" />

@@ -17,8 +17,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-// There are some bugs regarding enabling/disabling of buttons when users volunteer/withdraw from a task. (when multiple clients are browsing open tasks)
-// Log in needs to be properly to handle them, because some bugs occur only when the same user is hovering the same task, and our does not allow a user to be logged on more than one client.
 public class ViewTasksController {
 
     public static User currentUser = SimpleChatClient.getUser();

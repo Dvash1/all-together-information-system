@@ -7,31 +7,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import java.util.List;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
-
-import java.io.IOException;
 import java.util.Optional;
-
-import static il.cshaifasweng.OCSFMediatorExample.client.ViewTasksController.currentUser;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import javax.swing.plaf.synth.Region;
 
 /**
  * JavaFX App
@@ -41,8 +26,6 @@ public class SimpleChatClient extends Application {
     private static Scene scene;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     private static Stage stage;
-    private SimpleClient client;
-
     private static User user = null;
 
 
@@ -50,10 +33,6 @@ public class SimpleChatClient extends Application {
     public void start(Stage primaryStage) throws IOException {
 
         EventBus.getDefault().register(this);
-//        Parent fxml_loaded = loadFXML("ConnectToServer");
-//        scene = new Scene(loadFXML("ConnectToServer"), 1280, 900);
-//        stage.setScene(scene);
-//        SimpleChatClient.stage = stage;
         stage = primaryStage;
         setRoot("ConnectToServer"); // Load initial FXML
         stage.show();
@@ -137,17 +116,18 @@ public class SimpleChatClient extends Application {
                         Optional<String> dialog_result = tiDialog.showAndWait();
 
                         if (dialog_result.isPresent()) {
-                            String to_manager_text = "Task done by: \"" + user.getUserName() + "\"\nHas been marked complete with the message:\n\"" + dialog_result.get() + "\"";
-                            UserMessage to_manager_message = new UserMessage(to_manager_text , user.getTeudatZehut(), user.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
-                            Message to_send = new Message("Send message", to_manager_message);
-
-                            try {
-                                SimpleClient.getClient().sendToServer(to_send);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            // Update the task to complete.
+//                            String to_manager_text = "Task done by: \"" + user.getUserName() + "\"\nHas been marked complete with the message:\n\"" + dialog_result.get() + "\"";
+//                            UserMessage to_manager_message = new UserMessage(to_manager_text , user.getTeudatZehut(), user.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
+//                            Message to_send = new Message("Send message", to_manager_message);
+//
+//                            try {
+//                                SimpleClient.getClient().sendToServer(to_send);
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+                            // Update the task to complete and send a message, all handeled in server side.
                             Message message = new Message("Complete the task",user);
+                            message.setObject(dialog_result.get());
                             message.setTaskID(userMessage.getTask_id());
                             try {
                                 SimpleClient.getClient().sendToServer(message);
