@@ -942,7 +942,7 @@ public class SimpleServer extends AbstractServer {
 			else if(request.equals("Task not completed on time")) {
 				// Task id is in message.
 				int taskID = message.getTaskID();
-				createTaskNotCompleteThread(taskID, (UserMessage) message.getObject(), 20, sessionFactory, TimeUnit.SECONDS);
+				createTaskNotCompleteThread(taskID, (UserMessage) message.getObject(), 1, sessionFactory, TimeUnit.MINUTES);
 			}
 
 
@@ -1101,7 +1101,7 @@ public class SimpleServer extends AbstractServer {
 //				String message_text = "24 hours have passed on the task:\n\"" + task.getRequiredTask() + "\"\nBy: " + task.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
 //
 //				UserMessage messageToSend = new UserMessage(message_text, manager_zehut, task.getTaskCreator().getTeudatZehut(),"Not Complete");;
-				createNoVolunteerThread(task.getId(),20, sessionFactory, TimeUnit.SECONDS);
+				createNoVolunteerThread(task.getId(),1, sessionFactory, TimeUnit.MINUTES);
 
 				session.update(task);
 				session.flush();
@@ -1147,7 +1147,7 @@ public class SimpleServer extends AbstractServer {
 					case "Request":
 						int taskID_original =  ((Task) (message.getObject())).getId();
 						shutDown_pair(taskID_original);
-						createNoVolunteerThread(taskID_original, 20, sessionFactory, TimeUnit.SECONDS);
+						createNoVolunteerThread(taskID_original, 1, sessionFactory, TimeUnit.MINUTES);
 						break;
 
 				}

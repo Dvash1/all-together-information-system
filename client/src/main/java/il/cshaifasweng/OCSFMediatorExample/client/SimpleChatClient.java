@@ -88,11 +88,9 @@ public class SimpleChatClient extends Application {
 
     @Subscribe
     public void NewMessageEvent(NewMessageEvent event) {
-        System.out.println(event.getMessage().getObjectsArr().size());
         UserMessage userMessage = (UserMessage) event.getMessage().getObjectsArr().get(0); // Get the usermessage
         String formatted_date = (userMessage.getWas_sent_on()).format(formatter);
         String from = (String) event.getMessage().getObjectsArr().get(1);
-        System.out.println(from);
 
         switch(userMessage.getMessage_type()) { // Switch uses equals()
             case "Community":

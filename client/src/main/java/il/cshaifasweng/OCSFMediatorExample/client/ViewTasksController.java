@@ -125,7 +125,7 @@ public class ViewTasksController {
             SimpleClient.getClient().sendToServer(message);
 
             // Send message to manager
-            String to_manager_text = "Task done by: \"" + currentUser.getUserName() + "\"\nHas been marked complete with the message:\n\"" + text + "\"";
+            String to_manager_text = "The task: \"" + selectedTask.getRequiredTask() + "\"\nWhich was created by: \"" + selectedTask.getTaskCreator().getUserName() + "\"\nAnd volunteered to by: \"" + currentUser.getUserName() + "\"\nHas been marked complete with the message:\n\"" + text + "\"";
             UserMessage managerMessage = new UserMessage(to_manager_text, currentUser.getTeudatZehut(), currentUser.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
             Message messageToManager = new Message("Send message",managerMessage);
             SimpleClient.getClient().sendToServer(messageToManager);
