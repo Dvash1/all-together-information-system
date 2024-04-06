@@ -344,7 +344,6 @@ public class SimpleServer extends AbstractServer {
 			@Override
 			public void run() {
 				// Code to execute
-				System.out.println("Scheduled event started");
 				// This will be executed after allotted time
 				try (Session new_session = sessionFactory.openSession()) {
 					new_session.beginTransaction();
@@ -465,7 +464,6 @@ public class SimpleServer extends AbstractServer {
 		query.select(root);
 		query.where(cb.equal(root.get("id"), taskId));
 		Task found_task = null;
-		System.out.println("Starting query");
 		try {
 			found_task = newSession.createQuery(query).getSingleResult();
 		} catch (Exception e) {
@@ -672,7 +670,6 @@ public class SimpleServer extends AbstractServer {
 
 				if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
 					// If it is, we send a message to everyone to tell them nobody volunteered yet.
-					System.out.println("state is Request");
 					String text_for_message = "The task: \"" + task_to_check.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
 					List<User> community_list = new ArrayList<>();
 					// GET LIST
@@ -714,7 +711,7 @@ public class SimpleServer extends AbstractServer {
 		// TODO: REMOVE DEBUG?
 		// TODO: optimally, we would want the people sending to be a list. Maybe implement?
 		// --DEBUG
-		System.out.println("sendMessageToClient called");
+//		System.out.println("sendMessageToClient called");
 		// ---
 		String message_type = message.getMessage_type();
 		String sender_zehut = message.getSender_zehut();
@@ -725,7 +722,6 @@ public class SimpleServer extends AbstractServer {
 		} // Check if anything is empty first.
 
 		// --DEBUG
-		System.out.println("I passed the empty check");
 		System.out.print("Sender is:");
 		System.out.println(sender_zehut);
 		System.out.print("Reciever is:");

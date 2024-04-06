@@ -238,10 +238,10 @@ public class SimpleChatClient extends Application {
         double width = root.prefWidth(-1);
         double height = root.prefHeight(width);
 
-        System.out.print("width:");
-        System.out.println(width);
-        System.out.print("Height:");
-        System.out.println(height);
+//        System.out.print("width:");
+//        System.out.println(width);
+//        System.out.print("Height:");
+//        System.out.println(height);
         // Get the width and height of the scene from the FXML
 
         scene.setRoot(root);
