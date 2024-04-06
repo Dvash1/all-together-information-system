@@ -429,7 +429,7 @@ public class SimpleServer extends AbstractServer {
 
 				System.out.println("Task not volunteered to on time");
 
-				ScheduledFuture<?> scheduledFuture = scheduler.schedule(this, timeUnit, time);
+				ScheduledFuture<?> scheduledFuture = scheduler.schedule(this, 2, TimeUnit.MINUTES);
 				taskIDtoThread.get(task.getId()).setSecond(scheduledFuture);
 			}
 		};
