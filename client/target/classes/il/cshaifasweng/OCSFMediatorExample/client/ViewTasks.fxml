@@ -35,5 +35,6 @@
       </Text>
       <Button fx:id="withdrawBtn" disable="true" layoutX="917.0" layoutY="223.0" mnemonicParsing="false" onAction="#withdrawVolunteering" text="Withdraw volunteering" />
       <Button fx:id="backBtn" layoutX="59.0" layoutY="668.0" mnemonicParsing="false" onAction="#showPreviousScene" text="Back" />
+      <Button fx:id="emergencyButton" layoutX="171.0" layoutY="8.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="66.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
    </children>
 </AnchorPane>

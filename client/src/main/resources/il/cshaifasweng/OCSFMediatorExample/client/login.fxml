@@ -8,11 +8,11 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="451.0" prefWidth="436.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.LoginController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.LoginController">
    <children>
-      <AnchorPane fx:id="main_login_anchor" prefHeight="200.0" prefWidth="200.0">
+      <AnchorPane fx:id="main_login_anchor" prefHeight="425.0" prefWidth="445.0">
          <children>
-            <AnchorPane fx:id="login_form" prefHeight="434.0" prefWidth="445.0">
+            <AnchorPane fx:id="login_form">
                <children>
                   <Pane layoutX="123.0" layoutY="68.0" prefHeight="230.0" prefWidth="201.0" style="-fx-background-color: lightblue;">
                      <children>
@@ -24,7 +24,7 @@
                   </Pane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="forgot_form" prefHeight="434.0" prefWidth="445.0" visible="false">
+            <AnchorPane fx:id="forgot_form" visible="false">
                <children>
                   <Button fx:id="backButton_forgot" layoutX="14.0" layoutY="408.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
                   <Pane layoutX="62.0" layoutY="40.0" prefHeight="278.0" prefWidth="321.0" style="-fx-background-color: lightblue;">
@@ -37,7 +37,7 @@
                   </Pane>
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="new_password_form" prefHeight="434.0" prefWidth="445.0" visible="false">
+            <AnchorPane fx:id="new_password_form" prefHeight="450.0" prefWidth="445.0" visible="false">
                <children>
                   <Button fx:id="backButton_new_pass" layoutX="14.0" layoutY="408.0" onAction="#switch_form" prefHeight="25.0" prefWidth="84.0" text="Back" />
                   <Pane layoutX="56.0" layoutY="33.0" prefHeight="285.0" prefWidth="328.0" style="-fx-background-color: lightblue;">

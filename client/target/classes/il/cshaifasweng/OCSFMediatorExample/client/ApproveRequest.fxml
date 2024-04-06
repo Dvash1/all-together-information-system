@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="594.0" prefWidth="836.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.ApproveRequestController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="836.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.ApproveRequestController">
    <children>
       <TableView fx:id="tasksTableView" layoutX="54.0" layoutY="77.0" prefHeight="244.0" prefWidth="743.0">
          <columns>
@@ -33,5 +33,6 @@
       <RadioButton fx:id="denyRB" layoutX="54.0" layoutY="371.0" mnemonicParsing="false" text="Deny request" />
       <Button fx:id="submitBtn" disable="true" layoutX="392.0" layoutY="555.0" mnemonicParsing="false" onAction="#handleSubmission" text="Submit" />
       <Button fx:id="backBtn" layoutX="44.0" layoutY="29.0" mnemonicParsing="false" onAction="#showPreviousScene" prefHeight="25.0" prefWidth="56.0" text="Back" />
+      <Button fx:id="emergencyButton" layoutX="120.0" layoutY="3.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="64.0" prefWidth="126.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
    </children>
 </AnchorPane>

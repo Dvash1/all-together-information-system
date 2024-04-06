@@ -133,8 +133,8 @@ public class LoginController {
             });
         }
 
-
-        else if(message_text.equals("Login Failed: Wrong Password")){
+        else if(message_text.equals("Login Failed: Wrong Password") ||
+                message_text.equals("Login Failed: No Such User Exists")){
             System.out.println("Log in failed, wrong password");
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such Username, or the password is wrong");
@@ -151,6 +151,16 @@ public class LoginController {
                 alert.setHeaderText("Login Failed");
                 alert.show();
             });
+        }
+        else if(message_text.equals("Login Failed: Someone is already connected to the given ID")) {
+            System.out.println("Login failed - Someone is already connected to the given ID");
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Someone is already connected to the given ID");
+                alert.setTitle("Login Failed");
+                alert.setHeaderText("Login Failed");
+                alert.show();
+            });
+
         }
     }
     private String[] securityQuestions = {
@@ -195,7 +205,7 @@ public class LoginController {
         }
         else {
             Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such ID, or the password is wrong");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "There is no such ID, or the answer is wrong");
                 alert.setTitle("Login Failed");
                 alert.setHeaderText("Login Failed");
                 alert.show();

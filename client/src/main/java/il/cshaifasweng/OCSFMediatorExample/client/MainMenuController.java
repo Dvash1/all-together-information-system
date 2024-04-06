@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.CommunityManagerUser;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Platform;
@@ -83,13 +84,7 @@ public class MainMenuController {
     @FXML
     void emergency_button_press(ActionEvent event) throws IOException {
         SimpleChatClient.sendEmergencyRequest(SimpleChatClient.getUser());
-//        Parent root = FXMLLoader.load(getClass().getResource("emergency.fxml"));
-//        Scene scene = new Scene(root);
-//        Stage primaryStage = new Stage();
-//        primaryStage.setTitle("Emergency Window");
-//        primaryStage.setScene(scene);
-//        primaryStage.initModality(Modality.APPLICATION_MODAL);
-//        primaryStage.show();
+
     }
 
     @FXML
@@ -126,7 +121,7 @@ public class MainMenuController {
     @FXML
     void manager_options_pressed(ActionEvent event) {
         User user = SimpleChatClient.getUser();
-        if (user != null && user.isManager()) {
+        if (user != null && (user instanceof CommunityManagerUser)) {
             if (mainmenu_anchor_manager.isVisible()) {
                 mainmenu_anchor_manager.setVisible(false);
             }
@@ -172,7 +167,7 @@ public class MainMenuController {
 
         if (user != null) {
             showUsername(SimpleChatClient.getUser().getUserName());
-            if (user.isManager()) {
+            if (user instanceof CommunityManagerUser) {
                 managerButton.setVisible(true);
             }
 

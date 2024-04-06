@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+
 @Entity
 @Table(name = "communities")
 public class Community implements Serializable {
@@ -13,6 +14,7 @@ public class Community implements Serializable {
     private int id;
 
     private String communityName;
+
     @OneToOne
     @JoinColumn(name = "community_manager", referencedColumnName = "userName")
     private User communityManager;

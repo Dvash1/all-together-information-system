@@ -6,6 +6,7 @@ import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -31,13 +32,14 @@ import javax.persistence.criteria.*;
 import java.util.concurrent.*;
 
 
-
-
 public class SimpleServer extends AbstractServer {
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
 	private static HashMap<String,ConnectionToClient> idToClient = new HashMap<>();
 	private static HashMap<ConnectionToClient,String> clientToId = new HashMap<>();
+	private static HashMap<Integer, Pair<ScheduledExecutorService,ScheduledFuture>> taskIDtoThread = new HashMap<>();
 	private static Session session;
+
+
 
 	private static SessionFactory getSessionFactory() throws
 			HibernateException {
@@ -45,6 +47,8 @@ public class SimpleServer extends AbstractServer {
 
 		configuration.addAnnotatedClass(Task.class);
 		configuration.addAnnotatedClass(User.class);
+		configuration.addAnnotatedClass(CommunityManagerUser.class);
+		configuration.addAnnotatedClass(CommunityMemberUser.class);
 		configuration.addAnnotatedClass(Community.class);
 		configuration.addAnnotatedClass(Emergency.class);
 		configuration.addAnnotatedClass(UserMessage.class);
@@ -74,23 +78,24 @@ public class SimpleServer extends AbstractServer {
 			//check if database is empty first
 			if (getAllTasks(null, session).isEmpty()) {
 				// first community
-				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true,"0523842728");
+				CommunityManagerUser u1 = new CommunityManagerUser("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue","0523842728");
 				Community c1 = new Community("Kfir",u1);
 				u1.setCommunity(c1);
-				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false,"0538453293" ,c1);
-				User u3 = new User("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", false, "0523456789", c1);
-				User u4 = new User("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", false, "0501234565", c1);
-				User u5 = new User("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary", false, "0579876543", c1);
-				User u6 = new User("Emily Davis", "364892175", "password", "What is your favorite movie?", "The Shawshank Redemption", false, "0512345678", c1);
-				User u7 = new User("Daniel Wilson", "485739216", "123456", "What is your favorite food?", "Pizza", false, "0587654321", c1);
-				User u8 = new User("Olivia Martinez", "627183945", "pass123", "Who is your favorite author?", "J.K. Rowling", false, "0543210987", c1);
-				User u9 = new User("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", false, "0567890123", c1);
-				User u10 = new User("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog", false, "0532109876", c1);
+				u1.setCommunityManaging(c1);
+				CommunityMemberUser u2 = new CommunityMemberUser("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover","0538453293" ,c1);
+				CommunityMemberUser u3 = new CommunityMemberUser("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", "0523456789", c1);
+				CommunityMemberUser u4 = new CommunityMemberUser("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", "0501234565", c1);
+				CommunityMemberUser u5 = new CommunityMemberUser("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary",  "0579876543", c1);
+				CommunityMemberUser u6 = new CommunityMemberUser("Emily Davis", "364892175", "password", "What is your favorite movie?", "The Shawshank Redemption",  "0512345678", c1);
+				CommunityMemberUser u7 = new CommunityMemberUser("Daniel Wilson", "485739216", "123456", "What is your favorite food?", "Pizza",  "0587654321", c1);
+				CommunityMemberUser u8 = new CommunityMemberUser("Olivia Martinez", "627183945", "pass123", "Who is your favorite author?", "J.K. Rowling",  "0543210987", c1);
+				CommunityMemberUser u9 = new CommunityMemberUser("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", "0567890123", c1);
+				CommunityMemberUser u10 = new CommunityMemberUser("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog",  "0532109876", c1);
 
 				Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
-				Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "Request", u3);
-				Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "Request", u4);
-				Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1), "Complete", u5,u7);
+				Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "In Progress", u3,u4);
+				Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "In Progress", u4,u3);
+				Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1).minusDays(4), "Complete", u5,u7);
 				t4.setCompletionTime(LocalDateTime.now().minusDays(5));
 				Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
 
@@ -141,27 +146,33 @@ public class SimpleServer extends AbstractServer {
 				session.save(e9);
 				session.save(e10);
 				session.flush();
-
+				taskNotVolunteer(t1,2,sessionFactory,TimeUnit.SECONDS);
+				taskVolunteerDidNotFinishOnTime(t2.getId(),5,sessionFactory,TimeUnit.SECONDS);
+				taskVolunteerDidNotFinishOnTime(t3.getId(),12,sessionFactory,TimeUnit.SECONDS);
+				taskNotVolunteer(t5,1,sessionFactory,TimeUnit.HOURS);
 // second community
-				User u11 = new User("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", true, "0598765432");
+				CommunityManagerUser u11 = new CommunityManagerUser("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", "0598765432");
 				Community c2 = new Community("Lemons", u11);
 				u11.setCommunity(c2);
-				User u12 = new User("James White", "444555666", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
-				User u13 = new User("Ava Green", "777888999", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
-				User u14 = new User("Ethan Harris", "222333444", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
-				User u15 = new User("Mia Lee", "555666777", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
-				User u16 = new User("Jacob Hall", "888999000", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
-				User u17 = new User("Isabella Young", "333444555", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
-				User u18 = new User("Noah King", "666777888", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
-				User u19 = new User("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
-				User u20 = new User("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
+				u11.setCommunityManaging(c2);
+				CommunityMemberUser u12 = new CommunityMemberUser("James White", "444555666", "abc456", "What is your favorite sport?", "Football",  "0554321098", c2);
+				CommunityMemberUser u13 = new CommunityMemberUser("Ava Green", "777888999", "password789", "What is your favorite season?", "Spring", "0523456788", c2);
+				CommunityMemberUser u14 = new CommunityMemberUser("Ethan Harris", "222333444", "qwerty123", "What is your favorite TV show?", "Friends", "0501234567", c2);
+				CommunityMemberUser u15 = new CommunityMemberUser("Mia Lee", "555666777", "pass789", "What is your favorite holiday?", "Christmas", "0579876544", c2);
+				CommunityMemberUser u16 = new CommunityMemberUser("Jacob Hall", "888999000", "abc789", "What is your favorite music genre?", "Pop",  "0512345679", c2);
+				CommunityMemberUser u17 = new CommunityMemberUser("Isabella Young", "333444555", "passwordabc", "What is your favorite subject?", "History",  "0587654329", c2);
+				CommunityMemberUser u18 = new CommunityMemberUser("Noah King", "666777888", "qwertyabc", "What is your favorite color?", "Green", "0543210986", c2);
+				CommunityMemberUser u19 = new CommunityMemberUser("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", "0567890124", c2);
+				CommunityMemberUser u20 = new CommunityMemberUser("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", "0532109856", c2);
 
-				Task t6 = new Task("mow the lawn", LocalDateTime.now().minusHours(3), "Request", u11);
-				Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "Request", u12);
+				Task t6 = new Task("mow the lawn", LocalDateTime.now().minusWeeks(1), "Complete", u11);
+				t6.setCompletionTime(LocalDateTime.now().minusDays(3));
+				Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "In Progress", u12,u13);
 				Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13, u17);
-				t8.setCompletionTime(LocalDateTime.now().minusDays(2));
+				t8.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(4));
 				Task t9 = new Task("clean the garage", LocalDateTime.now().minusDays(3), "Request", u14);
-				Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Request", u15);
+				Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Complete", u15);
+				t10.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(3));
 
 				Emergency e11 = new Emergency(u11, LocalDateTime.now().minusDays(3));
 				Emergency e12 = new Emergency(u12, LocalDateTime.now().minusDays(1));
@@ -182,6 +193,7 @@ public class SimpleServer extends AbstractServer {
 				session.save(u15);
 				session.flush();
 
+
 				session.save(u16);
 				session.save(u17);
 				session.save(u18);
@@ -195,7 +207,8 @@ public class SimpleServer extends AbstractServer {
 				session.save(t9);
 				session.save(t10);
 				session.flush();
-
+				taskVolunteerDidNotFinishOnTime(t7.getId(),5,sessionFactory,TimeUnit.HOURS);
+				taskNotVolunteer(t9,32,sessionFactory,TimeUnit.MINUTES);
 
 				session.save(e11);
 				session.save(e12);
@@ -213,25 +226,29 @@ public class SimpleServer extends AbstractServer {
 
 				// third community
 
-				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true,"0598765432");
+				CommunityManagerUser u21 = new CommunityManagerUser("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream","0598765432");
+
 				Community c3 = new Community("Ono",u21);
 				u21.setCommunity(c3);
-				User u22 = new User("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", false, "0554321091", c3);
-				User u23 = new User("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", false, "0523456780", c3);
-				User u24 = new User("Zoe Evans", "485726391", "abc123!@#", "What is your favorite board game?", "Monopoly", false, "0501234563", c3);
-				User u25 = new User("Harper Edwards", "582619347", "password123!@#", "What is your favorite animal?", "Cat", false, "0579876545", c3);
-				User u26 = new User("Benjamin Collins", "726391845", "qwerty!@#$", "What is your favorite TV series?", "Breaking Bad", false, "0512345675", c3);
-				User u27 = new User("Aria Stewart", "917364825", "pass!@#$%", "What is your favorite outdoor activity?", "Hiking", false, "0587654323", c3);
-				User u28 = new User("Lucas Watson", "364819257", "abc!@#$%^", "What is your favorite indoor activity?", "Reading", false, "0543210989", c3);
-				User u29 = new User("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", false, "0567890120", c3);
-				User u30 = new User("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather", false, "0532109874", c3);
+				u21.setCommunityManaging(c3);
+				CommunityMemberUser u22 = new CommunityMemberUser("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", "0554321091", c3);
+				CommunityMemberUser u23 = new CommunityMemberUser("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", "0523456780", c3);
+				CommunityMemberUser u24 = new CommunityMemberUser("Zoe Evans", "485726391", "abc123!@#", "What is your favorite board game?", "Monopoly",  "0501234563", c3);
+				CommunityMemberUser u25 = new CommunityMemberUser("Harper Edwards", "582619347", "password123!@#", "What is your favorite animal?", "Cat", "0579876545", c3);
+				CommunityMemberUser u26 = new CommunityMemberUser("Benjamin Collins", "726391845", "qwerty!@#$", "What is your favorite TV series?", "Breaking Bad",  "0512345675", c3);
+				CommunityMemberUser u27 = new CommunityMemberUser("Aria Stewart", "917364825", "pass!@#$%", "What is your favorite outdoor activity?", "Hiking",  "0587654323", c3);
+				CommunityMemberUser u28 = new CommunityMemberUser("Lucas Watson", "364819257", "abc!@#$%^", "What is your favorite indoor activity?", "Reading",  "0543210989", c3);
+				CommunityMemberUser u29 = new CommunityMemberUser("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", "0567890120", c3);
+				CommunityMemberUser u30 = new CommunityMemberUser("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather",  "0532109874", c3);
 
-				Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "Request", u21);
+				Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "In Progress", u21,u22);
+
 				Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);
 				Task t13 = new Task("trim the hedges", LocalDateTime.now().minusWeeks(3), "Complete", u23, u27);
 				t13.setCompletionTime(LocalDateTime.now().minusWeeks(2));
-				Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "Request", u24);
-				Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Request", u25);
+				Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "In Progress", u24,u29);
+				Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Complete", u25);
+				t13.setCompletionTime(LocalDateTime.now().minusWeeks(1));
 
 				Emergency e21 = new Emergency(u21, LocalDateTime.now().minusDays(2));
 				Emergency e22 = new Emergency(u22, LocalDateTime.now().minusDays(4));
@@ -266,6 +283,9 @@ public class SimpleServer extends AbstractServer {
 				session.save(t15);
 				session.flush();
 
+				taskVolunteerDidNotFinishOnTime(t11.getId(),20,sessionFactory,TimeUnit.HOURS);
+				taskVolunteerDidNotFinishOnTime(t14.getId(),24,sessionFactory,TimeUnit.HOURS);
+				taskNotVolunteer(t12,17,sessionFactory,TimeUnit.SECONDS);
 
 				session.save(e21);
 				session.save(e22);
@@ -314,6 +334,109 @@ public class SimpleServer extends AbstractServer {
 		}
 	}
 
+	private static void taskVolunteerDidNotFinishOnTime(int taskID, long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
+		shutDown_pair(taskID);
+
+		ScheduledExecutorService scheduler;
+		scheduler = Executors.newSingleThreadScheduledExecutor();
+
+		Runnable to_do = new Runnable() {
+			@Override
+			public void run() {
+				// Code to execute
+				// This will be executed after allotted time
+				try (Session new_session = sessionFactory.openSession()) {
+					new_session.beginTransaction();
+					Task task_to_check = getTaskByTaskID(taskID, new_session);
+					System.out.print("Got the task. Id is: ");
+					System.out.println(taskID);
+					System.out.println(task_to_check.getTaskState());
+					if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
+						// If it is, we send a message to ask why it's still in progress.
+						System.out.println("Task is still in progress.");
+						// Do whatever you want to do in this case
+					}
+					System.out.println("Task not completed on time");
+					new_session.close();
+
+					scheduler.schedule(this, 2, TimeUnit.MINUTES);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		System.out.println("Created Thread");
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		taskIDtoThread.put(taskID, new Pair<>(scheduler, scheduledFuture));
+	}
+
+
+
+
+
+
+
+
+	private static void taskNotVolunteer(Task task, long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
+		// Give 24 hours for someone to volunteer.
+		shutDown_pair(task.getId());
+
+		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		System.out.println("Created Thread in SWITCH");
+
+		Runnable to_do = new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("Switch Scheduled event started");
+				// This will be executed after 1 day
+				Session new_session = sessionFactory.openSession();
+				new_session.beginTransaction();
+
+				System.out.print("(Switch)Got the task. Id is: ");
+				System.out.println(task.getId());
+				System.out.println(task.getTaskState());
+
+				if (task.getTaskState().equals("Request")) { // Check if still in request mode.
+					// If it is, we send a message to everyone to tell them nobody volunteered yet.
+					System.out.println("state is Request");
+					String text_for_message = "The task: \"" + task.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
+					List<User> community_list = new ArrayList<>();
+
+					// GET LIST
+					try {
+						community_list = getCommunityUsers(task.getTaskCreator(), new_session);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					// -----
+					System.out.println("Starting loop");
+					try {
+						for (User user_to_send : community_list) { // Loop through entire community and send them the message.
+							UserMessage usermessage_to_send = new UserMessage(text_for_message, task.getTaskCreator().getTeudatZehut(), user_to_send.getTeudatZehut(), "Community");
+							System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
+							sendMessageToClient(usermessage_to_send, new_session);
+						}
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						new_session.getTransaction().commit();
+						new_session.close();
+					}
+				}
+
+				System.out.println("Task not volunteered to on time");
+
+				ScheduledFuture<?> scheduledFuture = scheduler.schedule(this, 2, TimeUnit.MINUTES);
+				taskIDtoThread.get(task.getId()).setSecond(scheduledFuture);
+			}
+		};
+
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		taskIDtoThread.put(task.getId(), new Pair<>(scheduler, scheduledFuture));
+	}
+
 	private static List<Task> getAllTasks(List<LocalDateTime> dateList, Session newSession) throws Exception {
 		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
@@ -341,7 +464,6 @@ public class SimpleServer extends AbstractServer {
 		query.select(root);
 		query.where(cb.equal(root.get("id"), taskId));
 		Task found_task = null;
-		System.out.println("Starting query");
 		try {
 			found_task = newSession.createQuery(query).getSingleResult();
 		} catch (Exception e) {
@@ -380,7 +502,6 @@ public class SimpleServer extends AbstractServer {
 		List<Task> tasks = newSession.createQuery(query).getResultList();
 		return tasks;
 	}
-
 	private static List<User> getCommunityUsers(User user, Session newSession) throws Exception
 	{
 
@@ -488,11 +609,109 @@ public class SimpleServer extends AbstractServer {
 		return user;
 	}
 
+	private static void createTaskNotCompleteThread(int taskID, UserMessage usermessage_to_send,long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
+		shutDown_pair(taskID);
+
+		ScheduledExecutorService scheduler;
+		scheduler = Executors.newSingleThreadScheduledExecutor();
+
+		Runnable to_do = new Runnable() {
+			@Override
+			public void run() {
+				// Code to execute
+				System.out.println("Scheduled event started");
+				// This will be executed after allotted time
+				Session new_session = sessionFactory.openSession();
+				new_session.beginTransaction();
+				Task task_to_check = getTaskByTaskID(taskID, new_session);
+				System.out.print("Got the task. Id is: ");
+				System.out.println(taskID);
+				System.out.println(task_to_check.getTaskState());
+				if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
+					// If it is, we send a message to ask why it's still in progress.
+					usermessage_to_send.setTask_id(taskID);
+					try {
+						sendMessageToClient(usermessage_to_send, new_session);
+						System.out.println("called sendMessageToClient");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				System.out.println("Task not completed on time");
+				new_session.close();
+
+				scheduler.schedule(this,timeUnit,time);
+			}
+		};
+		System.out.println("Created Thread");
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		taskIDtoThread.put(taskID, new Pair<>(scheduler,scheduledFuture));
+	}
+
+
+	private static void createNoVolunteerThread(int taskID,long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
+		// Give 24 hours for someone to volunteer.
+		shutDown_pair(taskID);
+
+
+		ScheduledExecutorService scheduler;
+		scheduler = Executors.newSingleThreadScheduledExecutor();
+		System.out.println("Created Thread in SWITCH");
+
+		Runnable to_do = new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("Switch Scheduled event started");
+				// This will be executed after 1 day
+				Session new_session = sessionFactory.openSession();
+				new_session.beginTransaction();
+				Task task_to_check = getTaskByTaskID(taskID, new_session);
+				User user = task_to_check.getTaskCreator();
+
+				if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
+					// If it is, we send a message to everyone to tell them nobody volunteered yet.
+					String text_for_message = "The task: \"" + task_to_check.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
+					List<User> community_list = new ArrayList<>();
+					// GET LIST
+					try {
+						community_list = getCommunityUsers(user, new_session);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					// -----
+					System.out.println("Starting loop");
+					try {
+						for (User user_to_send : community_list) { // Loop through entire community and send them the message.
+							UserMessage usermessage_to_send = new UserMessage(text_for_message,user.getTeudatZehut(),user_to_send.getTeudatZehut(),"Community");
+							System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
+							sendMessageToClient(usermessage_to_send, new_session);
+						}
+
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					finally {
+
+						new_session.getTransaction().commit();
+						new_session.close();
+					}
+				}
+
+				System.out.println("Task not volunteered to on time");
+				ScheduledFuture<?> scheduledFuture = scheduler.schedule(this,timeUnit,time);
+				taskIDtoThread.get(taskID).setSecond(scheduledFuture);
+			}
+		};
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		taskIDtoThread.put(taskID, new Pair<>(scheduler,scheduledFuture));
+	};
+
 	private static void sendMessageToClient(UserMessage message, Session newSession) throws Exception {
 		// TODO: REMOVE DEBUG?
 		// TODO: optimally, we would want the people sending to be a list. Maybe implement?
 		// --DEBUG
-		System.out.println("sendMessageToClient called");
+//		System.out.println("sendMessageToClient called");
 		// ---
 		String message_type = message.getMessage_type();
 		String sender_zehut = message.getSender_zehut();
@@ -503,7 +722,6 @@ public class SimpleServer extends AbstractServer {
 		} // Check if anything is empty first.
 
 		// --DEBUG
-		System.out.println("I passed the empty check");
 		System.out.print("Sender is:");
 		System.out.println(sender_zehut);
 		System.out.print("Reciever is:");
@@ -524,9 +742,6 @@ public class SimpleServer extends AbstractServer {
 			newSession.remove(message);
 			newSession.flush();
 		} else { // Not connected. Save to DB.
-			// --DEBUG
-
-			// ---
 			newSession.save(message);
 			newSession.flush();
 
@@ -534,6 +749,20 @@ public class SimpleServer extends AbstractServer {
 
 //			newSession.getTransaction().commit();
 	}
+
+	private static void shutDown_pair(int taskID) {
+		if (taskIDtoThread.containsKey(taskID)) {
+			// Put the new pair in instead
+			Pair<ScheduledExecutorService, ScheduledFuture> hashedPair = taskIDtoThread.get(taskID);
+
+			// Shut down thread and cancel scheduled future
+			hashedPair.getSecond().cancel(true);
+			hashedPair.getFirst().shutdown();
+
+			taskIDtoThread.remove(taskID);
+		}
+	}
+
 
 	@Override
 	protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -553,16 +782,16 @@ public class SimpleServer extends AbstractServer {
 				String password = loginDetails[1];
 				System.out.println("teudatZehut : "+teudatZehut);
 				User user = getUserByTeudatZehut(teudatZehut, session);
-				System.out.println("numOfTries:"+user.getnumberOfLoginTries());
 				boolean subscriberFound = false;
 				if (user != null && !idToClient.containsKey(teudatZehut) && !user.isLocked()) {
-					if(password.equals(user.getPassword())) {
+					password = user.get_SHA_512_SecurePassword(password,user.getSalt());
+					if(password.equals(user.getPasswordHash())) {
 
 						// Bind client to id.
 						for(SubscribedClient subscriber: SubscribersList) {
 							if (subscriber.getClient() == client) {
 								// Take the client from the signature and compare
-								idToClient.put(teudatZehut, client); // TODO: check if both work.
+								idToClient.put(teudatZehut, client);
 								clientToId.put(client,teudatZehut);
 								subscriberFound = true;
 							}
@@ -584,7 +813,7 @@ public class SimpleServer extends AbstractServer {
 						}
 					}
 					else {
-						System.out.println(password + " versus "  + user.getPassword());
+						System.out.println(password + " versus "  + user.getPasswordHash());
 						user.incrementNumberOfLoginTries();
 
 						session.flush();
@@ -696,47 +925,24 @@ public class SimpleServer extends AbstractServer {
 				String newPassword = details[1];
 				User user = getUserByTeudatZehut(teudatZehut, session);
 				if (user != null) {
+					System.out.println("user!=null");
 					user.setPassword(newPassword);
 					session.flush();
-					if (user.getPassword().equals(newPassword)) {
+					String hashedPassword = user.get_SHA_512_SecurePassword(newPassword,user.getSalt());
+					if (user.getPasswordHash().equals(hashedPassword)) {
+						System.out.println("user.getPasswordHash().equals(newPassword)");
 						message.setMessage("Password Change Succeed");
 					}
 				} else {
 					message.setMessage("Password Change Failed");
 				}
+				System.out.println("Forgot Password Request: Message Sent:"+ message.getMessage());
 				client.sendToClient(message);
 			}
 			else if(request.equals("Task not completed on time")) {
 				// Task id is in message.
 				int taskID = message.getTaskID();
-				ScheduledExecutorService scheduler;
-				scheduler = Executors.newSingleThreadScheduledExecutor();
-				System.out.println("Created Thread");
-				scheduler.schedule(() -> {
-					System.out.println("Scheduled event started");
-					// This will be executed after 1 day
-					Session new_session = sessionFactory.openSession();
-					new_session.beginTransaction();
-					Task task_to_check = getTaskByTaskID(taskID, new_session);
-					System.out.print("Got the task. Id is: ");
-					System.out.println(taskID);
-					System.out.println(task_to_check.getTaskState());
-					if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
-						// If it is, we send a message to ask why it's still in progress.
-						UserMessage usermessage_to_send = (UserMessage) message.getObject();
-						usermessage_to_send.setTask_id(taskID);
-                        try {
-                            sendMessageToClient(usermessage_to_send, new_session);
-							System.out.println("called sendMessageToClient");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-					System.out.println("Task not completed on time");
-					new_session.close();
-					scheduler.shutdown();
-				}, 2, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
+				createTaskNotCompleteThread(taskID, (UserMessage) message.getObject(), 20, sessionFactory, TimeUnit.SECONDS);
 			}
 
 
@@ -889,6 +1095,14 @@ public class SimpleServer extends AbstractServer {
 			else if(request.equals("Withdraw from task"))
 			{
 				Task task = (Task) message.getObject();
+
+
+//				String manager_zehut = task.getTaskCreator().getCommunity().getCommunityManager().getTeudatZehut();
+//				String message_text = "24 hours have passed on the task:\n\"" + task.getRequiredTask() + "\"\nBy: " + task.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
+//
+//				UserMessage messageToSend = new UserMessage(message_text, manager_zehut, task.getTaskCreator().getTeudatZehut(),"Not Complete");;
+				createNoVolunteerThread(task.getId(),20, sessionFactory, TimeUnit.SECONDS);
+
 				session.update(task);
 				session.flush();
 				session.getTransaction().commit();
@@ -929,57 +1143,11 @@ public class SimpleServer extends AbstractServer {
 				}
 				sendToAllClients(message);
 //				client.sendToClient(message);
-				System.out.println("IN SWITCH");
 				switch (task.getTaskState()) {
 					case "Request":
-						// Give 24 hours for someone to volunteer.
-						ScheduledExecutorService scheduler;
-						scheduler = Executors.newSingleThreadScheduledExecutor();
-						System.out.println("Created Thread in SWITCH");
 						int taskID_original =  ((Task) (message.getObject())).getId();
-						scheduler.schedule(() -> {
-							System.out.println("Switch Scheduled event started");
-							// This will be executed after 1 day
-							Session new_session = sessionFactory.openSession();
-							new_session.beginTransaction();
-							Task task_to_check = getTaskByTaskID(taskID_original, new_session);
-							System.out.print("(Switch)Got the task. Id is: ");
-							System.out.println(task_to_check.getId());
-							System.out.println(task_to_check.getTaskState());
-							if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
-								// If it is, we send a message to everyone to tell them nobody volunteered yet.
-								System.out.println("state is Request");
-								String text_for_message = "The task: \"" + task_to_check.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
-								List<User> community_list = new ArrayList<>();
-								// GET LIST
-                                try {
-                                    community_list = getCommunityUsers(message.getUser(), new_session);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-								// -----
-                                System.out.println("Starting loop");
-								try {
-									for (User user_to_send : community_list) { // Loop through entire community and send them the message.
-										UserMessage usermessage_to_send = new UserMessage(text_for_message,message.getUser().getTeudatZehut(),user_to_send.getTeudatZehut(),"Community");
-										System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
-										sendMessageToClient(usermessage_to_send, new_session);
-									}
-
-								}
-								catch (Exception e) {
-										e.printStackTrace();
-								}
-								finally {
-
-									new_session.getTransaction().commit();
-									new_session.close();
-								}
-							}
-
-							System.out.println("Task not volunteered to on time");
-							scheduler.shutdown();
-						}, 5, TimeUnit.SECONDS); // ** Change here the time you want to give on a given task.
+						shutDown_pair(taskID_original);
+						createNoVolunteerThread(taskID_original, 20, sessionFactory, TimeUnit.SECONDS);
 						break;
 
 				}

@@ -40,5 +40,6 @@
         </yAxis>
       </BarChart>
       <Button fx:id="backBtn" layoutX="47.0" layoutY="25.0" mnemonicParsing="false" onAction="#showPreviousScene" prefHeight="25.0" prefWidth="56.0" text="Back" />
+      <Button fx:id="emergencyButton" layoutX="47.0" layoutY="98.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="103.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
    </children>
 </AnchorPane>

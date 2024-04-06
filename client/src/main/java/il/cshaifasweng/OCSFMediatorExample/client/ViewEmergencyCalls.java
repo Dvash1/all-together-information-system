@@ -57,6 +57,8 @@ public class ViewEmergencyCalls implements Initializable {
     private Button backBtn;
 
     @FXML
+    private Button emergencyButton;
+    @FXML
     private DatePicker endDatePicker;
 
     @FXML
@@ -80,6 +82,14 @@ public class ViewEmergencyCalls implements Initializable {
     // Going back to menu button
     @FXML
     private Button menuButton;
+
+
+    @FXML
+    void emergency_button_press(ActionEvent event) throws IOException {
+        SimpleChatClient.sendEmergencyRequest(SimpleChatClient.getUser());
+    }
+
+
 
 
     @FXML

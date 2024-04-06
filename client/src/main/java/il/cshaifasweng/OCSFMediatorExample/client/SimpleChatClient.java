@@ -31,6 +31,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import javax.swing.plaf.synth.Region;
+
 /**
  * JavaFX App
  */
@@ -45,14 +47,16 @@ public class SimpleChatClient extends Application {
 
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage primaryStage) throws IOException {
 
         EventBus.getDefault().register(this);
-//    	client = SimpleClient.getClient();
-//    	client.openConnection();
-        scene = new Scene(loadFXML("ConnectToServer"), 1280, 900);
-        stage.setScene(scene);
-
+//        Parent fxml_loaded = loadFXML("ConnectToServer");
+//        scene = new Scene(loadFXML("ConnectToServer"), 1280, 900);
+//        stage.setScene(scene);
+//        SimpleChatClient.stage = stage;
+        stage = primaryStage;
+        setRoot("ConnectToServer"); // Load initial FXML
+        stage.show();
         stage.setOnCloseRequest(event -> {
             event.consume();
 
@@ -131,6 +135,7 @@ public class SimpleChatClient extends Application {
                         tiDialog.setHeaderText("Please enter a message to send to your community manager: ");
                         tiDialog.setContentText("Message: ");
 
+
                         Optional<String> dialog_result = tiDialog.showAndWait();
 
                         if (dialog_result.isPresent()) {
@@ -161,6 +166,13 @@ public class SimpleChatClient extends Application {
                             alert3.showAndWait();
 
 
+                        }
+                        else {
+                            Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                            alert2.setTitle("You have a new message");
+                            alert2.setHeaderText("");
+                            alert2.setContentText("Once you have completed the task, please update your community manager.\nIf you're experiencing trouble completing the task, you may withdraw through the task list.");
+                            alert2.showAndWait();
                         }
                     } else  {
                         Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
@@ -195,6 +207,13 @@ public class SimpleChatClient extends Application {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            Platform.runLater(() -> {
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "Your emergency call has been forwarded");
+                alert2.setTitle("Emergency Call Success");
+                alert2.setHeaderText(null);
+                alert2.showAndWait();
+            });
         }
 
 
@@ -212,8 +231,23 @@ public class SimpleChatClient extends Application {
 
 
 
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+    static void setRoot(String fxml) throws IOException { // TODO: make work :)
+        Parent root = loadFXML(fxml);
+        scene = new Scene(root);
+        // Set the width and height of the scene to match the loaded FXML
+        double width = root.prefWidth(-1);
+        double height = root.prefHeight(width);
+
+//        System.out.print("width:");
+//        System.out.println(width);
+//        System.out.print("Height:");
+//        System.out.println(height);
+        // Get the width and height of the scene from the FXML
+
+        scene.setRoot(root);
+        stage.setScene(scene);
+        stage.setWidth(width);
+        stage.setHeight(height);
 
     }
 
