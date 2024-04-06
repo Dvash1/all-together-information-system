@@ -8,7 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 

@@ -9,9 +9,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javassist.Loader;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 
 
 import java.io.IOException;

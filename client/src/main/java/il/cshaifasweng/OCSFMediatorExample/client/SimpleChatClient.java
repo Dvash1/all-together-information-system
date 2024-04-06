@@ -16,7 +16,7 @@ import javafx.scene.control.ButtonType;
 import java.util.Optional;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 
 /**
  * JavaFX App

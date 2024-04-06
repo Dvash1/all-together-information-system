@@ -1,8 +1,10 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.client.events.LoginEvent;
+import il.cshaifasweng.OCSFMediatorExample.client.events.getEmergencyData;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import org.greenrobot.eventbus.EventBus;
-
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 
 public class SimpleClient extends AbstractClient {

@@ -6,23 +6,12 @@ import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.hibernate.Hibernate;
-import org.w3c.dom.Text;
-
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 import java.io.IOException;
-import java.util.List;
-
-import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
 
 
 public class MainMenuController {
