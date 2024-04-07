@@ -109,7 +109,7 @@ public class NewTaskController {
 
         RadioButton selectedButton = (RadioButton) toggle;
         String btnText = selectedButton.getText();
-        if(btnText.equals("other"))
+        if(btnText.equals("Other"))
         {
             btnText = otherTF.getText();
         }

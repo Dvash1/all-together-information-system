@@ -367,25 +367,15 @@ public class SimpleServer extends AbstractServer {
 					session.save(t30);
 					session.flush();
 
-					taskVolunteerDidNotFinishOnTime(t16,30,sessionFactory,TimeUnit.SECONDS);
-					taskNotVolunteer(t17,30,sessionFactory,TimeUnit.SECONDS);
-					taskVolunteerDidNotFinishOnTime(t19,30,sessionFactory,TimeUnit.SECONDS);
-					taskNotVolunteer(t22,30,sessionFactory,TimeUnit.SECONDS);
-					taskNotVolunteer(t24,30,sessionFactory,TimeUnit.SECONDS);
-					taskVolunteerDidNotFinishOnTime(t25,30,sessionFactory,TimeUnit.SECONDS);
-					taskNotVolunteer(t27,30,sessionFactory,TimeUnit.SECONDS);
-					taskVolunteerDidNotFinishOnTime(t29,30,sessionFactory,TimeUnit.SECONDS);
-					taskNotVolunteer(t30,30,sessionFactory,TimeUnit.SECONDS);
-
-//					taskVolunteerDidNotFinishOnTime(t16,24,sessionFactory,TimeUnit.HOURS);
-//					taskNotVolunteer(t17,22,sessionFactory,TimeUnit.HOURS);
-//					taskVolunteerDidNotFinishOnTime(t19,24,sessionFactory,TimeUnit.HOURS);
-//					taskNotVolunteer(t22,24,sessionFactory,TimeUnit.HOURS);
-//					taskNotVolunteer(t24,24,sessionFactory,TimeUnit.HOURS);
-//					taskVolunteerDidNotFinishOnTime(t25,24,sessionFactory,TimeUnit.HOURS);
-//					taskNotVolunteer(t27,24,sessionFactory,TimeUnit.HOURS);
-//					taskVolunteerDidNotFinishOnTime(t29,24,sessionFactory,TimeUnit.HOURS);
-//					taskNotVolunteer(t30,24,sessionFactory,TimeUnit.HOURS);
+					taskVolunteerDidNotFinishOnTime(t16,24,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t17,22,sessionFactory,TimeUnit.HOURS);
+					taskVolunteerDidNotFinishOnTime(t19,24,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t22,24,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t24,24,sessionFactory,TimeUnit.HOURS);
+					taskVolunteerDidNotFinishOnTime(t25,24,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t27,24,sessionFactory,TimeUnit.HOURS);
+					taskVolunteerDidNotFinishOnTime(t29,24,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t30,24,sessionFactory,TimeUnit.HOURS);
 
 				}
 			CriteriaBuilder cb = session.getCriteriaBuilder();
