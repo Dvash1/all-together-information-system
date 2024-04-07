@@ -60,7 +60,7 @@ public class SimpleServer extends AbstractServer {
 			configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
 			configuration.setProperty("hibernate.show_sql", "true");
 			configuration.setProperty("hibernate.hbm2ddl.auto", "update");
-			configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/lab7DB?serverTimezone=Europe/Istanbul");
+			configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/atis?serverTimezone=Europe/Istanbul");
 			configuration.setProperty("hibernate.connection.username", "root");
 			configuration.setProperty("hibernate.connection.password", "password");
 
