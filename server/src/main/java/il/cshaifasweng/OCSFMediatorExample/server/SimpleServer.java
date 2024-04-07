@@ -89,53 +89,53 @@ public class SimpleServer extends AbstractServer {
 				CommunityMemberUser u9 = new CommunityMemberUser("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", "0567890123", c1);
 				CommunityMemberUser u10 = new CommunityMemberUser("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog",  "0532109876", c1);
 
-					Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
-					Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "In Progress", u3,u4);
-					Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "In Progress", u4,u3);
-					Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1).minusDays(4), "Complete", u5,u7);
-					t4.setCompletionTime(LocalDateTime.now().minusDays(5));
-					Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
+				Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
+				Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "In Progress", u3,u4);
+				Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "In Progress", u4,u3);
+				Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1).minusDays(4), "Complete", u5,u7);
+				t4.setCompletionTime(LocalDateTime.now().minusDays(5));
+				Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
 
-					Emergency e1 = new Emergency(u1, LocalDateTime.now().minusDays(2));
-					Emergency e2 = new Emergency(u2, LocalDateTime.now().minusDays(4));
-					Emergency e3 = new Emergency(u3, LocalDateTime.now().minusDays(1));
-					Emergency e4 = new Emergency(u4, LocalDateTime.now().minusDays(3));
-					Emergency e5 = new Emergency(u5, LocalDateTime.now().minusDays(5));
-					Emergency e6 = new Emergency(u6, LocalDateTime.now().minusDays(2));
-					Emergency e7 = new Emergency(u7, LocalDateTime.now().minusDays(4));
-					Emergency e8 = new Emergency(u8, LocalDateTime.now().minusDays(1));
-					Emergency e9 = new Emergency(u9, LocalDateTime.now().minusDays(3));
-					Emergency e10 = new Emergency(u10, LocalDateTime.now().minusDays(5));
+				Emergency e1 = new Emergency(u1, LocalDateTime.now().minusDays(2));
+				Emergency e2 = new Emergency(u2, LocalDateTime.now().minusDays(4));
+				Emergency e3 = new Emergency(u3, LocalDateTime.now().minusDays(1));
+				Emergency e4 = new Emergency(u4, LocalDateTime.now().minusDays(3));
+				Emergency e5 = new Emergency(u5, LocalDateTime.now().minusDays(5));
+				Emergency e6 = new Emergency(u6, LocalDateTime.now().minusDays(2));
+				Emergency e7 = new Emergency(u7, LocalDateTime.now().minusDays(4));
+				Emergency e8 = new Emergency(u8, LocalDateTime.now().minusDays(1));
+				Emergency e9 = new Emergency(u9, LocalDateTime.now().minusDays(3));
+				Emergency e10 = new Emergency(u10, LocalDateTime.now().minusDays(5));
 
 
-					session.save(u1);
-					session.save(c1);
-					session.save(u2);
-					session.save(u3);
-					session.save(u4);
-					session.save(u5);
-					session.flush();
+				session.save(u1);
+				session.save(c1);
+				session.save(u2);
+				session.save(u3);
+				session.save(u4);
+				session.save(u5);
+				session.flush();
 
-					session.save(u6);
-					session.save(u7);
-					session.save(u8);
-					session.save(u9);
-					session.save(u10);
-					session.flush();
+				session.save(u6);
+				session.save(u7);
+				session.save(u8);
+				session.save(u9);
+				session.save(u10);
+				session.flush();
 
-					session.save(t1);
-					session.save(t2);
-					session.save(t3);
-					session.save(t4);
-					session.save(t5);
-					session.flush();
+				session.save(t1);
+				session.save(t2);
+				session.save(t3);
+				session.save(t4);
+				session.save(t5);
+				session.flush();
 
-					session.save(e1);
-					session.save(e2);
-					session.save(e3);
-					session.save(e4);
-					session.save(e5);
-					session.flush();
+				session.save(e1);
+				session.save(e2);
+				session.save(e3);
+				session.save(e4);
+				session.save(e5);
+				session.flush();
 
 				session.save(e6);
 				session.save(e7);
@@ -320,7 +320,7 @@ public class SimpleServer extends AbstractServer {
 					Task t23 = new Task("clean windowsills", LocalDateTime.now().minusDays(3), "Complete", u17, u15);
 					t23.setCompletionTime(LocalDateTime.now().minusDays(1));
 					Task t24 = new Task("vacuum carpets", LocalDateTime.now().minusDays(4), "Request", u11);
-					Task t25 = new Task("organize bookshel", LocalDateTime.now().minusDays(1), "In Progress", u16,u19);
+					Task t25 = new Task("organize bookshelf", LocalDateTime.now().minusDays(1), "In Progress", u16,u19);
 
 					session.save(t21);
 					session.save(t22);

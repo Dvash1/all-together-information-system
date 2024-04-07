@@ -32,6 +32,14 @@ public class CommunityManagerUser extends User implements Serializable {
     public CommunityManagerUser() {
     }
 
+    public List<User> getManagedUsers() {
+        return managedUsers;
+    }
+
+    public void setManagedUsers(List<User> managedUsers) {
+        this.managedUsers = managedUsers;
+    }
+
     public Community getCommunityManaging() {
         return communityManaging;
     }

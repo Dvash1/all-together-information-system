@@ -196,18 +196,12 @@ public class SimpleChatClient extends Application {
 
 
 
-    static void setRoot(String fxml) throws IOException { // TODO: make work :)
+    static void setRoot(String fxml) throws IOException {
         Parent root = loadFXML(fxml);
         scene = new Scene(root);
         // Set the width and height of the scene to match the loaded FXML
         double width = root.prefWidth(-1);
         double height = root.prefHeight(width);
-
-//        System.out.print("width:");
-//        System.out.println(width);
-//        System.out.print("Height:");
-//        System.out.println(height);
-        // Get the width and height of the scene from the FXML
 
         scene.setRoot(root);
         stage.setScene(scene);
@@ -225,7 +219,6 @@ public class SimpleChatClient extends Application {
 
     @Override
     public void stop() throws Exception {
-        // TODO Auto-generated method stub
         EventBus.getDefault().unregister(this);
         super.stop();
     }
