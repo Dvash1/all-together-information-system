@@ -52,19 +52,6 @@ public class SimpleChatClient extends Application {
         });
         stage.show();
     }
-
-    // delete/replace with sending message to users
-    @Subscribe
-    public void testEvent(getDataEvent event) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("This is a test");
-            alert.setHeaderText("");
-            alert.setContentText("Hopefully this is shown to all users");
-            alert.showAndWait();
-        });
-    }
-
     @Subscribe
     public void NewMessageEvent(NewMessageEvent event) {
         UserMessage userMessage = (UserMessage) event.getMessage().getObjectsArr().get(0); // Get the usermessage

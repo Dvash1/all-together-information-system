@@ -237,11 +237,12 @@ public class ViewTasksController {
             SimpleClient.getClient().sendToServer(message);
 
             // Scheduler implemented in simpleserver
-            String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
-            String message_text = "24 hours have passed on the task:\n\"" + selectedTask.getRequiredTask() + "\"\nBy: " + selectedTask.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
-            UserMessage not_completed_usermessage = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
+//            String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
+//            String message_text = "24 hours have passed on the task:\n\"" + selectedTask.getRequiredTask() + "\"\nBy: " + selectedTask.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
+//            UserMessage not_completed_usermessage = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
+
+
             Message not_completed_message = new Message(selectedTask.getId(),"Task not completed on time");
-            not_completed_message.setObject(not_completed_usermessage);
             SimpleClient.getClient().sendToServer(not_completed_message);
 
             Platform.runLater(() -> {

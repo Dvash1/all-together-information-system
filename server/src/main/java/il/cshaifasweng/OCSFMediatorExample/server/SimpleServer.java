@@ -1,14 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
-
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,19 +23,19 @@ import java.util.concurrent.*;
 
 public class SimpleServer extends AbstractServer {
 
-	private static final long noVolunteerTime = 1;
-	private static final TimeUnit noVolunteerTimeUnits = TimeUnit.MINUTES;
+	private static final long NOVOLUNTEERTIME = 2;
+	private static final TimeUnit NOVOLUNTEERTIMEUnits = TimeUnit.MINUTES;
 
-	private static final long toCompleteTime = 1;
-	private static final TimeUnit toCompleteTimeUnits = TimeUnit.MINUTES;
+	private static final long TOCOMPLETETIME = 2;
+	private static final TimeUnit TOCOMPLETETIMEUnits = TimeUnit.MINUTES;
 
-	private static final long lockingTime = 30;
-	private static final TimeUnit lockingTimeUnits = TimeUnit.SECONDS;
+	private static final long LOCKINGTIME = 30;
+	private static final TimeUnit LOCKINGTIMEUnits = TimeUnit.SECONDS;
 
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
-	private static HashMap<String,ConnectionToClient> idToClient = new HashMap<>();
-	private static HashMap<ConnectionToClient,String> clientToId = new HashMap<>();
-	private static HashMap<Integer, Pair<ScheduledExecutorService,ScheduledFuture>> taskIDtoThread = new HashMap<>();
+	private static ConcurrentHashMap<String,ConnectionToClient> idToClient = new ConcurrentHashMap<>();
+	private static ConcurrentHashMap<ConnectionToClient,String> clientToId = new ConcurrentHashMap<>();
+	private static ConcurrentHashMap<Integer, Pair<ScheduledExecutorService,ScheduledFuture>> taskIDtoThread = new ConcurrentHashMap<>();
 	private static Session session;
 
 	private static SessionFactory getSessionFactory() throws
@@ -333,11 +330,18 @@ public class SimpleServer extends AbstractServer {
 			session.close();
 		}
 	}
+	private static UserMessage createNotFinishedTaskMessage(Task task_to_check) {
+		User currentUser = task_to_check.getTaskVolunteer();
+		String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
+		String message_text = "24 hours have passed on the task:\n\"" + task_to_check.getRequiredTask() + "\"\nBy: " + task_to_check.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
+		UserMessage usermessage_to_send = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
+		return usermessage_to_send;
+	}
+
+
 
 	private static void taskVolunteerDidNotFinishOnTime(Task selectedTask, long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
-		System.out.println("Starting thread on base task that did not finish on time.");
 		int taskID = selectedTask.getId();
-		User currentUser = selectedTask.getTaskVolunteer();
 		shutDown_pair(taskID);
 
 		ScheduledExecutorService scheduler;
@@ -346,47 +350,41 @@ public class SimpleServer extends AbstractServer {
 		Runnable to_do = new Runnable() {
 			@Override
 			public void run() {
-				// Code to execute
 				// This will be executed after allotted time
-				try (Session new_session = sessionFactory.openSession()) {
-					new_session.beginTransaction();
-					Task task_to_check = getTaskByTaskID(taskID, new_session);
-					String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
-					String message_text = "24 hours have passed on the task:\n\"" + selectedTask.getRequiredTask() + "\"\nBy: " + selectedTask.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
-					UserMessage usermessage_to_send = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
-					if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
-						// If it is, we send a message to ask why it's still in progress.
-						usermessage_to_send.setTask_id(taskID);
-						try {
-							sendMessageToClient(usermessage_to_send, new_session);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+				Session new_session = sessionFactory.openSession();
+				new_session.beginTransaction();
+				Task task_to_check = getTaskByTaskID(taskID, new_session);
+				UserMessage usermessage_to_send = createNotFinishedTaskMessage(task_to_check);
+				if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
+					// If it is, we send a message to ask why it's still in progress.
+					usermessage_to_send.setTask_id(taskID);
+					try {
+						sendMessageToClient(usermessage_to_send, new_session);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-					System.out.println("Task not completed on time");
+
+					System.out.println("Task " + task_to_check.getId() + " not completed on time");
 					new_session.close();
 
-					scheduler.schedule(this, toCompleteTime, toCompleteTimeUnits);
-				} catch (Exception e) {
-					e.printStackTrace();
+					scheduler.schedule(this,TOCOMPLETETIME, TOCOMPLETETIMEUnits);
+
 				}
+
 			}
 		};
-		System.out.println("Created Thread");
+
+
 		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
 		taskIDtoThread.put(taskID, new Pair<>(scheduler, scheduledFuture));
 	}
 
 
 
-
-
-
-
-
 	private static void taskNotVolunteer(Task task, long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
 		// Give 24 hours for someone to volunteer.
-		shutDown_pair(task.getId());
+		int taskID = task.getId();
+		shutDown_pair(taskID);
 
 		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 //		System.out.println("Created Thread in SWITCH");
@@ -398,49 +396,46 @@ public class SimpleServer extends AbstractServer {
 				// This will be executed after 1 day
 				Session new_session = sessionFactory.openSession();
 				new_session.beginTransaction();
+				Task task_to_check = getTaskByTaskID(taskID, new_session);
 
-				System.out.print("(Switch)Got the task. Id is: ");
-				System.out.println(task.getId());
-				System.out.println(task.getTaskState());
-
-				if (task.getTaskState().equals("Request")) { // Check if still in request mode.
+				if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
 					// If it is, we send a message to everyone to tell them nobody volunteered yet.
-					System.out.println("state is Request");
-					String text_for_message = "The task: \"" + task.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
+					UserMessage usermessage_to_send = createNoVolunteerMessage(task_to_check);
 					List<User> community_list = new ArrayList<>();
-
 					// GET LIST
 					try {
-						community_list = getCommunityUsers(task.getTaskCreator(), new_session);
+						community_list = getCommunityUsers(task_to_check.getTaskCreator(), new_session);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-
-					// -----
-					System.out.println("Starting loop");
+//					System.out.println("Starting loop");
 					try {
 						for (User user_to_send : community_list) { // Loop through entire community and send them the message.
-							UserMessage usermessage_to_send = new UserMessage(text_for_message, task.getTaskCreator().getTeudatZehut(), user_to_send.getTeudatZehut(), "Community");
+							// Set the ID to send to.
+							usermessage_to_send.setTeudatZehut_to(user_to_send.getTeudatZehut());
+							// -- DEBUG
 							System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
+							// --------
 							sendMessageToClient(usermessage_to_send, new_session);
 						}
 
-					} catch (Exception e) {
-						e.printStackTrace();
-					} finally {
-						new_session.getTransaction().commit();
-						new_session.close();
 					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					ScheduledFuture<?> scheduledFuture = scheduler.schedule(this,NOVOLUNTEERTIME,NOVOLUNTEERTIMEUnits);
+					taskIDtoThread.get(taskID).setSecond(scheduledFuture);
+					new_session.getTransaction().commit();
+					new_session.close();
+
+				}
+				else {
+					shutDown_pair(taskID);
 				}
 
-//				System.out.println("Task not volunteered to on time");
-
-				ScheduledFuture<?> scheduledFuture = scheduler.schedule(this, noVolunteerTime, noVolunteerTimeUnits);
-				taskIDtoThread.get(task.getId()).setSecond(scheduledFuture);
 			}
 		};
-
-		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time);
 		taskIDtoThread.put(task.getId(), new Pair<>(scheduler, scheduledFuture));
 	}
 
@@ -514,8 +509,6 @@ public class SimpleServer extends AbstractServer {
 		query.select(root);
 		// fetch only users from the same community
 		query.where(cb.equal(communityJoin.get("communityName"), user.getCommunity().getCommunityName()));
-
-
 
 		List<User> users = newSession.createQuery(query).getResultList();
 		return users;
@@ -609,7 +602,7 @@ public class SimpleServer extends AbstractServer {
 		return user;
 	}
 
-	private static void createTaskNotCompleteThread(int taskID, UserMessage usermessage_to_send,long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
+	private static void createTaskNotCompleteThread(int taskID,long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
 		shutDown_pair(taskID);
 
 		ScheduledExecutorService scheduler;
@@ -622,26 +615,36 @@ public class SimpleServer extends AbstractServer {
 				Session new_session = sessionFactory.openSession();
 				new_session.beginTransaction();
 				Task task_to_check = getTaskByTaskID(taskID, new_session);
-
+				UserMessage usermessage_to_send = createNotFinishedTaskMessage(task_to_check);
 				if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
 					// If it is, we send a message to ask why it's still in progress.
 					usermessage_to_send.setTask_id(taskID);
 					try {
 						sendMessageToClient(usermessage_to_send, new_session);
-						System.out.println("called sendMessageToClient");
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				}
-				System.out.println("Task not completed on time");
-				new_session.close();
 
-				scheduler.schedule(this,timeUnit,time);
+					System.out.println("Task " + task_to_check.getId() + " not completed on time");
+					new_session.close();
+
+					scheduler.schedule(this,timeUnit,time);
+
+				}
+
 			}
 		};
-		System.out.println("Created Thread");
-		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time);
 		taskIDtoThread.put(taskID, new Pair<>(scheduler,scheduledFuture));
+
+	}
+
+	private static UserMessage createNoVolunteerMessage(Task task) {
+		String text_for_message = "The task: \"" + task.getRequiredTask() + "\" by: \""+ task.getTaskCreator().getUserName() + "\"\nWas not volunteered to and 24 hours have passed.";
+		String creatorZehut = task.getTaskCreator().getTeudatZehut();
+
+		UserMessage to_send = new UserMessage(text_for_message,creatorZehut,creatorZehut,"Community");
+		return to_send;
 	}
 
 
@@ -649,10 +652,8 @@ public class SimpleServer extends AbstractServer {
 		// Give 24 hours for someone to volunteer.
 		shutDown_pair(taskID);
 
-
 		ScheduledExecutorService scheduler;
 		scheduler = Executors.newSingleThreadScheduledExecutor();
-		System.out.println("Created Thread in SWITCH");
 
 		Runnable to_do = new Runnable() {
 			@Override
@@ -662,23 +663,25 @@ public class SimpleServer extends AbstractServer {
 				Session new_session = sessionFactory.openSession();
 				new_session.beginTransaction();
 				Task task_to_check = getTaskByTaskID(taskID, new_session);
-				User user = task_to_check.getTaskCreator();
 
 				if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
 					// If it is, we send a message to everyone to tell them nobody volunteered yet.
-					String text_for_message = "The task: \"" + task_to_check.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
+					UserMessage usermessage_to_send = createNoVolunteerMessage(task_to_check);
 					List<User> community_list = new ArrayList<>();
 					// GET LIST
 					try {
-						community_list = getCommunityUsers(user, new_session);
+						community_list = getCommunityUsers(task_to_check.getTaskCreator(), new_session);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 //					System.out.println("Starting loop");
 					try {
 						for (User user_to_send : community_list) { // Loop through entire community and send them the message.
-							UserMessage usermessage_to_send = new UserMessage(text_for_message,user.getTeudatZehut(),user_to_send.getTeudatZehut(),"Community");
+							// Set the ID to send to.
+							usermessage_to_send.setTeudatZehut_to(user_to_send.getTeudatZehut());
+							// -- DEBUG
 							System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
+							// --------
 							sendMessageToClient(usermessage_to_send, new_session);
 						}
 
@@ -686,20 +689,19 @@ public class SimpleServer extends AbstractServer {
 					catch (Exception e) {
 						e.printStackTrace();
 					}
-					finally {
-
-						new_session.getTransaction().commit();
-						new_session.close();
-					}
+					ScheduledFuture<?> scheduledFuture = scheduler.schedule(this,timeUnit,time);
+					taskIDtoThread.get(taskID).setSecond(scheduledFuture);
+					new_session.getTransaction().commit();
+					new_session.close();
 				}
-
-//				System.out.println("Task not volunteered to on time");
-				ScheduledFuture<?> scheduledFuture = scheduler.schedule(this,timeUnit,time);
-				taskIDtoThread.get(taskID).setSecond(scheduledFuture);
+				else {
+					shutDown_pair(taskID);
+				}
 			}
 		};
-		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time);
 		taskIDtoThread.put(taskID, new Pair<>(scheduler,scheduledFuture));
+
 	}
 	private static void sendMessageToClient(UserMessage message, Session newSession) throws Exception {
 		// --DEBUG
@@ -741,6 +743,10 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	private static void shutDown_pair(int taskID) {
+		// Function that shuts down thread and its scheduled event.
+		// If no thread is available, we don't do anything.
+
+
 		if (taskIDtoThread.containsKey(taskID)) {
 			// Put the new pair in instead
 			Pair<ScheduledExecutorService, ScheduledFuture> hashedPair = taskIDtoThread.get(taskID);
@@ -836,7 +842,7 @@ public class SimpleServer extends AbstractServer {
                                         System.err.println("Exception occurred in scheduled task:");
                                         e.printStackTrace();
                                     }
-                                }, lockingTime, lockingTimeUnits);
+                                }, LOCKINGTIME, LOCKINGTIMEUnits);
                                 System.out.println("After scheduler scheduled");
 
                                 // Additional logging to check if the main thread is still active
@@ -916,7 +922,7 @@ public class SimpleServer extends AbstractServer {
                 case "Task not completed on time" -> {
                     // Task id is in message.
                     int taskID = message.getTaskID();
-                    createTaskNotCompleteThread(taskID, (UserMessage) message.getObject(), toCompleteTime, sessionFactory, toCompleteTimeUnits);
+                    createTaskNotCompleteThread(taskID, TOCOMPLETETIME, sessionFactory, TOCOMPLETETIMEUnits);
                 }
                 case "Emergency Request" -> {
                     User user;
@@ -1044,7 +1050,7 @@ public class SimpleServer extends AbstractServer {
                 // withdrawing is being handled separately because you could change a state to be "Request" in two ways.
                 case "Withdraw from task" -> {
                     Task task = (Task) message.getObject();
-                    createNoVolunteerThread(task.getId(), noVolunteerTime, sessionFactory, noVolunteerTimeUnits);
+                    createNoVolunteerThread(task.getId(), NOVOLUNTEERTIME, sessionFactory, NOVOLUNTEERTIMEUnits);
 
                     session.update(task);
                     session.flush();
@@ -1059,6 +1065,7 @@ public class SimpleServer extends AbstractServer {
                         task = getTaskByTaskID(message.getTaskID(), session);
                         task.setTaskState("Complete");
                         task.setCompletionTime(LocalDateTime.now());
+						shutDown_pair(task.getId());
 
 						User user = message.getUser();
 						String dialog_result = (String) message.getObject();
@@ -1083,7 +1090,7 @@ public class SimpleServer extends AbstractServer {
                         case "Request":
                             int taskID_original = ((Task) (message.getObject())).getId();
                             shutDown_pair(taskID_original);
-                            createNoVolunteerThread(taskID_original, noVolunteerTime, sessionFactory, noVolunteerTimeUnits);
+                            createNoVolunteerThread(taskID_original, NOVOLUNTEERTIME, sessionFactory, NOVOLUNTEERTIMEUnits);
                             break;
 
                     }
@@ -1178,15 +1185,3 @@ public class SimpleServer extends AbstractServer {
 	}
 
 }
-
-
-// to implement :
-//1.
-// add two hashmaps, mapping ConnectionToClient to Integer (User ID) and vice versa
-// when user logs in : add mapping
-// when user logs out : remove mapping
-// if manager wants to send a message to a user in his community, or when a new task is posted, first search for related ConnectionToClient object
-
-//2.add new entry to database, containing awaiting messages to user/manager. (fetch list when user logs in)
-// OneToMany
-// query using CriteriaQuery, delete using CriteriaDelete

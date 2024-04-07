@@ -135,7 +135,7 @@ public class NewTaskController {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Success");
             alert.setHeaderText(null);
-            alert.setContentText("Your request has been added,a message has been sent to your community manager (Not really)");
+            alert.setContentText("Your request has been added,a message has been sent to your community manager");
             alert.showAndWait();
 
             // close down new task window, go back to viewtasks
