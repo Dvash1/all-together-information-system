@@ -72,230 +72,294 @@ public class SimpleServer extends AbstractServer {
 			session.beginTransaction();
 
 			//check if database is empty first
-			if (getAllTasks(null, session).isEmpty()) {
-				// first community
-				User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true,"0523842728");
-				Community c1 = new Community("Kfir",u1);
-				u1.setCommunity(c1);
-				User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false,"0538453293" ,c1);
-				User u3 = new User("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", false, "0523456789", c1);
-				User u4 = new User("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", false, "0501234565", c1);
-				User u5 = new User("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary", false, "0579876543", c1);
-				User u6 = new User("Emily Davis", "364892175", "password", "What is your favorite movie?", "The Shawshank Redemption", false, "0512345678", c1);
-				User u7 = new User("Daniel Wilson", "485739216", "123456", "What is your favorite food?", "Pizza", false, "0587654321", c1);
-				User u8 = new User("Olivia Martinez", "627183945", "pass123", "Who is your favorite author?", "J.K. Rowling", false, "0543210987", c1);
-				User u9 = new User("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", false, "0567890123", c1);
-				User u10 = new User("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog", false, "0532109876", c1);
+				if (getAllTasks(null, session).isEmpty()) {
+					// first community
+					User u1 = new User("Jan Christie", "335720074", "nJ9rS8~-", "What is your favorite color?", "Blue", true,"0523842728");
+					Community c1 = new Community("Kfir",u1);
+					u1.setCommunity(c1);
+					User u2 = new User("Elie Dempsey", "331928044", "bZ8W7+.q", "What is your pet's name?", "Rover", false,"0538453293" ,c1);
+					User u3 = new User("John Smith", "746158392", "password123", "What is your mother's maiden name?", "Johnson", false, "0523456789", c1);
+					User u4 = new User("Alice Johnson", "538294617", "qwerty", "What city were you born in?", "New York", false, "0501234565", c1);
+					User u5 = new User("Michael Brown", "921475386", "abc123", "What is the name of your first school?", "Maple Elementary", false, "0579876543", c1);
+					User u6 = new User("Emily Davis", "364892175", "password", "What is your favorite movie?", "The Shawshank Redemption", false, "0512345678", c1);
+					User u7 = new User("Daniel Wilson", "485739216", "123456", "What is your favorite food?", "Pizza", false, "0587654321", c1);
+					User u8 = new User("Olivia Martinez", "627183945", "pass123", "Who is your favorite author?", "J.K. Rowling", false, "0543210987", c1);
+					User u9 = new User("William Anderson", "819276435", "password456", "What is your dream vacation destination?", "Paris", false, "0567890123", c1);
+					User u10 = new User("Sophia Garcia", "294617583", "123abc", "What is your favorite animal?", "Dog", false, "0532109876", c1);
 
-				Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
-				Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "In Progress", u3,u4);
-				Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "In Progress", u4,u3);
-				Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1).minusDays(4), "Complete", u5,u7);
-				t4.setCompletionTime(LocalDateTime.now().minusDays(5));
-				Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
+					Task t1 = new Task("walk the dogs", LocalDateTime.now(),"Request",u2);
+					Task t2 = new Task("clean the house", LocalDateTime.now().minusHours(2), "In Progress", u3,u4);
+					Task t3 = new Task("grocery shopping", LocalDateTime.now().minusDays(1), "In Progress", u4,u3);
+					Task t4 = new Task("write report", LocalDateTime.now().minusWeeks(1).minusDays(4), "Complete", u5,u7);
+					t4.setCompletionTime(LocalDateTime.now().minusDays(5));
+					Task t5 = new Task("prepare presentation", LocalDateTime.now().minusDays(2), "Request", u6);
 
-				Emergency e1 = new Emergency(u1, LocalDateTime.now().minusDays(2));
-				Emergency e2 = new Emergency(u2, LocalDateTime.now().minusDays(4));
-				Emergency e3 = new Emergency(u3, LocalDateTime.now().minusDays(1));
-				Emergency e4 = new Emergency(u4, LocalDateTime.now().minusDays(3));
-				Emergency e5 = new Emergency(u5, LocalDateTime.now().minusDays(5));
-				Emergency e6 = new Emergency(u6, LocalDateTime.now().minusDays(2));
-				Emergency e7 = new Emergency(u7, LocalDateTime.now().minusDays(4));
-				Emergency e8 = new Emergency(u8, LocalDateTime.now().minusDays(1));
-				Emergency e9 = new Emergency(u9, LocalDateTime.now().minusDays(3));
-				Emergency e10 = new Emergency(u10, LocalDateTime.now().minusDays(5));
-
-
-				session.save(u1);
-				session.save(c1);
-				session.save(u2);
-				session.save(u3);
-				session.save(u4);
-				session.save(u5);
-				session.flush();
-
-				session.save(u6);
-				session.save(u7);
-				session.save(u8);
-				session.save(u9);
-				session.save(u10);
-				session.flush();
-
-				session.save(t1);
-				session.save(t2);
-				session.save(t3);
-				session.save(t4);
-				session.save(t5);
-				session.flush();
-
-				session.save(e1);
-				session.save(e2);
-				session.save(e3);
-				session.save(e4);
-				session.save(e5);
-				session.flush();
-
-				session.save(e6);
-				session.save(e7);
-				session.save(e8);
-				session.save(e9);
-				session.save(e10);
-				session.flush();
-				taskNotVolunteer(t1,2,sessionFactory,TimeUnit.SECONDS);
-				taskVolunteerDidNotFinishOnTime(t2,5,sessionFactory,TimeUnit.SECONDS);
-				taskVolunteerDidNotFinishOnTime(t3,12,sessionFactory,TimeUnit.SECONDS);
-				taskNotVolunteer(t5,1,sessionFactory,TimeUnit.HOURS);
-// second community
-				User u11 = new User("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", true, "0598765432");
-				Community c2 = new Community("Lemons", u11);
-				u11.setCommunity(c2);
-				User u12 = new User("James White", "444555666", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
-				User u13 = new User("Ava Green", "777888999", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
-				User u14 = new User("Ethan Harris", "222333444", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
-				User u15 = new User("Mia Lee", "555666777", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
-				User u16 = new User("Jacob Hall", "888999000", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
-				User u17 = new User("Isabella Young", "333444555", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
-				User u18 = new User("Noah King", "666777888", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
-				User u19 = new User("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
-				User u20 = new User("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
-
-				Task t6 = new Task("mow the lawn", LocalDateTime.now().minusWeeks(1), "Complete", u11);
-				t6.setCompletionTime(LocalDateTime.now().minusDays(3));
-				Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "In Progress", u12,u13);
-				Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13, u17);
-				t8.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(4));
-				Task t9 = new Task("clean the garage", LocalDateTime.now().minusDays(3), "Request", u14);
-				Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Complete", u15);
-				t10.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(3));
-
-				Emergency e11 = new Emergency(u11, LocalDateTime.now().minusDays(3));
-				Emergency e12 = new Emergency(u12, LocalDateTime.now().minusDays(1));
-				Emergency e13 = new Emergency(u13, LocalDateTime.now().minusDays(2));
-				Emergency e14 = new Emergency(u14, LocalDateTime.now().minusDays(4));
-				Emergency e15 = new Emergency(u15, LocalDateTime.now().minusDays(5));
-				Emergency e16 = new Emergency(u16, LocalDateTime.now().minusDays(2));
-				Emergency e17 = new Emergency(u17, LocalDateTime.now().minusDays(3));
-				Emergency e18 = new Emergency(u18, LocalDateTime.now().minusDays(1));
-				Emergency e19 = new Emergency(u19, LocalDateTime.now().minusDays(4));
-				Emergency e20 = new Emergency(u20, LocalDateTime.now().minusDays(5));
-
-				session.save(u11);
-				session.save(c2);
-				session.save(u12);
-				session.save(u13);
-				session.save(u14);
-				session.save(u15);
-				session.flush();
+					Emergency e1 = new Emergency(u1, LocalDateTime.now().minusDays(2));
+					Emergency e2 = new Emergency(u2, LocalDateTime.now().minusDays(4));
+					Emergency e3 = new Emergency(u3, LocalDateTime.now().minusDays(1));
+					Emergency e4 = new Emergency(u4, LocalDateTime.now().minusDays(3));
+					Emergency e5 = new Emergency(u5, LocalDateTime.now().minusDays(5));
+					Emergency e6 = new Emergency(u6, LocalDateTime.now().minusDays(2));
+					Emergency e7 = new Emergency(u7, LocalDateTime.now().minusDays(4));
+					Emergency e8 = new Emergency(u8, LocalDateTime.now().minusDays(1));
+					Emergency e9 = new Emergency(u9, LocalDateTime.now().minusDays(3));
+					Emergency e10 = new Emergency(u10, LocalDateTime.now().minusDays(5));
 
 
-				session.save(u16);
-				session.save(u17);
-				session.save(u18);
-				session.save(u19);
-				session.save(u20);
-				session.flush();
+					session.save(u1);
+					session.save(c1);
+					session.save(u2);
+					session.save(u3);
+					session.save(u4);
+					session.save(u5);
+					session.flush();
 
-				session.save(t6);
-				session.save(t7);
-				session.save(t8);
-				session.save(t9);
-				session.save(t10);
-				session.flush();
-				taskVolunteerDidNotFinishOnTime(t7,5,sessionFactory,TimeUnit.HOURS);
-				taskNotVolunteer(t9,32,sessionFactory,TimeUnit.MINUTES);
+					session.save(u6);
+					session.save(u7);
+					session.save(u8);
+					session.save(u9);
+					session.save(u10);
+					session.flush();
 
-				session.save(e11);
-				session.save(e12);
-				session.save(e13);
-				session.save(e14);
-				session.save(e15);
-				session.flush();
+					session.save(t1);
+					session.save(t2);
+					session.save(t3);
+					session.save(t4);
+					session.save(t5);
+					session.flush();
 
-				session.save(e16);
-				session.save(e17);
-				session.save(e18);
-				session.save(e19);
-				session.save(e20);
-				session.flush();
+					session.save(e1);
+					session.save(e2);
+					session.save(e3);
+					session.save(e4);
+					session.save(e5);
+					session.flush();
 
-				// third community
+					session.save(e6);
+					session.save(e7);
+					session.save(e8);
+					session.save(e9);
+					session.save(e10);
+					session.flush();
+					taskNotVolunteer(t1,2,sessionFactory,TimeUnit.SECONDS);
+					taskVolunteerDidNotFinishOnTime(t2,5,sessionFactory,TimeUnit.SECONDS);
+					taskVolunteerDidNotFinishOnTime(t3,12,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t5,1,sessionFactory,TimeUnit.HOURS);
+	// second community
+					User u11 = new User("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", true, "0598765432");
+					Community c2 = new Community("Lemons", u11);
+					u11.setCommunity(c2);
+					User u12 = new User("James White", "444555666", "abc456", "What is your favorite sport?", "Football", false, "0554321098", c2);
+					User u13 = new User("Ava Green", "777888999", "password789", "What is your favorite season?", "Spring", false, "0523456788", c2);
+					User u14 = new User("Ethan Harris", "222333444", "qwerty123", "What is your favorite TV show?", "Friends", false, "0501234567", c2);
+					User u15 = new User("Mia Lee", "555666777", "pass789", "What is your favorite holiday?", "Christmas", false, "0579876544", c2);
+					User u16 = new User("Jacob Hall", "888999000", "abc789", "What is your favorite music genre?", "Pop", false, "0512345679", c2);
+					User u17 = new User("Isabella Young", "333444555", "passwordabc", "What is your favorite subject?", "History", false, "0587654329", c2);
+					User u18 = new User("Noah King", "666777888", "qwertyabc", "What is your favorite color?", "Green", false, "0543210986", c2);
+					User u19 = new User("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", false, "0567890124", c2);
+					User u20 = new User("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", false, "0532109856", c2);
 
-				User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true,"0598765432");
-				Community c3 = new Community("Ono",u21);
-				u21.setCommunity(c3);
-				User u22 = new User("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", false, "0554321091", c3);
-				User u23 = new User("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", false, "0523456780", c3);
-				User u24 = new User("Zoe Evans", "485726391", "abc123!@#", "What is your favorite board game?", "Monopoly", false, "0501234563", c3);
-				User u25 = new User("Harper Edwards", "582619347", "password123!@#", "What is your favorite animal?", "Cat", false, "0579876545", c3);
-				User u26 = new User("Benjamin Collins", "726391845", "qwerty!@#$", "What is your favorite TV series?", "Breaking Bad", false, "0512345675", c3);
-				User u27 = new User("Aria Stewart", "917364825", "pass!@#$%", "What is your favorite outdoor activity?", "Hiking", false, "0587654323", c3);
-				User u28 = new User("Lucas Watson", "364819257", "abc!@#$%^", "What is your favorite indoor activity?", "Reading", false, "0543210989", c3);
-				User u29 = new User("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", false, "0567890120", c3);
-				User u30 = new User("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather", false, "0532109874", c3);
+					Task t6 = new Task("mow the lawn", LocalDateTime.now().minusWeeks(1), "Complete", u11,u15);
+					t6.setCompletionTime(LocalDateTime.now().minusDays(3));
+					Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "In Progress", u12,u13);
+					Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13, u17);
+					t8.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(4));
+					Task t9 = new Task("clean the garage", LocalDateTime.now().minusDays(3), "Request", u14);
+					Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Complete", u15,u19);
+					t10.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(3));
 
-				Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "In Progress", u21,u22);
+					Emergency e11 = new Emergency(u11, LocalDateTime.now().minusDays(3));
+					Emergency e12 = new Emergency(u12, LocalDateTime.now().minusDays(1));
+					Emergency e13 = new Emergency(u13, LocalDateTime.now().minusDays(2));
+					Emergency e14 = new Emergency(u14, LocalDateTime.now().minusDays(4));
+					Emergency e15 = new Emergency(u15, LocalDateTime.now().minusDays(5));
+					Emergency e16 = new Emergency(u16, LocalDateTime.now().minusDays(2));
+					Emergency e17 = new Emergency(u17, LocalDateTime.now().minusDays(3));
+					Emergency e18 = new Emergency(u18, LocalDateTime.now().minusDays(1));
+					Emergency e19 = new Emergency(u19, LocalDateTime.now().minusDays(4));
+					Emergency e20 = new Emergency(u20, LocalDateTime.now().minusDays(5));
 
-				Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);
-				Task t13 = new Task("trim the hedges", LocalDateTime.now().minusWeeks(3), "Complete", u23, u27);
-				t13.setCompletionTime(LocalDateTime.now().minusWeeks(2));
-				Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "In Progress", u24,u29);
-				Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Complete", u25);
-				t13.setCompletionTime(LocalDateTime.now().minusWeeks(1));
-
-				Emergency e21 = new Emergency(u21, LocalDateTime.now().minusDays(2));
-				Emergency e22 = new Emergency(u22, LocalDateTime.now().minusDays(4));
-				Emergency e23 = new Emergency(u23, LocalDateTime.now().minusDays(1));
-				Emergency e24 = new Emergency(u24, LocalDateTime.now().minusDays(3));
-				Emergency e25 = new Emergency(u25, LocalDateTime.now().minusDays(5));
-				Emergency e26 = new Emergency(u26, LocalDateTime.now().minusDays(2));
-				Emergency e27 = new Emergency(u27, LocalDateTime.now().minusDays(4));
-				Emergency e28 = new Emergency(u28, LocalDateTime.now().minusDays(1));
-				Emergency e29 = new Emergency(u29, LocalDateTime.now().minusDays(3));
-				Emergency e30 = new Emergency(u30, LocalDateTime.now().minusDays(5));
-
-				session.save(u21);
-				session.save(c3);
-				session.save(u22);
-				session.save(u23);
-				session.save(u24);
-				session.save(u25);
-				session.flush();
-
-				session.save(u26);
-				session.save(u27);
-				session.save(u28);
-				session.save(u29);
-				session.save(u30);
-				session.flush();
-
-				session.save(t11);
-				session.save(t12);
-				session.save(t13);
-				session.save(t14);
-				session.save(t15);
-				session.flush();
-
-				taskVolunteerDidNotFinishOnTime(t11,20,sessionFactory,TimeUnit.HOURS);
-				taskVolunteerDidNotFinishOnTime(t14,24,sessionFactory,TimeUnit.HOURS);
-				taskNotVolunteer(t12,17,sessionFactory,TimeUnit.SECONDS);
-
-				session.save(e21);
-				session.save(e22);
-				session.save(e23);
-				session.save(e24);
-				session.save(e25);
-				session.flush();
-
-				session.save(e26);
-				session.save(e27);
-				session.save(e28);
-				session.save(e29);
-				session.save(e30);
-				session.flush();
+					session.save(u11);
+					session.save(c2);
+					session.save(u12);
+					session.save(u13);
+					session.save(u14);
+					session.save(u15);
+					session.flush();
 
 
+					session.save(u16);
+					session.save(u17);
+					session.save(u18);
+					session.save(u19);
+					session.save(u20);
+					session.flush();
 
-			}
+					session.save(t6);
+					session.save(t7);
+					session.save(t8);
+					session.save(t9);
+					session.save(t10);
+					session.flush();
+					taskVolunteerDidNotFinishOnTime(t7,5,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t9,32,sessionFactory,TimeUnit.MINUTES);
+
+					session.save(e11);
+					session.save(e12);
+					session.save(e13);
+					session.save(e14);
+					session.save(e15);
+					session.flush();
+
+					session.save(e16);
+					session.save(e17);
+					session.save(e18);
+					session.save(e19);
+					session.save(e20);
+					session.flush();
+
+					// third community
+
+					User u21 = new User("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream", true,"0598765432");
+					Community c3 = new Community("Ono",u21);
+					u21.setCommunity(c3);
+					User u22 = new User("Grace Turner", "726394185", "qwerty12345", "What is your favorite fruit?", "Strawberry", false, "0554321091", c3);
+					User u23 = new User("Mason Parker", "364598217", "password!@#", "What is your favorite drink?", "Lemonade", false, "0523456780", c3);
+					User u24 = new User("Zoe Evans", "485726391", "abc123!@#", "What is your favorite board game?", "Monopoly", false, "0501234563", c3);
+					User u25 = new User("Harper Edwards", "582619347", "password123!@#", "What is your favorite animal?", "Cat", false, "0579876545", c3);
+					User u26 = new User("Benjamin Collins", "726391845", "qwerty!@#$", "What is your favorite TV series?", "Breaking Bad", false, "0512345675", c3);
+					User u27 = new User("Aria Stewart", "917364825", "pass!@#$%", "What is your favorite outdoor activity?", "Hiking", false, "0587654323", c3);
+					User u28 = new User("Lucas Watson", "364819257", "abc!@#$%^", "What is your favorite indoor activity?", "Reading", false, "0543210989", c3);
+					User u29 = new User("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", false, "0567890120", c3);
+					User u30 = new User("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather", false, "0532109874", c3);
+
+					Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "In Progress", u21,u22);
+
+					Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);
+					Task t13 = new Task("trim the hedges", LocalDateTime.now().minusWeeks(3), "Complete", u23, u27);
+					t13.setCompletionTime(LocalDateTime.now().minusWeeks(2));
+					Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "In Progress", u24,u29);
+					Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Complete", u25,u21);
+					t15.setCompletionTime(LocalDateTime.now().minusWeeks(3));
+
+					Emergency e21 = new Emergency(u21, LocalDateTime.now().minusDays(2));
+					Emergency e22 = new Emergency(u22, LocalDateTime.now().minusDays(4));
+					Emergency e23 = new Emergency(u23, LocalDateTime.now().minusDays(1));
+					Emergency e24 = new Emergency(u24, LocalDateTime.now().minusDays(3));
+					Emergency e25 = new Emergency(u25, LocalDateTime.now().minusDays(5));
+					Emergency e26 = new Emergency(u26, LocalDateTime.now().minusDays(2));
+					Emergency e27 = new Emergency(u27, LocalDateTime.now().minusDays(4));
+					Emergency e28 = new Emergency(u28, LocalDateTime.now().minusDays(1));
+					Emergency e29 = new Emergency(u29, LocalDateTime.now().minusDays(3));
+					Emergency e30 = new Emergency(u30, LocalDateTime.now().minusDays(5));
+
+					session.save(u21);
+					session.save(c3);
+					session.save(u22);
+					session.save(u23);
+					session.save(u24);
+					session.save(u25);
+					session.flush();
+
+					session.save(u26);
+					session.save(u27);
+					session.save(u28);
+					session.save(u29);
+					session.save(u30);
+					session.flush();
+
+					session.save(t11);
+					session.save(t12);
+					session.save(t13);
+					session.save(t14);
+					session.save(t15);
+					session.flush();
+
+					taskVolunteerDidNotFinishOnTime(t11,20,sessionFactory,TimeUnit.HOURS);
+					taskVolunteerDidNotFinishOnTime(t14,24,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t12,17,sessionFactory,TimeUnit.SECONDS);
+
+
+					session.save(e21);
+					session.save(e22);
+					session.save(e23);
+					session.save(e24);
+					session.save(e25);
+					session.flush();
+
+					session.save(e26);
+					session.save(e27);
+					session.save(e28);
+					session.save(e29);
+					session.save(e30);
+					session.flush();
+
+					Task t16 = new Task("wash the windows", LocalDateTime.now().minusDays(1), "In Progress", u5,u7);
+					Task t17 = new Task("organize closet", LocalDateTime.now().minusDays(1).minusHours(2), "Request", u8);
+					Task t18 = new Task("trim the bushes", LocalDateTime.now().minusDays(2), "Complete", u2, u9);
+					t18.setCompletionTime(LocalDateTime.now().minusDays(1));
+					Task t19 = new Task("water the plants", LocalDateTime.now().minusDays(4), "In Progress", u9,u10);
+					Task t20 = new Task("repaint the bedroom", LocalDateTime.now().minusDays(5), "Complete", u1,u6);
+					t20.setCompletionTime(LocalDateTime.now().minusDays(3));
+
+					session.save(t16);
+					session.save(t17);
+					session.save(t18);
+					session.save(t19);
+					session.save(t20);
+					session.flush();
+
+					Task t21 = new Task("fix kitchen sink", LocalDateTime.now().minusDays(4), "Complete", u14,u12);
+					t21.setCompletionTime(LocalDateTime.now().minusDays(3));
+					Task t22 = new Task("sort paperwork", LocalDateTime.now().minusDays(5), "Request", u15);
+					Task t23 = new Task("clean windowsills", LocalDateTime.now().minusDays(3), "Complete", u17, u15);
+					t23.setCompletionTime(LocalDateTime.now().minusDays(1));
+					Task t24 = new Task("vacuum carpets", LocalDateTime.now().minusDays(4), "Request", u11);
+					Task t25 = new Task("organize bookshel", LocalDateTime.now().minusDays(1), "In Progress", u16,u19);
+
+					session.save(t21);
+					session.save(t22);
+					session.save(t23);
+					session.save(t24);
+					session.save(t25);
+					session.flush();
+
+					Task t26 = new Task("polish silverware", LocalDateTime.now().minusDays(2), "Complete", u21,u22);
+					t26.setCompletionTime(LocalDateTime.now().minusMinutes(45));
+					Task t27 = new Task("fix leaky faucet", LocalDateTime.now().minusDays(6), "Request", u22);
+					Task t28 = new Task("assemble furniture", LocalDateTime.now().minusDays(7), "Complete", u23, u27);
+					t28.setCompletionTime(LocalDateTime.now().minusDays(4));
+					Task t29 = new Task("plant new flowers", LocalDateTime.now().minusDays(2), "In Progress", u24,u29);
+					Task t30 = new Task("install light fixtures", LocalDateTime.now().minusDays(1), "Request", u25);
+
+					session.save(t26);
+					session.save(t27);
+					session.save(t28);
+					session.save(t29);
+					session.save(t30);
+					session.flush();
+
+					taskVolunteerDidNotFinishOnTime(t16,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t17,30,sessionFactory,TimeUnit.SECONDS);
+					taskVolunteerDidNotFinishOnTime(t19,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t22,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t24,30,sessionFactory,TimeUnit.SECONDS);
+					taskVolunteerDidNotFinishOnTime(t25,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t27,30,sessionFactory,TimeUnit.SECONDS);
+					taskVolunteerDidNotFinishOnTime(t29,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t30,30,sessionFactory,TimeUnit.SECONDS);
+
+//					taskVolunteerDidNotFinishOnTime(t16,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t17,22,sessionFactory,TimeUnit.HOURS);
+//					taskVolunteerDidNotFinishOnTime(t19,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t22,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t24,24,sessionFactory,TimeUnit.HOURS);
+//					taskVolunteerDidNotFinishOnTime(t25,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t27,24,sessionFactory,TimeUnit.HOURS);
+//					taskVolunteerDidNotFinishOnTime(t29,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t30,24,sessionFactory,TimeUnit.HOURS);
+
+				}
 			CriteriaBuilder cb = session.getCriteriaBuilder();
 			CriteriaQuery<UserMessage> query = cb.createQuery(UserMessage.class);
 			Root<UserMessage> root = query.from(UserMessage.class); // Specify the root entity
