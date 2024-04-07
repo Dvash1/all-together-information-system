@@ -21,7 +21,10 @@ import org.hibernate.service.ServiceRegistry;
 import javax.persistence.criteria.*;
 import java.util.concurrent.*;
 
+
 public class SimpleServer extends AbstractServer {
+
+	private static SessionFactory sessionFactory;
 
 	private static final long NOVOLUNTEERTIME = 2;
 	private static final TimeUnit NOVOLUNTEERTIMEUnits = TimeUnit.MINUTES;
@@ -40,23 +43,43 @@ public class SimpleServer extends AbstractServer {
 
 	private static SessionFactory getSessionFactory() throws
 			HibernateException {
-		Configuration configuration = new Configuration();
+		if (sessionFactory == null) {
+			Configuration configuration = new Configuration();
 
-		configuration.addAnnotatedClass(Task.class);
-		configuration.addAnnotatedClass(User.class);
-		configuration.addAnnotatedClass(CommunityManagerUser.class);
-		configuration.addAnnotatedClass(CommunityMemberUser.class);
-		configuration.addAnnotatedClass(Community.class);
-		configuration.addAnnotatedClass(Emergency.class);
-		configuration.addAnnotatedClass(UserMessage.class);
+			configuration.addAnnotatedClass(Task.class);
+			configuration.addAnnotatedClass(User.class);
+			configuration.addAnnotatedClass(CommunityManagerUser.class);
+			configuration.addAnnotatedClass(CommunityMemberUser.class);
+			configuration.addAnnotatedClass(Community.class);
+			configuration.addAnnotatedClass(Emergency.class);
+			configuration.addAnnotatedClass(UserMessage.class);
 
 
-		ServiceRegistry serviceRegistry = new
-				StandardServiceRegistryBuilder()
-				.applySettings(configuration.getProperties())
-				.build();
+			// Set Hibernate properties
+			configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
+			configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+			configuration.setProperty("hibernate.show_sql", "true");
+			configuration.setProperty("hibernate.hbm2ddl.auto", "update");
+			configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/lab7DB?serverTimezone=Europe/Istanbul");
+			configuration.setProperty("hibernate.connection.username", "root");
+			configuration.setProperty("hibernate.connection.password", "password");
 
-		return configuration.buildSessionFactory(serviceRegistry);
+			// Set C3P0 properties
+			configuration.setProperty("hibernate.c3p0.min_size", "5");
+			configuration.setProperty("hibernate.c3p0.max_size", "50");
+			configuration.setProperty("hibernate.c3p0.timeout", String.valueOf(50));
+			configuration.setProperty("hibernate.c3p0.max_statements", "100");
+			configuration.setProperty("hibernate.c3p0.idle_test_period", "300");
+
+
+			ServiceRegistry serviceRegistry = new
+					StandardServiceRegistryBuilder()
+					.applySettings(configuration.getProperties())
+					.build();
+
+			sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+		}
+		return sessionFactory;
 	}
 
 
@@ -757,6 +780,7 @@ public class SimpleServer extends AbstractServer {
 					taskIDtoThread.get(taskID).setSecond(scheduledFuture);
 					new_session.getTransaction().commit();
 					new_session.close();
+
 				}
 				else {
 					shutDown_pair(taskID);
@@ -1204,6 +1228,7 @@ public class SimpleServer extends AbstractServer {
                     sendToAllClients(message);
                 }
             }
+			session.getTransaction().commit();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (Exception exception) {
@@ -1214,6 +1239,7 @@ public class SimpleServer extends AbstractServer {
 			exception.printStackTrace();
 		}
 		finally {
+
 			session.close();
 		}
 	}
