@@ -1,9 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-// *******IMPORTANT*******
-// because emergency class is not implemented yet, this code is missing an implementation of "live updating" (update the histogram whenever someone presses the emergency button)
-// a simple solution could be to add the emergency object to the observable list, if the requirements are met.
-// TODO: after an emergency button has been processed, send a msg to relevant clients to update them.
+import il.cshaifasweng.OCSFMediatorExample.client.events.getEmergencyData;
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -21,12 +18,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 import java.util.*;
-
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
-
 import javafx.util.StringConverter;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

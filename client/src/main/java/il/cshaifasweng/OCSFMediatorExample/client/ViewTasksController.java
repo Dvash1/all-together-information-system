@@ -11,14 +11,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-// There are some bugs regarding enabling/disabling of buttons when users volunteer/withdraw from a task. (when multiple clients are browsing open tasks)
-// Log in needs to be properly to handle them, because some bugs occur only when the same user is hovering the same task, and our does not allow a user to be logged on more than one client.
 public class ViewTasksController {
 
     public static User currentUser = SimpleChatClient.getUser();
@@ -121,14 +119,10 @@ public class ViewTasksController {
         messageToManagerTA.clear();
 
         try {
-            Message message = new Message("Update task",selectedTask,currentUser);
+            Message message = new Message(selectedTask.getId(),"Complete the task");
+            message.setUser(currentUser);
+            message.setObject(text);
             SimpleClient.getClient().sendToServer(message);
-
-            // Send message to manager
-            String to_manager_text = "Task done by: \"" + currentUser.getUserName() + "\"\nHas been marked complete with the message:\n\"" + text + "\"";
-            UserMessage managerMessage = new UserMessage(to_manager_text, currentUser.getTeudatZehut(), currentUser.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
-            Message messageToManager = new Message("Send message",managerMessage);
-            SimpleClient.getClient().sendToServer(messageToManager);
 
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -239,11 +233,12 @@ public class ViewTasksController {
             SimpleClient.getClient().sendToServer(message);
 
             // Scheduler implemented in simpleserver
-            String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
-            String message_text = "24 hours have passed on the task:\n\"" + selectedTask.getRequiredTask() + "\"\nBy: " + selectedTask.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
-            UserMessage not_completed_usermessage = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
+//            String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
+//            String message_text = "24 hours have passed on the task:\n\"" + selectedTask.getRequiredTask() + "\"\nBy: " + selectedTask.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
+//            UserMessage not_completed_usermessage = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
+
+
             Message not_completed_message = new Message(selectedTask.getId(),"Task not completed on time");
-            not_completed_message.setObject(not_completed_usermessage);
             SimpleClient.getClient().sendToServer(not_completed_message);
 
             Platform.runLater(() -> {

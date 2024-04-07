@@ -1,17 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
-
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.SubscribedClient;
-
 import java.io.IOException;
-import java.sql.Time;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,22 +18,25 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import javax.persistence.Query;
-
-import org.hibernate.Criteria;
-
 import javax.persistence.criteria.*;
 import java.util.concurrent.*;
 
-
 public class SimpleServer extends AbstractServer {
+
+	private static final long NOVOLUNTEERTIME = 2;
+	private static final TimeUnit NOVOLUNTEERTIMEUnits = TimeUnit.MINUTES;
+
+	private static final long TOCOMPLETETIME = 2;
+	private static final TimeUnit TOCOMPLETETIMEUnits = TimeUnit.MINUTES;
+
+	private static final long LOCKINGTIME = 30;
+	private static final TimeUnit LOCKINGTIMEUnits = TimeUnit.SECONDS;
+
 	private static ArrayList<SubscribedClient> SubscribersList = new ArrayList<>();
-	private static HashMap<String,ConnectionToClient> idToClient = new HashMap<>();
-	private static HashMap<ConnectionToClient,String> clientToId = new HashMap<>();
-	private static HashMap<Integer, Pair<ScheduledExecutorService,ScheduledFuture>> taskIDtoThread = new HashMap<>();
+	private static ConcurrentHashMap<String,ConnectionToClient> idToClient = new ConcurrentHashMap<>();
+	private static ConcurrentHashMap<ConnectionToClient,String> clientToId = new ConcurrentHashMap<>();
+	private static ConcurrentHashMap<Integer, Pair<ScheduledExecutorService,ScheduledFuture>> taskIDtoThread = new ConcurrentHashMap<>();
 	private static Session session;
-
-
 
 	private static SessionFactory getSessionFactory() throws
 			HibernateException {
@@ -147,8 +144,8 @@ public class SimpleServer extends AbstractServer {
 				session.save(e10);
 				session.flush();
 				taskNotVolunteer(t1,2,sessionFactory,TimeUnit.SECONDS);
-				taskVolunteerDidNotFinishOnTime(t2.getId(),5,sessionFactory,TimeUnit.SECONDS);
-				taskVolunteerDidNotFinishOnTime(t3.getId(),12,sessionFactory,TimeUnit.SECONDS);
+				taskVolunteerDidNotFinishOnTime(t2,5,sessionFactory,TimeUnit.SECONDS);
+				taskVolunteerDidNotFinishOnTime(t3,12,sessionFactory,TimeUnit.SECONDS);
 				taskNotVolunteer(t5,1,sessionFactory,TimeUnit.HOURS);
 // second community
 				CommunityManagerUser u11 = new CommunityManagerUser("Emma Thompson", "111222333", "pass456", "What is your favorite hobby?", "Reading", "0598765432");
@@ -165,66 +162,66 @@ public class SimpleServer extends AbstractServer {
 				CommunityMemberUser u19 = new CommunityMemberUser("Sophie Baker", "999000111", "passabc", "What is your favorite book?", "To Kill a Mockingbird", "0567890124", c2);
 				CommunityMemberUser u20 = new CommunityMemberUser("William Cook", "123456789", "abcqwerty", "What is your favorite movie genre?", "Action", "0532109856", c2);
 
-				Task t6 = new Task("mow the lawn", LocalDateTime.now().minusWeeks(1), "Complete", u11);
-				t6.setCompletionTime(LocalDateTime.now().minusDays(3));
-				Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "In Progress", u12,u13);
-				Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13, u17);
-				t8.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(4));
-				Task t9 = new Task("clean the garage", LocalDateTime.now().minusDays(3), "Request", u14);
-				Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Complete", u15);
-				t10.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(3));
+					Task t6 = new Task("mow the lawn", LocalDateTime.now().minusWeeks(1), "Complete", u11,u15);
+					t6.setCompletionTime(LocalDateTime.now().minusDays(3));
+					Task t7 = new Task("fix the roof", LocalDateTime.now().minusDays(2), "In Progress", u12,u13);
+					Task t8 = new Task("paint the fence", LocalDateTime.now().minusWeeks(2), "Complete", u13, u17);
+					t8.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(4));
+					Task t9 = new Task("clean the garage", LocalDateTime.now().minusDays(3), "Request", u14);
+					Task t10 = new Task("organize the shed", LocalDateTime.now().minusWeeks(3), "Complete", u15,u19);
+					t10.setCompletionTime(LocalDateTime.now().minusWeeks(1).minusDays(3));
 
-				Emergency e11 = new Emergency(u11, LocalDateTime.now().minusDays(3));
-				Emergency e12 = new Emergency(u12, LocalDateTime.now().minusDays(1));
-				Emergency e13 = new Emergency(u13, LocalDateTime.now().minusDays(2));
-				Emergency e14 = new Emergency(u14, LocalDateTime.now().minusDays(4));
-				Emergency e15 = new Emergency(u15, LocalDateTime.now().minusDays(5));
-				Emergency e16 = new Emergency(u16, LocalDateTime.now().minusDays(2));
-				Emergency e17 = new Emergency(u17, LocalDateTime.now().minusDays(3));
-				Emergency e18 = new Emergency(u18, LocalDateTime.now().minusDays(1));
-				Emergency e19 = new Emergency(u19, LocalDateTime.now().minusDays(4));
-				Emergency e20 = new Emergency(u20, LocalDateTime.now().minusDays(5));
+					Emergency e11 = new Emergency(u11, LocalDateTime.now().minusDays(3));
+					Emergency e12 = new Emergency(u12, LocalDateTime.now().minusDays(1));
+					Emergency e13 = new Emergency(u13, LocalDateTime.now().minusDays(2));
+					Emergency e14 = new Emergency(u14, LocalDateTime.now().minusDays(4));
+					Emergency e15 = new Emergency(u15, LocalDateTime.now().minusDays(5));
+					Emergency e16 = new Emergency(u16, LocalDateTime.now().minusDays(2));
+					Emergency e17 = new Emergency(u17, LocalDateTime.now().minusDays(3));
+					Emergency e18 = new Emergency(u18, LocalDateTime.now().minusDays(1));
+					Emergency e19 = new Emergency(u19, LocalDateTime.now().minusDays(4));
+					Emergency e20 = new Emergency(u20, LocalDateTime.now().minusDays(5));
 
-				session.save(u11);
-				session.save(c2);
-				session.save(u12);
-				session.save(u13);
-				session.save(u14);
-				session.save(u15);
-				session.flush();
+					session.save(u11);
+					session.save(c2);
+					session.save(u12);
+					session.save(u13);
+					session.save(u14);
+					session.save(u15);
+					session.flush();
 
 
-				session.save(u16);
-				session.save(u17);
-				session.save(u18);
-				session.save(u19);
-				session.save(u20);
-				session.flush();
+					session.save(u16);
+					session.save(u17);
+					session.save(u18);
+					session.save(u19);
+					session.save(u20);
+					session.flush();
 
-				session.save(t6);
-				session.save(t7);
-				session.save(t8);
-				session.save(t9);
-				session.save(t10);
-				session.flush();
-				taskVolunteerDidNotFinishOnTime(t7.getId(),5,sessionFactory,TimeUnit.HOURS);
-				taskNotVolunteer(t9,32,sessionFactory,TimeUnit.MINUTES);
+					session.save(t6);
+					session.save(t7);
+					session.save(t8);
+					session.save(t9);
+					session.save(t10);
+					session.flush();
+					taskVolunteerDidNotFinishOnTime(t7,5,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t9,32,sessionFactory,TimeUnit.MINUTES);
 
-				session.save(e11);
-				session.save(e12);
-				session.save(e13);
-				session.save(e14);
-				session.save(e15);
-				session.flush();
+					session.save(e11);
+					session.save(e12);
+					session.save(e13);
+					session.save(e14);
+					session.save(e15);
+					session.flush();
 
-				session.save(e16);
-				session.save(e17);
-				session.save(e18);
-				session.save(e19);
-				session.save(e20);
-				session.flush();
+					session.save(e16);
+					session.save(e17);
+					session.save(e18);
+					session.save(e19);
+					session.save(e20);
+					session.flush();
 
-				// third community
+					// third community
 
 				CommunityManagerUser u21 = new CommunityManagerUser("Liam Murphy", "918273645", "abcpassword", "What is your favorite dessert?", "Ice Cream","0598765432");
 
@@ -241,69 +238,133 @@ public class SimpleServer extends AbstractServer {
 				CommunityMemberUser u29 = new CommunityMemberUser("Layla Harris", "485726193", "qwerty!@#$%^&", "What is your favorite ice cream flavor?", "Vanilla", "0567890120", c3);
 				CommunityMemberUser u30 = new CommunityMemberUser("Henry Clark", "819273645", "password!@#$%^&*", "What is your favorite movie?", "The Godfather",  "0532109874", c3);
 
-				Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "In Progress", u21,u22);
+					Task t11 = new Task("rake the leaves", LocalDateTime.now().minusHours(4), "In Progress", u21,u22);
 
-				Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);
-				Task t13 = new Task("trim the hedges", LocalDateTime.now().minusWeeks(3), "Complete", u23, u27);
-				t13.setCompletionTime(LocalDateTime.now().minusWeeks(2));
-				Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "In Progress", u24,u29);
-				Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Complete", u25);
-				t13.setCompletionTime(LocalDateTime.now().minusWeeks(1));
+					Task t12 = new Task("clean the gutters", LocalDateTime.now().minusDays(5), "Request", u22);
+					Task t13 = new Task("trim the hedges", LocalDateTime.now().minusWeeks(3), "Complete", u23, u27);
+					t13.setCompletionTime(LocalDateTime.now().minusWeeks(2));
+					Task t14 = new Task("wash the car", LocalDateTime.now().minusDays(4), "In Progress", u24,u29);
+					Task t15 = new Task("sweep the driveway", LocalDateTime.now().minusWeeks(4), "Complete", u25,u21);
+					t15.setCompletionTime(LocalDateTime.now().minusWeeks(3));
 
-				Emergency e21 = new Emergency(u21, LocalDateTime.now().minusDays(2));
-				Emergency e22 = new Emergency(u22, LocalDateTime.now().minusDays(4));
-				Emergency e23 = new Emergency(u23, LocalDateTime.now().minusDays(1));
-				Emergency e24 = new Emergency(u24, LocalDateTime.now().minusDays(3));
-				Emergency e25 = new Emergency(u25, LocalDateTime.now().minusDays(5));
-				Emergency e26 = new Emergency(u26, LocalDateTime.now().minusDays(2));
-				Emergency e27 = new Emergency(u27, LocalDateTime.now().minusDays(4));
-				Emergency e28 = new Emergency(u28, LocalDateTime.now().minusDays(1));
-				Emergency e29 = new Emergency(u29, LocalDateTime.now().minusDays(3));
-				Emergency e30 = new Emergency(u30, LocalDateTime.now().minusDays(5));
+					Emergency e21 = new Emergency(u21, LocalDateTime.now().minusDays(2));
+					Emergency e22 = new Emergency(u22, LocalDateTime.now().minusDays(4));
+					Emergency e23 = new Emergency(u23, LocalDateTime.now().minusDays(1));
+					Emergency e24 = new Emergency(u24, LocalDateTime.now().minusDays(3));
+					Emergency e25 = new Emergency(u25, LocalDateTime.now().minusDays(5));
+					Emergency e26 = new Emergency(u26, LocalDateTime.now().minusDays(2));
+					Emergency e27 = new Emergency(u27, LocalDateTime.now().minusDays(4));
+					Emergency e28 = new Emergency(u28, LocalDateTime.now().minusDays(1));
+					Emergency e29 = new Emergency(u29, LocalDateTime.now().minusDays(3));
+					Emergency e30 = new Emergency(u30, LocalDateTime.now().minusDays(5));
 
-				session.save(u21);
-				session.save(c3);
-				session.save(u22);
-				session.save(u23);
-				session.save(u24);
-				session.save(u25);
-				session.flush();
+					session.save(u21);
+					session.save(c3);
+					session.save(u22);
+					session.save(u23);
+					session.save(u24);
+					session.save(u25);
+					session.flush();
 
-				session.save(u26);
-				session.save(u27);
-				session.save(u28);
-				session.save(u29);
-				session.save(u30);
-				session.flush();
+					session.save(u26);
+					session.save(u27);
+					session.save(u28);
+					session.save(u29);
+					session.save(u30);
+					session.flush();
 
-				session.save(t11);
-				session.save(t12);
-				session.save(t13);
-				session.save(t14);
-				session.save(t15);
-				session.flush();
+					session.save(t11);
+					session.save(t12);
+					session.save(t13);
+					session.save(t14);
+					session.save(t15);
+					session.flush();
 
-				taskVolunteerDidNotFinishOnTime(t11.getId(),20,sessionFactory,TimeUnit.HOURS);
-				taskVolunteerDidNotFinishOnTime(t14.getId(),24,sessionFactory,TimeUnit.HOURS);
-				taskNotVolunteer(t12,17,sessionFactory,TimeUnit.SECONDS);
-
-				session.save(e21);
-				session.save(e22);
-				session.save(e23);
-				session.save(e24);
-				session.save(e25);
-				session.flush();
-
-				session.save(e26);
-				session.save(e27);
-				session.save(e28);
-				session.save(e29);
-				session.save(e30);
-				session.flush();
+					taskVolunteerDidNotFinishOnTime(t11,20,sessionFactory,TimeUnit.HOURS);
+					taskVolunteerDidNotFinishOnTime(t14,24,sessionFactory,TimeUnit.HOURS);
+					taskNotVolunteer(t12,17,sessionFactory,TimeUnit.SECONDS);
 
 
+					session.save(e21);
+					session.save(e22);
+					session.save(e23);
+					session.save(e24);
+					session.save(e25);
+					session.flush();
 
-			}
+					session.save(e26);
+					session.save(e27);
+					session.save(e28);
+					session.save(e29);
+					session.save(e30);
+					session.flush();
+
+					Task t16 = new Task("wash the windows", LocalDateTime.now().minusDays(1), "In Progress", u5,u7);
+					Task t17 = new Task("organize closet", LocalDateTime.now().minusDays(1).minusHours(2), "Request", u8);
+					Task t18 = new Task("trim the bushes", LocalDateTime.now().minusDays(2), "Complete", u2, u9);
+					t18.setCompletionTime(LocalDateTime.now().minusDays(1));
+					Task t19 = new Task("water the plants", LocalDateTime.now().minusDays(4), "In Progress", u9,u10);
+					Task t20 = new Task("repaint the bedroom", LocalDateTime.now().minusDays(5), "Complete", u1,u6);
+					t20.setCompletionTime(LocalDateTime.now().minusDays(3));
+
+					session.save(t16);
+					session.save(t17);
+					session.save(t18);
+					session.save(t19);
+					session.save(t20);
+					session.flush();
+
+					Task t21 = new Task("fix kitchen sink", LocalDateTime.now().minusDays(4), "Complete", u14,u12);
+					t21.setCompletionTime(LocalDateTime.now().minusDays(3));
+					Task t22 = new Task("sort paperwork", LocalDateTime.now().minusDays(5), "Request", u15);
+					Task t23 = new Task("clean windowsills", LocalDateTime.now().minusDays(3), "Complete", u17, u15);
+					t23.setCompletionTime(LocalDateTime.now().minusDays(1));
+					Task t24 = new Task("vacuum carpets", LocalDateTime.now().minusDays(4), "Request", u11);
+					Task t25 = new Task("organize bookshelf", LocalDateTime.now().minusDays(1), "In Progress", u16,u19);
+
+					session.save(t21);
+					session.save(t22);
+					session.save(t23);
+					session.save(t24);
+					session.save(t25);
+					session.flush();
+
+					Task t26 = new Task("polish silverware", LocalDateTime.now().minusDays(2), "Complete", u21,u22);
+					t26.setCompletionTime(LocalDateTime.now().minusMinutes(45));
+					Task t27 = new Task("fix leaky faucet", LocalDateTime.now().minusDays(6), "Request", u22);
+					Task t28 = new Task("assemble furniture", LocalDateTime.now().minusDays(7), "Complete", u23, u27);
+					t28.setCompletionTime(LocalDateTime.now().minusDays(4));
+					Task t29 = new Task("plant new flowers", LocalDateTime.now().minusDays(2), "In Progress", u24,u29);
+					Task t30 = new Task("install light fixtures", LocalDateTime.now().minusDays(1), "Request", u25);
+
+					session.save(t26);
+					session.save(t27);
+					session.save(t28);
+					session.save(t29);
+					session.save(t30);
+					session.flush();
+
+					taskVolunteerDidNotFinishOnTime(t16,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t17,30,sessionFactory,TimeUnit.SECONDS);
+					taskVolunteerDidNotFinishOnTime(t19,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t22,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t24,30,sessionFactory,TimeUnit.SECONDS);
+					taskVolunteerDidNotFinishOnTime(t25,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t27,30,sessionFactory,TimeUnit.SECONDS);
+					taskVolunteerDidNotFinishOnTime(t29,30,sessionFactory,TimeUnit.SECONDS);
+					taskNotVolunteer(t30,30,sessionFactory,TimeUnit.SECONDS);
+
+//					taskVolunteerDidNotFinishOnTime(t16,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t17,22,sessionFactory,TimeUnit.HOURS);
+//					taskVolunteerDidNotFinishOnTime(t19,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t22,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t24,24,sessionFactory,TimeUnit.HOURS);
+//					taskVolunteerDidNotFinishOnTime(t25,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t27,24,sessionFactory,TimeUnit.HOURS);
+//					taskVolunteerDidNotFinishOnTime(t29,24,sessionFactory,TimeUnit.HOURS);
+//					taskNotVolunteer(t30,24,sessionFactory,TimeUnit.HOURS);
+
+				}
 			CriteriaBuilder cb = session.getCriteriaBuilder();
 			CriteriaQuery<UserMessage> query = cb.createQuery(UserMessage.class);
 			Root<UserMessage> root = query.from(UserMessage.class); // Specify the root entity
@@ -333,8 +394,18 @@ public class SimpleServer extends AbstractServer {
 			session.close();
 		}
 	}
+	private static UserMessage createNotFinishedTaskMessage(Task task_to_check) {
+		User currentUser = task_to_check.getTaskVolunteer();
+		String manager_zehut = currentUser.getCommunity().getCommunityManager().getTeudatZehut();
+		String message_text = "24 hours have passed on the task:\n\"" + task_to_check.getRequiredTask() + "\"\nBy: " + task_to_check.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
+		UserMessage usermessage_to_send = new UserMessage(message_text, manager_zehut, currentUser.getTeudatZehut(),"Not Complete");
+		return usermessage_to_send;
+	}
 
-	private static void taskVolunteerDidNotFinishOnTime(int taskID, long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
+
+
+	private static void taskVolunteerDidNotFinishOnTime(Task selectedTask, long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
+		int taskID = selectedTask.getId();
 		shutDown_pair(taskID);
 
 		ScheduledExecutorService scheduler;
@@ -343,46 +414,44 @@ public class SimpleServer extends AbstractServer {
 		Runnable to_do = new Runnable() {
 			@Override
 			public void run() {
-				// Code to execute
 				// This will be executed after allotted time
-				try (Session new_session = sessionFactory.openSession()) {
-					new_session.beginTransaction();
-					Task task_to_check = getTaskByTaskID(taskID, new_session);
-					System.out.print("Got the task. Id is: ");
-					System.out.println(taskID);
-					System.out.println(task_to_check.getTaskState());
-					if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
-						// If it is, we send a message to ask why it's still in progress.
-						System.out.println("Task is still in progress.");
-						// Do whatever you want to do in this case
+				Session new_session = sessionFactory.openSession();
+				new_session.beginTransaction();
+				Task task_to_check = getTaskByTaskID(taskID, new_session);
+				UserMessage usermessage_to_send = createNotFinishedTaskMessage(task_to_check);
+				if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
+					// If it is, we send a message to ask why it's still in progress.
+					usermessage_to_send.setTask_id(taskID);
+					try {
+						sendMessageToClient(usermessage_to_send, new_session);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-					System.out.println("Task not completed on time");
+
+					System.out.println("Task " + task_to_check.getId() + " not completed on time");
 					new_session.close();
 
-					scheduler.schedule(this, 2, TimeUnit.MINUTES);
-				} catch (Exception e) {
-					e.printStackTrace();
+					scheduler.schedule(this,TOCOMPLETETIME, TOCOMPLETETIMEUnits);
+
 				}
+
 			}
 		};
-		System.out.println("Created Thread");
+
+
 		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
 		taskIDtoThread.put(taskID, new Pair<>(scheduler, scheduledFuture));
 	}
 
 
 
-
-
-
-
-
 	private static void taskNotVolunteer(Task task, long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
 		// Give 24 hours for someone to volunteer.
-		shutDown_pair(task.getId());
+		int taskID = task.getId();
+		shutDown_pair(taskID);
 
 		ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-		System.out.println("Created Thread in SWITCH");
+//		System.out.println("Created Thread in SWITCH");
 
 		Runnable to_do = new Runnable() {
 			@Override
@@ -391,49 +460,46 @@ public class SimpleServer extends AbstractServer {
 				// This will be executed after 1 day
 				Session new_session = sessionFactory.openSession();
 				new_session.beginTransaction();
+				Task task_to_check = getTaskByTaskID(taskID, new_session);
 
-				System.out.print("(Switch)Got the task. Id is: ");
-				System.out.println(task.getId());
-				System.out.println(task.getTaskState());
-
-				if (task.getTaskState().equals("Request")) { // Check if still in request mode.
+				if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
 					// If it is, we send a message to everyone to tell them nobody volunteered yet.
-					System.out.println("state is Request");
-					String text_for_message = "The task: \"" + task.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
+					UserMessage usermessage_to_send = createNoVolunteerMessage(task_to_check);
 					List<User> community_list = new ArrayList<>();
-
 					// GET LIST
 					try {
-						community_list = getCommunityUsers(task.getTaskCreator(), new_session);
+						community_list = getCommunityUsers(task_to_check.getTaskCreator(), new_session);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-
-					// -----
-					System.out.println("Starting loop");
+//					System.out.println("Starting loop");
 					try {
 						for (User user_to_send : community_list) { // Loop through entire community and send them the message.
-							UserMessage usermessage_to_send = new UserMessage(text_for_message, task.getTaskCreator().getTeudatZehut(), user_to_send.getTeudatZehut(), "Community");
+							// Set the ID to send to.
+							usermessage_to_send.setTeudatZehut_to(user_to_send.getTeudatZehut());
+							// -- DEBUG
 							System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
+							// --------
 							sendMessageToClient(usermessage_to_send, new_session);
 						}
 
-					} catch (Exception e) {
-						e.printStackTrace();
-					} finally {
-						new_session.getTransaction().commit();
-						new_session.close();
 					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					ScheduledFuture<?> scheduledFuture = scheduler.schedule(this,NOVOLUNTEERTIME,NOVOLUNTEERTIMEUnits);
+					taskIDtoThread.get(taskID).setSecond(scheduledFuture);
+					new_session.getTransaction().commit();
+					new_session.close();
+
+				}
+				else {
+					shutDown_pair(taskID);
 				}
 
-				System.out.println("Task not volunteered to on time");
-
-				ScheduledFuture<?> scheduledFuture = scheduler.schedule(this, 2, TimeUnit.MINUTES);
-				taskIDtoThread.get(task.getId()).setSecond(scheduledFuture);
 			}
 		};
-
-		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time);
 		taskIDtoThread.put(task.getId(), new Pair<>(scheduler, scheduledFuture));
 	}
 
@@ -441,8 +507,6 @@ public class SimpleServer extends AbstractServer {
 		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
-		Join<Task, User> creatorJoin = root.join("taskCreator");
-		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
 		query.select(root);
 		if (dateList != null)
 		{
@@ -454,12 +518,10 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	private static Task getTaskByTaskID(int taskId, Session newSession) {
-		System.out.println("Getting task by ID");
+//		System.out.println("Getting task by ID");
 		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
-		Join<Task, User> creatorJoin = root.join("taskCreator");
-		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
 
 		query.select(root);
 		query.where(cb.equal(root.get("id"), taskId));
@@ -490,7 +552,6 @@ public class SimpleServer extends AbstractServer {
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
 		Join<Task, User> creatorJoin = root.join("taskCreator");
-		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
 		query.select(root);
 		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()));
 
@@ -512,8 +573,6 @@ public class SimpleServer extends AbstractServer {
 		query.select(root);
 		// fetch only users from the same community
 		query.where(cb.equal(communityJoin.get("communityName"), user.getCommunity().getCommunityName()));
-
-
 
 		List<User> users = newSession.createQuery(query).getResultList();
 		return users;
@@ -544,7 +603,6 @@ public class SimpleServer extends AbstractServer {
 		CriteriaQuery<Task> query = cb.createQuery(Task.class);
 		Root<Task> root = query.from(Task.class);
 		Join<Task, User> creatorJoin = root.join("taskCreator");
-		Join<Task, User> volunteerJoin = root.join("taskVolunteer", JoinType.LEFT);
 		query.select(root);
 		query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
 				cb.or(cb.equal(root.get("taskState"), "Request"),
@@ -564,7 +622,6 @@ public class SimpleServer extends AbstractServer {
 		CriteriaBuilder cb = newSession.getCriteriaBuilder();
 		CriteriaQuery<Emergency> query = cb.createQuery(Emergency.class);
 		Root<Emergency> root = query.from(Emergency.class);
-		Join<Emergency, User> creatorJoin = root.join("user");
 		query.select(root);
 		if (dateList != null)
 		{
@@ -589,8 +646,8 @@ public class SimpleServer extends AbstractServer {
 			query.where(cb.equal(creatorJoin.get("community"), user.getCommunity()),
 					cb.between(root.get("callTime"), dateList.get(0), dateList.get(1)));
 		}
-		List<Emergency> emergencys = newSession.createQuery(query).getResultList();
-		return emergencys;
+		List<Emergency> emergencies = newSession.createQuery(query).getResultList();
+		return emergencies;
 	}
 
 	private static User getUserByTeudatZehut(String teudatZehut, Session newSession) throws Exception {
@@ -609,7 +666,7 @@ public class SimpleServer extends AbstractServer {
 		return user;
 	}
 
-	private static void createTaskNotCompleteThread(int taskID, UserMessage usermessage_to_send,long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
+	private static void createTaskNotCompleteThread(int taskID,long timeUnit, SessionFactory sessionFactory, TimeUnit time) {
 		shutDown_pair(taskID);
 
 		ScheduledExecutorService scheduler;
@@ -618,34 +675,40 @@ public class SimpleServer extends AbstractServer {
 		Runnable to_do = new Runnable() {
 			@Override
 			public void run() {
-				// Code to execute
-				System.out.println("Scheduled event started");
 				// This will be executed after allotted time
 				Session new_session = sessionFactory.openSession();
 				new_session.beginTransaction();
 				Task task_to_check = getTaskByTaskID(taskID, new_session);
-				System.out.print("Got the task. Id is: ");
-				System.out.println(taskID);
-				System.out.println(task_to_check.getTaskState());
+				UserMessage usermessage_to_send = createNotFinishedTaskMessage(task_to_check);
 				if (task_to_check.getTaskState().equals("In Progress")) { // Check if still in progress.
 					// If it is, we send a message to ask why it's still in progress.
 					usermessage_to_send.setTask_id(taskID);
 					try {
 						sendMessageToClient(usermessage_to_send, new_session);
-						System.out.println("called sendMessageToClient");
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				}
-				System.out.println("Task not completed on time");
-				new_session.close();
 
-				scheduler.schedule(this,timeUnit,time);
+					System.out.println("Task " + task_to_check.getId() + " not completed on time");
+					new_session.close();
+
+					scheduler.schedule(this,timeUnit,time);
+
+				}
+
 			}
 		};
-		System.out.println("Created Thread");
-		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time);
 		taskIDtoThread.put(taskID, new Pair<>(scheduler,scheduledFuture));
+
+	}
+
+	private static UserMessage createNoVolunteerMessage(Task task) {
+		String text_for_message = "The task: \"" + task.getRequiredTask() + "\" by: \""+ task.getTaskCreator().getUserName() + "\"\nWas not volunteered to and 24 hours have passed.";
+		String creatorZehut = task.getTaskCreator().getTeudatZehut();
+
+		UserMessage to_send = new UserMessage(text_for_message,creatorZehut,creatorZehut,"Community");
+		return to_send;
 	}
 
 
@@ -653,37 +716,36 @@ public class SimpleServer extends AbstractServer {
 		// Give 24 hours for someone to volunteer.
 		shutDown_pair(taskID);
 
-
 		ScheduledExecutorService scheduler;
 		scheduler = Executors.newSingleThreadScheduledExecutor();
-		System.out.println("Created Thread in SWITCH");
 
 		Runnable to_do = new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("Switch Scheduled event started");
+//				System.out.println("Switch Scheduled event started");
 				// This will be executed after 1 day
 				Session new_session = sessionFactory.openSession();
 				new_session.beginTransaction();
 				Task task_to_check = getTaskByTaskID(taskID, new_session);
-				User user = task_to_check.getTaskCreator();
 
 				if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
 					// If it is, we send a message to everyone to tell them nobody volunteered yet.
-					String text_for_message = "The task: \"" + task_to_check.getRequiredTask() + "\"\nWas not volunteered to and 24 hours have passed.";
+					UserMessage usermessage_to_send = createNoVolunteerMessage(task_to_check);
 					List<User> community_list = new ArrayList<>();
 					// GET LIST
 					try {
-						community_list = getCommunityUsers(user, new_session);
+						community_list = getCommunityUsers(task_to_check.getTaskCreator(), new_session);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					// -----
-					System.out.println("Starting loop");
+//					System.out.println("Starting loop");
 					try {
 						for (User user_to_send : community_list) { // Loop through entire community and send them the message.
-							UserMessage usermessage_to_send = new UserMessage(text_for_message,user.getTeudatZehut(),user_to_send.getTeudatZehut(),"Community");
+							// Set the ID to send to.
+							usermessage_to_send.setTeudatZehut_to(user_to_send.getTeudatZehut());
+							// -- DEBUG
 							System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
+							// --------
 							sendMessageToClient(usermessage_to_send, new_session);
 						}
 
@@ -691,25 +753,21 @@ public class SimpleServer extends AbstractServer {
 					catch (Exception e) {
 						e.printStackTrace();
 					}
-					finally {
-
-						new_session.getTransaction().commit();
-						new_session.close();
-					}
+					ScheduledFuture<?> scheduledFuture = scheduler.schedule(this,timeUnit,time);
+					taskIDtoThread.get(taskID).setSecond(scheduledFuture);
+					new_session.getTransaction().commit();
+					new_session.close();
 				}
-
-				System.out.println("Task not volunteered to on time");
-				ScheduledFuture<?> scheduledFuture = scheduler.schedule(this,timeUnit,time);
-				taskIDtoThread.get(taskID).setSecond(scheduledFuture);
+				else {
+					shutDown_pair(taskID);
+				}
 			}
 		};
-		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time); // ** Change here the time you want to give on a given task.
+		ScheduledFuture<?> scheduledFuture = scheduler.schedule(to_do, timeUnit, time);
 		taskIDtoThread.put(taskID, new Pair<>(scheduler,scheduledFuture));
-	};
 
+	}
 	private static void sendMessageToClient(UserMessage message, Session newSession) throws Exception {
-		// TODO: REMOVE DEBUG?
-		// TODO: optimally, we would want the people sending to be a list. Maybe implement?
 		// --DEBUG
 //		System.out.println("sendMessageToClient called");
 		// ---
@@ -722,17 +780,17 @@ public class SimpleServer extends AbstractServer {
 		} // Check if anything is empty first.
 
 		// --DEBUG
-		System.out.print("Sender is:");
-		System.out.println(sender_zehut);
-		System.out.print("Reciever is:");
-		System.out.println(to_zehut);
+//		System.out.print("Sender is:");
+//		System.out.println(sender_zehut);
+//		System.out.print("Reciever is:");
+//		System.out.println(to_zehut);
 		// ---
 
 		User message_sender_user = getUserByTeudatZehut(sender_zehut, newSession);
 
 		if (idToClient.containsKey(to_zehut)) { // User is logged in.
 			// --DEBUG
-			System.out.println("User logged in");
+//			System.out.println("User logged in");
 			// ---
 			ConnectionToClient Message_Reciever_Client = idToClient.get(to_zehut);
 			List<Object> messageDetails = new ArrayList<>();
@@ -746,11 +804,13 @@ public class SimpleServer extends AbstractServer {
 			newSession.flush();
 
 		}
-
-//			newSession.getTransaction().commit();
 	}
 
 	private static void shutDown_pair(int taskID) {
+		// Function that shuts down thread and its scheduled event.
+		// If no thread is available, we don't do anything.
+
+
 		if (taskIDtoThread.containsKey(taskID)) {
 			// Put the new pair in instead
 			Pair<ScheduledExecutorService, ScheduledFuture> hashedPair = taskIDtoThread.get(taskID);
@@ -774,120 +834,109 @@ public class SimpleServer extends AbstractServer {
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 
-			// TODO: give the user 5-6 times to try and connect and screw him for 30 seconds if he makes mistakes
-			// When a user needs to connect
-			if(request.equals("Login Request")){
-				String[] loginDetails = (String[])message.getObject();
-				String teudatZehut = loginDetails[0];
-				String password = loginDetails[1];
-				System.out.println("teudatZehut : "+teudatZehut);
-				User user = getUserByTeudatZehut(teudatZehut, session);
-				boolean subscriberFound = false;
-				if (user != null && !idToClient.containsKey(teudatZehut) && !user.isLocked()) {
-					password = user.get_SHA_512_SecurePassword(password,user.getSalt());
-					if(password.equals(user.getPasswordHash())) {
+            switch (request) {
+                case "Login Request" -> {
+                    String[] loginDetails = (String[]) message.getObject();
+                    String teudatZehut = loginDetails[0];
+                    String password = loginDetails[1];
+                    System.out.println("teudatZehut : " + teudatZehut);
+                    User user = getUserByTeudatZehut(teudatZehut, session);
+                    boolean subscriberFound = false;
+                    if (user != null && !idToClient.containsKey(teudatZehut) && !user.isLocked()) {
+                        password = user.get_SHA_512_SecurePassword(password, user.getSalt());
+                        if (password.equals(user.getPasswordHash())) {
 
-						// Bind client to id.
-						for(SubscribedClient subscriber: SubscribersList) {
-							if (subscriber.getClient() == client) {
-								// Take the client from the signature and compare
-								idToClient.put(teudatZehut, client);
-								clientToId.put(client,teudatZehut);
-								subscriberFound = true;
-							}
-						}
-						if (subscriberFound) { // We log in only after making sure the client is subscribed
-							message.setMessage("Login Succeed");
-							user.resetNumberOfLoginTries();
-							session.flush();
-							message.setUser(user);
-						}
-						else { // Client wasn't subscribed. Shouldn't happen, debug this if happened.
-							try {
-								message.setMessage("Login Failed: Something went wrong. You aren't connected?");
-								throw new RuntimeException("You aren't connected");
-							}
-							catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					else {
-						System.out.println(password + " versus "  + user.getPasswordHash());
-						user.incrementNumberOfLoginTries();
-
-						session.flush();
-						if (user.isLocked()) {
-							message.setMessage("Login Failed: Locked");
-						}
-						else if(user.getnumberOfLoginTries() >= 6) {
-							if(!user.isLocked()) {
-								user.setLocked(true);
-								session.flush();
-							}
-							message.setMessage("Login Failed: Locked");
-
-							// Create a personal scheduler for the user if not already created
-							System.out.println("Schedular Created");
-
-							// Schedule the task to unlock the user after 30 seconds
-							ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-							scheduler.schedule(() -> {
-								// Log thread information
-								System.out.println("Scheduled task is running on thread: " + Thread.currentThread().getName());
-								try {
-									Session session2 = sessionFactory.openSession();
-									session2.beginTransaction();
-									user.resetNumberOfLoginTries();
-									user.setLocked(false);
-									session2.update(user);
-									session2.flush();
-									session2.getTransaction().commit();
-									session2.close();
-									System.out.println("30 seconds passed, user is unlocked");
-									scheduler.shutdown();
-								} catch (Exception e) {
-									// Log and handle the exception
-									System.err.println("Exception occurred in scheduled task:");
-									e.printStackTrace();
+                            // Bind client to id.
+							synchronized (SubscribersList){
+								for (SubscribedClient subscriber : SubscribersList) {
+									if (subscriber.getClient() == client) {
+										// Take the client from the signature and compare
+										idToClient.put(teudatZehut, client);
+										clientToId.put(client, teudatZehut);
+										subscriberFound = true;
+									}
 								}
-							}, 30, TimeUnit.SECONDS);
-							System.out.println("After scheduler scheduled");
+							}
+                            if (subscriberFound) { // We log in only after making sure the client is subscribed
+                                message.setMessage("Login Succeed");
+                                user.resetNumberOfLoginTries();
+                                session.flush();
+                                message.setUser(user);
+                            } else { // Client wasn't subscribed. Shouldn't happen, debug this if happened.
+                                try {
+                                    message.setMessage("Login Failed: Something went wrong. You aren't connected?");
+                                    throw new RuntimeException("You aren't connected");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            System.out.println(password + " versus " + user.getPasswordHash());
+                            user.incrementNumberOfLoginTries();
 
-							// Additional logging to check if the main thread is still active
-							System.out.println("Main thread is active: " + Thread.currentThread().getName() + " " + Thread.currentThread().getState());
-						}
-						else {
-							message.setMessage("Login Failed: Wrong Password");
-						}
-					}
-				}
-				else {
-					if(user == null) {
-						message.setMessage("Login Failed: No Such User Exists");
-					}
-					else if (user.isLocked()) {
-						message.setMessage("Login Failed: Locked");
-					}
-					else {
-						message.setMessage("Login Failed: Someone is already connected to the given ID");
-					}
-				}
-				System.out.println("message sent: "+message.getMessage());
-				client.sendToClient(message);
-			}
+                            session.flush();
+                            if (user.isLocked()) {
+                                message.setMessage("Login Failed: Locked");
+                            } else if (user.getnumberOfLoginTries() >= 6) {
+                                if (!user.isLocked()) {
+                                    user.setLocked(true);
+                                    session.flush();
+                                }
+                                message.setMessage("Login Failed: Locked");
+
+                                // Create a personal scheduler for the user if not already created
+                                System.out.println("Scheduler Created");
+
+                                // Schedule the task to unlock the user after 30 seconds
+                                ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+                                scheduler.schedule(() -> {
+                                    // Log thread information
+                                    System.out.println("Scheduled task is running on thread: " + Thread.currentThread().getName());
+                                    try {
+                                        Session session2 = sessionFactory.openSession();
+                                        session2.beginTransaction();
+                                        user.resetNumberOfLoginTries();
+                                        user.setLocked(false);
+                                        session2.update(user);
+                                        session2.flush();
+                                        session2.getTransaction().commit();
+                                        session2.close();
+                                        System.out.println("30 seconds passed, user is unlocked");
+                                        scheduler.shutdown();
+                                    } catch (Exception e) {
+                                        // Log and handle the exception
+                                        System.err.println("Exception occurred in scheduled task:");
+                                        e.printStackTrace();
+                                    }
+                                }, LOCKINGTIME, LOCKINGTIMEUnits);
+                                System.out.println("After scheduler scheduled");
+
+                                // Additional logging to check if the main thread is still active
+                                System.out.println("Main thread is active: " + Thread.currentThread().getName() + " " + Thread.currentThread().getState());
+                            } else {
+                                message.setMessage("Login Failed: Wrong Password");
+                            }
+                        }
+                    } else {
+                        if (user == null) {
+                            message.setMessage("Login Failed: No Such User Exists");
+                        } else if (user.isLocked()) {
+                            message.setMessage("Login Failed: Locked");
+                        } else {
+                            message.setMessage("Login Failed: Someone is already connected to the given ID");
+                        }
+                    }
+                    System.out.println("message sent: " + message.getMessage());
+                    client.sendToClient(message);
+                }
+                case "Log Out" -> {
+                    System.out.println("In Log Out");
+                    User user = (User) message.getObject();
+
+                    System.out.print("The ID logging out is:");
+                    System.out.println(user.getId());
 
 
-
-			else if(request.equals("Log Out")){
-				System.out.println("In Log Out");
-				User user = (User) message.getObject();
-
-				System.out.print("The ID logging out is:");
-				System.out.println(user.getId());
-
-
-				if (user != null) {
 					String teudatZehut = user.getTeudatZehut();
 					// remove from both hash maps
 
@@ -898,315 +947,270 @@ public class SimpleServer extends AbstractServer {
 					message.setMessage("log out");
 					client.sendToClient(message);
 
-				}
-				// TODO: also add for if user is null
 
 
-			}
-			else if(request.equals("Forgot Password Request")){
-				String[] forgotDetails = (String[])message.getObject();
-				String teudatZehut = forgotDetails[0];
-				String selectedQuestion = forgotDetails[1];
-				String answer = forgotDetails[2];
-				User user = getUserByTeudatZehut(teudatZehut, session);
+                }
+                case "Forgot Password Request" -> {
+                    String[] forgotDetails = (String[]) message.getObject();
+                    String teudatZehut = forgotDetails[0];
+                    String selectedQuestion = forgotDetails[1];
+                    String answer = forgotDetails[2];
+                    User user = getUserByTeudatZehut(teudatZehut, session);
 
-				if (user != null && user.getSecretQuestion().equals(selectedQuestion) && user.getSecretQuestionAnswer().equals(answer)) {
-					message.setMessage("Forgot Password: Match");
-				}
-				else {
-					message.setMessage("Forgot Password: Fail");
-				}
-				System.out.println("message sent: " + message.getMessage());
-				client.sendToClient(message);
-			}
-			else if(request.equals("New Password Request")) {
-				String[] details = (String[]) message.getObject();
-				String teudatZehut = details[0];
-				String newPassword = details[1];
-				User user = getUserByTeudatZehut(teudatZehut, session);
-				if (user != null) {
-					System.out.println("user!=null");
-					user.setPassword(newPassword);
-					session.flush();
-					String hashedPassword = user.get_SHA_512_SecurePassword(newPassword,user.getSalt());
-					if (user.getPasswordHash().equals(hashedPassword)) {
-						System.out.println("user.getPasswordHash().equals(newPassword)");
-						message.setMessage("Password Change Succeed");
+                    if (user != null && user.getSecretQuestion().equals(selectedQuestion) && user.getSecretQuestionAnswer().equals(answer)) {
+                        message.setMessage("Forgot Password: Match");
+                    } else {
+                        message.setMessage("Forgot Password: Fail");
+                    }
+                    System.out.println("message sent: " + message.getMessage());
+                    client.sendToClient(message);
+                }
+                case "New Password Request" -> {
+                    String[] details = (String[]) message.getObject();
+                    String teudatZehut = details[0];
+                    String newPassword = details[1];
+                    User user = getUserByTeudatZehut(teudatZehut, session);
+                    if (user != null) {
+                        System.out.println("user!=null");
+                        user.setPassword(newPassword);
+                        session.flush();
+                        String hashedPassword = user.get_SHA_512_SecurePassword(newPassword, user.getSalt());
+                        if (user.getPasswordHash().equals(hashedPassword)) {
+                            System.out.println("user.getPasswordHash().equals(newPassword)");
+                            message.setMessage("Password Change Succeed");
+                        }
+                    } else {
+                        message.setMessage("Password Change Failed");
+                    }
+                    System.out.println("Forgot Password Request: Message Sent:" + message.getMessage());
+                    client.sendToClient(message);
+                }
+                case "Task not completed on time" -> {
+                    // Task id is in message.
+                    int taskID = message.getTaskID();
+                    createTaskNotCompleteThread(taskID, TOCOMPLETETIME, sessionFactory, TOCOMPLETETIMEUnits);
+                }
+                case "Emergency Request" -> {
+                    User user;
+                    Emergency newEmergency = null;
+                    // button was pressed when logged in
+                    if (message.getUser() != null) {
+
+                        newEmergency = (Emergency) message.getObject();
+                        user = newEmergency.getUser(); // or message.getUser()
+                        session.save(newEmergency);
+                        session.flush();
+                        session.getTransaction().commit();
+                        message.setMessage("Emergency Call Succeeded");
+                    }
+                    // button pressed from Log in menu
+                    else {
+                        String phoneNumber = (String) message.getObject();
+                        user = getUserByPhoneNumber(phoneNumber, session);
+
+                        //found user in database with matching phone number
+                        if (user != null) {
+                            newEmergency = new Emergency(user, LocalDateTime.now());
+                            session.save(newEmergency);
+                            session.flush();
+                            session.getTransaction().commit();
+                            message.setMessage("Emergency Call Succeeded");
+                        } else
+                        // no user with matching phone number, send error message to user
+                        {
+                            message.setMessage("Emergency Call Failed");
+                        }
+                    }
+                    System.out.println("message sent: " + message.getMessage());
+                    client.sendToClient(message);
+                    if (message.getMessage().equals("Emergency Call Succeeded")) {
+                        Message update = new Message("update histogram", newEmergency, user);
+                        sendToAllClients(update);
+                    }
+                }
+
+                case "create task" -> {
+                    Task testTask = (Task) message.getObject();
+                    session.save(testTask);
+                    session.flush();
+                    session.getTransaction().commit();
+                    sendToAllClients(message);
+                }
+
+
+				// used for CommunityInformationController (and ViewEmergencyCalls for now)
+                case "get tasks" -> {
+                    User u1 = message.getUser();
+                    List<Task> tasks = getCommunityTasks(u1, null, session);
+                    // fetches all Tasks in database from the same community
+
+                    message.setObject(tasks);
+                    client.sendToClient(message);
+                }
+
+				// used for ViewTasksController
+                case "get open tasks" -> {
+                    User u1 = message.getUser();
+                    List<Task> tasks = getOpenTasks(u1, session);
+                    // fetches all OPEN (AND APPROVED) TASKS in database from the same community
+                    message.setObject(tasks);
+                    client.sendToClient(message);
+                }
+
+				// retrieve community users for CommunityInformationController
+                case "get users" -> {
+                    User u1 = message.getUser();
+                    List<User> Users = getCommunityUsers(u1, session);
+                    message.setObject(Users);
+                    client.sendToClient(message);
+                }
+
+
+                //called when ApproveRequestController is loaded
+                case "get awaiting approval requests" -> {
+                    User currentUser = message.getUser();
+                    List<Task> tasks = getWaitingTasks(currentUser, session);
+                    message.setObject(tasks);
+                    client.sendToClient(message);
+
+                }
+
+                case "emergency everything" -> {
+                    List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+                    List<Emergency> emergencies = getAllEmergencyCases(null, session);
+                    message.setMessage("emergency histogram");
+                    message.setObject(emergencies);
+                    client.sendToClient(message);
+                }
+                case "emergency my community all dates" -> {
+                    User u1 = (User) message.getUser();
+                    List<Emergency> emergencies = getCommunityEmergencies(u1, null, session);
+                    message.setMessage("emergency histogram");
+                    message.setObject(emergencies);
+                    client.sendToClient(message);
+                }
+                case "emergency all community specific dates" -> {
+                    List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+                    List<Emergency> emergencies = getAllEmergencyCases(dates, session);
+                    message.setMessage("emergency histogram");
+                    message.setObject(emergencies);
+                    client.sendToClient(message);
+                }
+                case "emergency my community specific dates" -> {
+                    User u1 = (User) message.getUser();
+                    List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
+                    List<Emergency> emergencies = getCommunityEmergencies(u1, dates, session);
+                    message.setMessage("emergency histogram");
+                    message.setObject(emergencies);
+                    client.sendToClient(message);
+                }
+
+
+                case "Get Data" -> {
+                    Task task = session.get(Task.class, message.getTaskID());
+                    message.setObject(task);
+                    client.sendToClient(message);
+
+                }
+
+                // withdrawing is being handled separately because you could change a state to be "Request" in two ways.
+                case "Withdraw from task" -> {
+                    Task task = (Task) message.getObject();
+                    createNoVolunteerThread(task.getId(), NOVOLUNTEERTIME, sessionFactory, NOVOLUNTEERTIMEUnits);
+
+                    session.update(task);
+                    session.flush();
+                    session.getTransaction().commit();
+                    sendToAllClients(message);
+                }
+                case "Update task", "Complete the task" -> {
+                    Task task;
+                    if (request.equals(("Update task"))) {
+                        task = (Task) message.getObject();
+                    } else {
+                        task = getTaskByTaskID(message.getTaskID(), session);
+                        task.setTaskState("Complete");
+                        task.setCompletionTime(LocalDateTime.now());
+						shutDown_pair(task.getId());
+
+						User user = message.getUser();
+						String dialog_result = (String) message.getObject();
+						String to_manager_text = "The task: \"" + task.getRequiredTask() + "\"\nWhich was created by: \"" + task.getTaskCreator().getUserName() + "\"\nAnd volunteered to by: \"" + user.getUserName() + "\"\nHas been marked complete with the message:\n\"" + dialog_result + "\"";
+						UserMessage to_manager_message = new UserMessage(to_manager_text , user.getTeudatZehut(), user.getCommunity().getCommunityManager().getTeudatZehut(), "Normal");
+						message.setObject(task);
+
+						sendMessageToClient(to_manager_message, session);
 					}
-				} else {
-					message.setMessage("Password Change Failed");
-				}
-				System.out.println("Forgot Password Request: Message Sent:"+ message.getMessage());
-				client.sendToClient(message);
-			}
-			else if(request.equals("Task not completed on time")) {
-				// Task id is in message.
-				int taskID = message.getTaskID();
-				createTaskNotCompleteThread(taskID, (UserMessage) message.getObject(), 20, sessionFactory, TimeUnit.SECONDS);
-			}
+                    session.update(task);
+                    session.flush();
+                    session.getTransaction().commit();
 
+                    switch (task.getTaskState()) {
+                        case "Request" -> message.setMessage("Publish approved task");
+                        case "In Progress" -> message.setMessage("Volunteer to task");
+                        case "Denied" -> message.setMessage("Request denied");
+                        default -> message.setMessage("Complete task");
+                    }
+                    sendToAllClients(message);
+                    switch (task.getTaskState()) {
+                        case "Request":
+                            int taskID_original = ((Task) (message.getObject())).getId();
+                            shutDown_pair(taskID_original);
+                            createNoVolunteerThread(taskID_original, NOVOLUNTEERTIME, sessionFactory, NOVOLUNTEERTIMEUnits);
+                            break;
 
-			else if(request.equals("Emergency Request")){
-				User user ;
-				Emergency newEmergency = null;
-				// button was pressed when logged in
-				if(message.getUser() != null )
-				{
+                    }
 
-					newEmergency = (Emergency) message.getObject();
-					user = newEmergency.getUser(); // or message.getUser()
-					session.save(newEmergency);
-					session.flush();
-					session.getTransaction().commit();
-					message.setMessage("Emergency Call Succeeded");
-				}
-				// button pressed from Log in menu
-				else
-				{
-					String phoneNumber = (String)message.getObject();
-					user = getUserByPhoneNumber(phoneNumber, session);
+                }
+                case "Send message" -> {
+                    // Hopefully, message has a UserMessage object in it.
+                    try {
+                        sendMessageToClient((UserMessage) message.getObject(), session);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                case "Get user's messages" -> { // Get by query a list of all the user messages for user
+                    String teudatZehut = (String) message.getObject();
+                    List<UserMessage> userMessageList = getAllUsersMessagesByTeudatZehut(teudatZehut, session);
+                    System.out.print("Size of messageList is:");
+                    System.out.println(userMessageList.size());
 
-					//found user in database with matching phone number
-					if(user != null)
-					{
-						newEmergency = new Emergency(user,LocalDateTime.now());
-						session.save(newEmergency);
-						session.flush();
-						session.getTransaction().commit();
-						message.setMessage("Emergency Call Succeeded");
-					}
-					else
-					// no user with matching phone number, send error message to user
-					{
-						message.setMessage("Emergency Call Failed");
-					}
-				}
-				System.out.println("message sent: " + message.getMessage());
-				client.sendToClient(message);
-				if(message.getMessage().equals("Emergency Call Succeeded"))
-				{
-					// For now im sending the message to all clients
-					// But we might want to send it specifically to the community manager
-					//
-					Message update = new Message("update histogram",newEmergency,user);
-					sendToAllClients(update);
-				}
-			}
+                    System.out.print("The value of !isEmpty is: ");
+                    System.out.println(!userMessageList.isEmpty());
 
-			//create task, for now send the message to all the clients
-			// however its more logical to send the message only to the community manager that needs to approve
-			else if(request.equals("create task"))
-			{
-				Task testTask = (Task) message.getObject();
-				session.save(testTask);
-				session.flush();
-				session.getTransaction().commit();
-//				client.sendToClient(message);
-				sendToAllClients(message);
-
-			}
-
-
-
-// used for CommunityInformationController (and ViewEmergencyCalls for now)
-			else if(request.equals("get tasks")) {
-				User u1 = message.getUser();
-				List<Task> tasks = getCommunityTasks(u1,null, session);
-				// fetches all Tasks in database from the same community
-
-				message.setObject(tasks);
-				client.sendToClient(message);
-			}
-// used for ViewTasksController
-			else if(request.equals("get open tasks")) {
-				User u1 = message.getUser();
-				List<Task> tasks = getOpenTasks(u1, session);
-				// fetches all OPEN (AND APPROVED) TASKS in database from the same community
-				message.setObject(tasks);
-				client.sendToClient(message);
-			}
-// retrieve community users for CommunityInformationController
-
-			else if(request.equals("get users")) {
-				User u1 = message.getUser();
-				List<User> Users = getCommunityUsers(u1, session);
-				message.setObject(Users);
-				client.sendToClient(message);
-			}
-
-			//called when ApproveRequestController is loaded
-			else if (request.equals("get awaiting approval requests"))
-			{
-				User currentUser = message.getUser();
-				List<Task> tasks = getWaitingTasks(currentUser, session);
-				message.setObject(tasks);
-				client.sendToClient(message);
-
-			}
-
-
-			// ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
-// note : this worked fine before i made changes to getCommunityTasks
-			else if(request.equals("emergency everything"))
-			{
-				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Emergency> emergencies = getAllEmergencyCases(null, session);
-				message.setMessage("emergency histogram");
-				message.setObject(emergencies);
-				client.sendToClient(message);
-			}
-			else if(request.equals("emergency my community all dates"))
-			{
-				User u1 = (User) message.getUser();
-				List<Emergency> emergencies = getCommunityEmergencies(u1,null, session);
-				message.setMessage("emergency histogram");
-				message.setObject(emergencies);
-				client.sendToClient(message);
-			}
-			else if(request.equals("emergency all community specific dates"))
-			{
-				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Emergency> emergencies = getAllEmergencyCases(dates, session);
-				message.setMessage("emergency histogram");
-				message.setObject(emergencies);
-				client.sendToClient(message);
-			}
-			else if(request.equals("emergency my community specific dates"))
-			{
-				User u1 = (User) message.getUser();
-				List<LocalDateTime> dates = (List<LocalDateTime>) message.getObject();
-				List<Emergency> emergencies = getCommunityEmergencies(u1,dates, session);
-				message.setMessage("emergency histogram");
-				message.setObject(emergencies);
-				client.sendToClient(message);
-			}
-
-// ***************************************REPLACE WITH EMERGENCY IMPLEMENTATION *********************
-
-
-
-			else if (request.equals("Get Data")) {
-				Task task = session.get(Task.class,message.getTaskID());
-				message.setObject(task);
-				client.sendToClient(message);
-
-			}
-			// withdrawing is being handled separately because you could change a state to be "Request" in two ways.
-			else if(request.equals("Withdraw from task"))
-			{
-				Task task = (Task) message.getObject();
-
-
-//				String manager_zehut = task.getTaskCreator().getCommunity().getCommunityManager().getTeudatZehut();
-//				String message_text = "24 hours have passed on the task:\n\"" + task.getRequiredTask() + "\"\nBy: " + task.getTaskCreator().getUserName() + "\n" + "Are you finished with the task?";
-//
-//				UserMessage messageToSend = new UserMessage(message_text, manager_zehut, task.getTaskCreator().getTeudatZehut(),"Not Complete");;
-				createNoVolunteerThread(task.getId(),20, sessionFactory, TimeUnit.SECONDS);
-
-				session.update(task);
-				session.flush();
-				session.getTransaction().commit();
-				sendToAllClients(message);
-			}
-
-
-			else if (request.equals("Update task") || request.equals("Complete the task")) {
-				Task task;
-				if (request.equals(("Update task"))) {
-					task = (Task) message.getObject();
-				}
-				else {
-					task = getTaskByTaskID(message.getTaskID(), session);
-					message.setObject(task);
-					task.setTaskState("Complete");
-					task.setCompletionTime(LocalDateTime.now());
-				}
-				session.update(task);
-				session.flush();
-				session.getTransaction().commit();
-				if(task.getTaskState().equals("Request"))
-				{
-					message.setMessage("Publish approved task");
-				}
-
-				else if (task.getTaskState().equals("In Progress"))
-				{
-					message.setMessage("Volunteer to task");
-				}
-				else if (task.getTaskState().equals("Denied"))
-				{
-					message.setMessage("Request denied");
-				}
-				else
-				{
-					message.setMessage("Complete task");
-				}
-				sendToAllClients(message);
-//				client.sendToClient(message);
-				switch (task.getTaskState()) {
-					case "Request":
-						int taskID_original =  ((Task) (message.getObject())).getId();
-						shutDown_pair(taskID_original);
-						createNoVolunteerThread(taskID_original, 20, sessionFactory, TimeUnit.SECONDS);
-						break;
-
-				}
-
-			}
-
-			else if (request.equals("Send message"))
-			{
-				// Hopefully, message has a UserMessage object in it.
-				try {
-					sendMessageToClient((UserMessage) message.getObject(), session);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			}
-
-
-			else if (request.equals("Get user's messages")) { // Get by query a list of all the user messages for user
-				String teudatZehut = (String)message.getObject();
-				List<UserMessage> userMessageList = getAllUsersMessagesByTeudatZehut(teudatZehut, session);
-				System.out.print("Size of messageList is:");
-				System.out.println(userMessageList.size());
-
-				System.out.print("The value of !isEmpty is: ");
-				System.out.println(!userMessageList.isEmpty());
-
-				if(!userMessageList.isEmpty()) {
+                    if (!userMessageList.isEmpty()) {
 //					message.setMessage("New Message"); // Use NewMessageEvent in SimpleChatClient
-					for (UserMessage userMessage : userMessageList) { // Loop over list and send a message to the client.
+                        for (UserMessage userMessage : userMessageList) { // Loop over list and send a message to the client.
 //						message.setObject(userMessage);
-						System.out.println("I'm sending a message");
-						sendMessageToClient(userMessage, session);
+                            System.out.println("I'm sending a message");
+                            sendMessageToClient(userMessage, session);
+                        }
+                        session.flush();
+                        session.getTransaction().commit();
+                    }
+                }
+                case "add client" -> {
+                    SubscribedClient connection = new SubscribedClient(client);
+					synchronized (SubscribersList)
+					{
+						SubscribersList.add(connection);
 					}
-					session.flush();
-					session.getTransaction().commit();
-				}
-			}
-
-
-			else if (request.equals("add client")){
-				SubscribedClient connection = new SubscribedClient(client);
-				SubscribersList.add(connection);
 //				message.setMessage("client added successfully");
 //				client.sendToClient(message);
-			}
-			else{
-				message.setMessage(request);
-				sendToAllClients(message);
-
-			}
+                }
+                default -> {
+                    message.setMessage(request);
+                    sendToAllClients(message);
+                }
+            }
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (Exception exception) {
 			if (session != null) {
 				session.getTransaction().rollback();
 			}
-			System.err.println("An error occured, changes have been rolled back.");
+			System.err.println("An error occurred, changes have been rolled back.");
 			exception.printStackTrace();
 		}
 		finally {
@@ -1215,12 +1219,15 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	public void sendToAllClients(Message message) {
-		try {
-			for (SubscribedClient SubscribedClient : SubscribersList) {
-				SubscribedClient.getClient().sendToClient(message);
+		synchronized (SubscribersList)
+		{
+			try {
+				for (SubscribedClient SubscribedClient : SubscribersList) {
+					SubscribedClient.getClient().sendToClient(message);
+				}
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
 		}
 	}
 
@@ -1250,15 +1257,3 @@ public class SimpleServer extends AbstractServer {
 	}
 
 }
-
-
-// to implement :
-//1.
-// add two hashmaps, mapping ConnectionToClient to Integer (User ID) and vice versa
-// when user logs in : add mapping
-// when user logs out : remove mapping
-// if manager wants to send a message to a user in his community, or when a new task is posted, first search for related ConnectionToClient object
-
-//2.add new entry to database, containing awaiting messages to user/manager. (fetch list when user logs in)
-// OneToMany
-// query using CriteriaQuery, delete using CriteriaDelete

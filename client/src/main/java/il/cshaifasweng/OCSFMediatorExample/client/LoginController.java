@@ -2,12 +2,10 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import java.io.IOException;
 
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 import il.cshaifasweng.OCSFMediatorExample.entities.Message;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -20,9 +18,6 @@ import javafx.stage.Stage;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import static il.cshaifasweng.OCSFMediatorExample.client.SimpleChatClient.loadFXML;
-
-// TODO: we should probably make setroot also change the scene's size. serverConnect is like, my entire screen lmao
 public class LoginController {
     @FXML
     private TextField answer_field_forgot;
@@ -258,10 +253,6 @@ public class LoginController {
                 alert.show();
             });
         }
-    }
-    @FXML
-    void switchToPrimary(ActionEvent event) throws IOException {
-        SceneManager.switchScene("primary.fxml",event);
     }
     public void initialize() {
         question_bar_forgot.getItems().addAll(securityQuestions);

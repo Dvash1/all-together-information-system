@@ -9,9 +9,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javassist.Loader;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import il.cshaifasweng.OCSFMediatorExample.client.events.*;
 
 
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class ApproveRequestController {
             selectedTask.setTaskState("Denied");
 
             newMessage = new Message("Update task",selectedTask,currentUser);
-            String text = denyRequestTA.getText();
+            String text = "The task \"" + selectedTask.getRequiredTask() + "\"\nhas been denied with the message:\n" + denyRequestTA.getText();
             UserMessage user_message = new UserMessage(text, currentUser.getTeudatZehut(), selectedTask.getTaskCreator().getTeudatZehut() , "Normal");
             // To, From, Text
             Message denialMessage = new Message("Send message",user_message);
@@ -118,7 +118,7 @@ public class ApproveRequestController {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Request denied");
                 alert.setHeaderText(null);
-                alert.setContentText("The request has been denied.\nAn explanatory message regarding the reason for denial has been sent to the user.\n(STILL NOT IMPLEMENTED)");
+                alert.setContentText("The request has been denied.\nAn explanatory message regarding the reason for denial has been sent to the user.\n");
                 alert.showAndWait();
             });
         }
