@@ -783,14 +783,16 @@ public class SimpleServer extends AbstractServer {
                         if (password.equals(user.getPasswordHash())) {
 
                             // Bind client to id.
-                            for (SubscribedClient subscriber : SubscribersList) {
-                                if (subscriber.getClient() == client) {
-                                    // Take the client from the signature and compare
-                                    idToClient.put(teudatZehut, client);
-                                    clientToId.put(client, teudatZehut);
-                                    subscriberFound = true;
-                                }
-                            }
+							synchronized (SubscribersList){
+								for (SubscribedClient subscriber : SubscribersList) {
+									if (subscriber.getClient() == client) {
+										// Take the client from the signature and compare
+										idToClient.put(teudatZehut, client);
+										clientToId.put(client, teudatZehut);
+										subscriberFound = true;
+									}
+								}
+							}
                             if (subscriberFound) { // We log in only after making sure the client is subscribed
                                 message.setMessage("Login Succeed");
                                 user.resetNumberOfLoginTries();
@@ -1126,7 +1128,10 @@ public class SimpleServer extends AbstractServer {
                 }
                 case "add client" -> {
                     SubscribedClient connection = new SubscribedClient(client);
-                    SubscribersList.add(connection);
+					synchronized (SubscribersList)
+					{
+						SubscribersList.add(connection);
+					}
 //				message.setMessage("client added successfully");
 //				client.sendToClient(message);
                 }
@@ -1150,12 +1155,15 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	public void sendToAllClients(Message message) {
-		try {
-			for (SubscribedClient SubscribedClient : SubscribersList) {
-				SubscribedClient.getClient().sendToClient(message);
+		synchronized (SubscribersList)
+		{
+			try {
+				for (SubscribedClient SubscribedClient : SubscribersList) {
+					SubscribedClient.getClient().sendToClient(message);
+				}
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
 		}
 	}
 

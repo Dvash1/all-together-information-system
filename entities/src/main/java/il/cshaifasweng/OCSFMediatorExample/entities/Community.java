@@ -19,20 +19,14 @@ public class Community implements Serializable {
     @JoinColumn(name = "community_manager", referencedColumnName = "userName")
     private User communityManager;
 
-    // not sure where to put the mappedBy, either here or in User.
-    @OneToMany(mappedBy = "community")
-    private List<User> communityUsers;
+
 
 
     public Community() {
 
     }
 
-    public Community(String communityName, User communityManager, List<User> communityUsers) {
-        this.communityName = communityName;
-        this.communityManager = communityManager;
-        this.communityUsers = communityUsers;
-    }
+
     public Community(String communityName, User communityManager) {
         this.communityName = communityName;
         this.communityManager = communityManager;
@@ -59,12 +53,6 @@ public class Community implements Serializable {
         this.communityManager = communityManager;
     }
 
-    public List<User> getCommunityUsers() {
-        return communityUsers;
-    }
 
-    public void setCommunityUsers(List<User> communityUsers) {
-        this.communityUsers = communityUsers;
-    }
 }
 
