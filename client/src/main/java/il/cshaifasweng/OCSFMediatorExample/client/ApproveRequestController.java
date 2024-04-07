@@ -164,8 +164,18 @@ public class ApproveRequestController {
          approveRB.setToggleGroup(toggleGroup);
          denyRB.setToggleGroup(toggleGroup);
 
+         tasksTableView.setOnMouseClicked(event ->
+         {
+             if(tasksTableView.getSelectionModel().getSelectedItem() != null && toggleGroup.getSelectedToggle() != null)
+             {
+                 submitBtn.setDisable(false);
+             }
+             else {
+                 submitBtn.setDisable(true);
+             }
+         });
         toggleGroup.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
-            if (newToggle != null) {
+            if (newToggle != null && tasksTableView.getSelectionModel().getSelectedItem() != null) {
                 submitBtn.setDisable(false);
             }
             if (newToggle == denyRB) {
