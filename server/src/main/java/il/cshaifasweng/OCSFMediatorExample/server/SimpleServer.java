@@ -26,11 +26,11 @@ public class SimpleServer extends AbstractServer {
 
 	private static SessionFactory sessionFactory;
 
-	private static final long NOVOLUNTEERTIME = 2;
-	private static final TimeUnit NOVOLUNTEERTIMEUnits = TimeUnit.MINUTES;
+	private static final long NOVOLUNTEERTIME = 24;
+	private static final TimeUnit NOVOLUNTEERTIMEUnits = TimeUnit.HOURS;
 
-	private static final long TOCOMPLETETIME = 2;
-	private static final TimeUnit TOCOMPLETETIMEUnits = TimeUnit.MINUTES;
+	private static final long TOCOMPLETETIME = 24;
+	private static final TimeUnit TOCOMPLETETIMEUnits = TimeUnit.HOURS;
 
 	private static final long LOCKINGTIME = 30;
 	private static final TimeUnit LOCKINGTIMEUnits = TimeUnit.SECONDS;
@@ -388,23 +388,6 @@ public class SimpleServer extends AbstractServer {
 //					taskNotVolunteer(t30,24,sessionFactory,TimeUnit.HOURS);
 
 				}
-			CriteriaBuilder cb = session.getCriteriaBuilder();
-			CriteriaQuery<UserMessage> query = cb.createQuery(UserMessage.class);
-			Root<UserMessage> root = query.from(UserMessage.class); // Specify the root entity
-			query.select(root); // Specify the select clause
-
-			List<UserMessage> userMessages = session.createQuery(query).getResultList();
-			if (userMessages.isEmpty()) {
-				for (int i = 1; i <= 10; i++) {
-					UserMessage um = new UserMessage("Test " + i, "111222333", "444555666", "Normal");
-					session.save(um);
-				}
-				for (int i = 1; i <= 10; i++) {
-					UserMessage um = new UserMessage("Community Test " + i, "111222333", "444555666", "Community");
-					session.save(um);
-				}
-				session.flush();
-			}
 			session.getTransaction().commit();
 		} catch (Exception exception) {
 			if (session != null) {
@@ -487,7 +470,6 @@ public class SimpleServer extends AbstractServer {
 
 				if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
 					// If it is, we send a message to everyone to tell them nobody volunteered yet.
-					UserMessage usermessage_to_send = createNoVolunteerMessage(task_to_check);
 					List<User> community_list = new ArrayList<>();
 					// GET LIST
 					try {
@@ -499,6 +481,7 @@ public class SimpleServer extends AbstractServer {
 					try {
 						for (User user_to_send : community_list) { // Loop through entire community and send them the message.
 							// Set the ID to send to.
+							UserMessage usermessage_to_send = createNoVolunteerMessage(task_to_check);
 							usermessage_to_send.setTeudatZehut_to(user_to_send.getTeudatZehut());
 							// -- DEBUG
 							System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
@@ -753,7 +736,6 @@ public class SimpleServer extends AbstractServer {
 
 				if (task_to_check.getTaskState().equals("Request")) { // Check if still in request mode.
 					// If it is, we send a message to everyone to tell them nobody volunteered yet.
-					UserMessage usermessage_to_send = createNoVolunteerMessage(task_to_check);
 					List<User> community_list = new ArrayList<>();
 					// GET LIST
 					try {
@@ -765,6 +747,7 @@ public class SimpleServer extends AbstractServer {
 					try {
 						for (User user_to_send : community_list) { // Loop through entire community and send them the message.
 							// Set the ID to send to.
+							UserMessage usermessage_to_send = createNoVolunteerMessage(task_to_check);
 							usermessage_to_send.setTeudatZehut_to(user_to_send.getTeudatZehut());
 							// -- DEBUG
 							System.out.println("sending message to user with TeudatZehut : " + user_to_send.getTeudatZehut());
@@ -824,9 +807,9 @@ public class SimpleServer extends AbstractServer {
 			newSession.remove(message);
 			newSession.flush();
 		} else { // Not connected. Save to DB.
+			System.out.println("-----NOT LOGGED IN. SAVING TO DB----");
 			newSession.save(message);
 			newSession.flush();
-
 		}
 	}
 
@@ -1228,7 +1211,7 @@ public class SimpleServer extends AbstractServer {
                     sendToAllClients(message);
                 }
             }
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (Exception exception) {
@@ -1239,7 +1222,6 @@ public class SimpleServer extends AbstractServer {
 			exception.printStackTrace();
 		}
 		finally {
-
 			session.close();
 		}
 	}
