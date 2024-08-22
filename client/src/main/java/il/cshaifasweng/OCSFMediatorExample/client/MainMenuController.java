@@ -169,7 +169,7 @@ public class MainMenuController {
             }
         }
         else {
-            System.out.println("for some reason, user is null and this is not okay, okay?");
+            System.out.println("For some reason, user is null and this is not okay, okay?");
         }
     }
 }
