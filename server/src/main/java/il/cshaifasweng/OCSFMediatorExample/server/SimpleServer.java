@@ -69,7 +69,7 @@ public class SimpleServer extends AbstractServer {
 //				session.save(u1);
 //				session.save(t1);
 				Task task = session.get(Task.class,1);
-				task.setRequiredTask("Bombing Ron Spector!!!");
+				task.setRequiredTask("Bombing Ron Spector!!!!");
 				session.update(task);
 				session.flush();
 
