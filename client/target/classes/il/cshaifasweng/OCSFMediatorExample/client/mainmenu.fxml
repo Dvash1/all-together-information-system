@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="mainmenuAnchor" prefHeight="490.0" prefWidth="447.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.MainMenuController">
+   <children>
+      <Label fx:id="hi_label" layoutX="287.0" layoutY="13.0" prefHeight="17.0" prefWidth="138.0" style="-fx-background-color: lightblue;" text="Welcome &lt;USER&gt;" />
+      <Button fx:id="logoutButton" layoutX="14.0" layoutY="400.0" mnemonicParsing="false" onAction="#logout" prefHeight="25.0" prefWidth="86.0" text="Log Out" />
+      <Button fx:id="tasksListButton" layoutX="165.0" layoutY="86.0" mnemonicParsing="false" onAction="#switchToTasks" prefHeight="25.0" prefWidth="126.0" text="Tasks List" />
+      <AnchorPane fx:id="mainmenu_anchor_manager" layoutX="128.0" layoutY="169.0" prefHeight="165.0" prefWidth="189.0">
+         <children>
+            <Button fx:id="histogramButton" layoutX="61.0" layoutY="24.0" mnemonicParsing="false" onAction="#switchToHistograms" text="Histograms" />
+            <Button fx:id="communityButton" layoutX="48.0" layoutY="72.0" mnemonicParsing="false" onAction="#switchToCommunityInfo" text="Community info" />
+            <Button fx:id="requestButton" layoutX="44.0" layoutY="120.0" mnemonicParsing="false" onAction="#switchToApproveRequests" prefHeight="25.0" prefWidth="111.0" text="Approve requests" />
+         </children>
+      </AnchorPane>
+      <Button fx:id="managerButton" layoutX="165.0" layoutY="125.0" mnemonicParsing="false" onAction="#manager_options_pressed" prefHeight="25.0" prefWidth="126.0" text="Manager Options" />
+      <Button fx:id="emergencyButton" layoutX="160.0" layoutY="342.0" mnemonicParsing="false" onAction="#emergency_button_press" prefHeight="103.0" prefWidth="137.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: red;" text="Emergency Button" textFill="WHITE" />
+   </children>
+</AnchorPane>
