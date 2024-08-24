@@ -428,7 +428,7 @@ public class SimpleServer extends AbstractServer {
 						e.printStackTrace();
 					}
 
-					System.out.println("Task " + task_to_check.getId() + " not completed on time");
+					System.out.println("Task " + task_to_check.getId() + " not completed on time.");
 					new_session.close();
 
 					scheduler.schedule(this,TOCOMPLETETIME, TOCOMPLETETIMEUnits);
