@@ -28,7 +28,8 @@ The configuration is as follows:
 ![image](https://github.com/user-attachments/assets/eb4dcc97-a1da-442b-b0e0-18cd65bb2697)
 
 3. Client -
-Same as before,
+Same as before:
+
 ![image](https://github.com/user-attachments/assets/0d67c4bb-2b53-426d-a746-395a64f4451b)
 
 ## Using The Application
@@ -38,10 +39,10 @@ If you wish to use the application, feel free to do so. If you do use it, please
 Note that there are two .csv files in the repository, namely tasks and users. 
 These are the example databases for the tasks and users which we used to simulate its use, meaning if you wish to test the application, in order to log in you could/should use the log in information in these files.
 
-If you are planning to use an actual database or change its initialization, refer to the createDatabase() method in the SimpleServer.java file at server/main/.. folders. 
+If you are planning to use an actual database or change its initialization, refer to the createDatabase() method in the SimpleServer.java file. 
 
 ## Structure
 
-The server side is mainly implemented at the ```bash server/src/main/java/il/cshaifasweng/OCSFMediatorExample/server/``` directory.
-The client side is mainly implemented at the ```bash client/src/main/java/il/cshaifasweng/OCSFMediatorExample/client/``` directory, mainly on the controller files. 
+The server side is mainly implemented at the ```server/src/main/java/il/cshaifasweng/OCSFMediatorExample/server/``` directory.
+The client side is mainly implemented at the ```client/src/main/java/il/cshaifasweng/OCSFMediatorExample/client/``` directory, mainly on the controller files. 
 
