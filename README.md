@@ -17,17 +17,17 @@ The following instructions will be for using InteliJ. The next few steps do not 
 You should be able to run these steps easily using your command prompt with Java.
 
 
-1. Compiling - 
+- 1. Compiling - 
 You should use the following configuration:
 ![image](https://github.com/user-attachments/assets/23a173b2-442e-4ff0-8c72-990f7f42670c)
 
 The next steps would be to run both the server and the client. Enable simultaneous if you have not already.
 
-2. Server - 
+- 2. Server - 
 The configuration is as follows:
 ![image](https://github.com/user-attachments/assets/eb4dcc97-a1da-442b-b0e0-18cd65bb2697)
 
-3. Client -
+- 3. Client -
 Same as before:
 
 ![image](https://github.com/user-attachments/assets/0d67c4bb-2b53-426d-a746-395a64f4451b)
